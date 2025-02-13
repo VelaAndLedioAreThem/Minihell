@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 13:56:35 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/13 15:30:54 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@
 # include <readline/history.h>
 
 // Parsing struct 
-typedef enum e_token_type {
+typedef enum e_token_type
+{
 	TOKEN_WORD,
 	TOKEN_PIPE,
 	TOKEN_REDIRECT_IN,
@@ -46,6 +47,41 @@ typedef enum e_token_type {
 	TOKEN_EOF
 }	t_token_type;
 
- j
+typedef struct s_token
+{
+	char			*value;
+	t_token_type	type;
+	int				expandable;
+	struct s_token	*next;
+}	t_token;
+
+typedef enum e_ast_type
+{
+	AST_COMMAND,
+	AST_PIPELINE,
+	AST_REDIR,
+	AST_AND_OR,
+	AST_SUBSHELL
+}	t_ast_type;
+
+typedef struct s_command
+{
+	char			**args;
+	char			*infile;
+	char			*outfile;
+	char			*heredoc_delim;
+	int				append;
+	int				is_builtin;
+}	t_commands;
+
+// Main struct
+typedef struct s_ast
+{
+	t_ast_type		type;
+	struct s_ast	*left;
+	struct s_ast	*right;
+	t_commands		*cmd;
+	int				operator_type;
+}	t_ast;
 
 #endif
