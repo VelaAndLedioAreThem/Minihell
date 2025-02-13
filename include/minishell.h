@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 01:41:44 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:56:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,22 @@
 # include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+
+// Parsing struct 
+typedef enum e_token_type {
+	TOKEN_WORD,
+	TOKEN_PIPE,
+	TOKEN_REDIRECT_IN,
+	TOKEN_REDIRECT_OUT,
+	TOKEN_APPEND,
+	TOKEN_HEREDOC,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_PAREN_OPEN,
+	TOKEN_PAREN_CLOSE,
+	TOKEN_EOF
+}	t_token_type;
+
+ j
 
 #endif

@@ -6,18 +6,14 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 01:36:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:24:41 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int main(int argc, char **argv)
+int main(char **envp)
 {
-	if (argc == 1)
-	{
-		printf("%s\n");
-		exit(1);
-	}
+
 }
 
