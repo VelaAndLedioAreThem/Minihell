@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 16:43:33 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:28:16 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -87,4 +87,5 @@ typedef struct s_ast
 	t_token			*token;
 }	t_ast;
 
+int		ft_isspace(int num);
 #endif
