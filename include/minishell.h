@@ -6,11 +6,8 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/02/13 15:30:54 by ldurmish         ###   ########.fr       */
-=======
+/*   Updated: 2025/02/13 16:43:33 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
->>>>>>> 985b200330b058822be8b8c2731f545579a69a69
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +31,7 @@
 # include <sys/ioctl.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include "../libft/include/libft.h"
 
 // Parsing struct 
 typedef enum e_token_type
@@ -86,6 +84,7 @@ typedef struct s_ast
 	struct s_ast	*right;
 	t_commands		*cmd;
 	int				operator_type;
+	t_token			*token;
 }	t_ast;
 
 #endif

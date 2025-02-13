@@ -19,7 +19,7 @@ RED = \033[0m;31m
 GREEN = \033[0m;32m
 
 # Source files for minishell
-SRCS = $(SRC)main.c
+SRCS = $(SRC)main.c $(PARSE)tokenize.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)
