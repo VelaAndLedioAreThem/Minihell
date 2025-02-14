@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:33:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/14 14:08:28 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/14 14:51:45 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ int	tokenize_utils(t_token **token, char *input, int *i)
 	int		status;
 
 	status = 0;
-	if (input[*i] == '\'' || input[*i] == '"');
-	if (is_operator(input[*i]))
+	if (input[*i] == '\'' || input[*i] == '"')
+		status = handle_quotes(token, input, i);
+	else if (is_operator(input[*i]))
 	{
 		status = handle_operator(token, input, i);
 		if (status == 0)

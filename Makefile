@@ -3,7 +3,7 @@ NAME = minishell
 
 # Compiler Settings
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror -g -fsanitize=leak,address
 INCLUDE = -I include/ -I libft/include
 LIBFT_DIR = libft/
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -60,6 +60,10 @@ fclean: clean
 		@echo "$(GREEN)Executables cleaned successfully$(RESET)"
 
 re: fclean all
+
+# Valgrind 
+valgrind: re
+	valgrind --leak-check=full ./minishell
 
 # Phony targets
 .PHONY: all clean fclean re
