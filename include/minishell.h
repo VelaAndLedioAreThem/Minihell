@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 17:28:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/14 01:09:30 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -46,7 +46,8 @@ typedef enum e_token_type
 	TOKEN_OR,
 	TOKEN_PAREN_OPEN,
 	TOKEN_PAREN_CLOSE,
-	TOKEN_EOF
+	TOKEN_EOF,
+	TOKEN_WILDCARD
 }	t_token_type;
 
 typedef struct s_token
@@ -87,5 +88,13 @@ typedef struct s_ast
 	t_token			*token;
 }	t_ast;
 
-int		ft_isspace(int num);
+int			ft_isspace(int num);
+t_token		*create_node(char *str, t_token_type type);
+t_token		*tokenize(char *input);
+void		append_node(t_token **token, t_token *current_token);
+int			is_operator(char c);
+int			return_parenthesis(t_token **token, char c);
+int			handle_double_operator(t_token **head, char *input, int *i);
+int			handle_single_operator(t_token **token, char c);
+int			ft_strcmp(char *s1, char *s2);
 #endif
