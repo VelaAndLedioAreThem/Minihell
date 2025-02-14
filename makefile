@@ -1,39 +1,35 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/02/13 18:09:43 by vszpiech          #+#    #+#              #
-#    Updated: 2025/02/13 18:09:43 by vszpiech         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+NAME = minishell
+
+SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = includes
+
+SRC = $(wildcard $(SRC_DIR)/*.c) \
+      $(wildcard $(SRC_DIR)/builtins/*.c) \
+      $(wildcard $(SRC_DIR)/parsing/*.c) \
+      $(wildcard $(SRC_DIR)/execution/*.c) \
+      $(wildcard $(SRC_DIR)/utils/*.c)
+
+OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g
-LDFLAGS = -lreadline
-
-# Include all source files, including those in the builtins folder
-SRC = main.c envs.c signals.c \
-      builtins/builtins.c builtins/handle_builtins.c builtins/Redirections.c
-
-OBJ = $(SRC:.c=.o)
-NAME = minishell
+CFLAGS = -Wall -Wextra -Werror -I$(INC_DIR)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ -lreadline
 
-# Rule for compiling .c files into .o files
-%.o: %.c shell.h
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(OBJ_DIR) $(OBJ_DIR)/builtins $(OBJ_DIR)/parsing $(OBJ_DIR)/execution $(OBJ_DIR)/utils
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJ)
+	rm -rf $(OBJ_DIR)
 
 fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
+.PHONY: all clean fclean re
