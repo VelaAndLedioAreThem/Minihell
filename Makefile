@@ -21,7 +21,7 @@ GREEN = \033[0m;32m
 
 # Source files for minishell
 SRCS = $(SRC)main.c $(PARSE)tokenize.c $(PARSE)nodes.c $(PARSE)tokenize_utils.c \
-	   $(PARSE_UTILS)utils.c
+	   $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c $(PARSE)tokenize_utils_2.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)

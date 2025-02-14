@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/14 01:09:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/14 13:26:47 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -97,4 +97,7 @@ int			return_parenthesis(t_token **token, char c);
 int			handle_double_operator(t_token **head, char *input, int *i);
 int			handle_single_operator(t_token **token, char c);
 int			ft_strcmp(char *s1, char *s2);
+int			handle_word(t_token **token, char *input, int *i);
+t_token		*free_tokens(t_token *token);
+
 #endif
