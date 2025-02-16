@@ -22,6 +22,7 @@ GREEN = \033[0m;32m
 # Source files for minishell
 SRCS = $(SRC)main.c $(PARSE)tokenize.c $(PARSE)nodes.c $(PARSE)tokenize_utils.c \
 	   $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c $(PARSE)tokenize_utils_2.c \
+	   $(PARSE)convert_env.c $(PARSE)env_parsing.c $(PARSE)env_parsing_utils.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -29,7 +30,7 @@ OBJS = $(SRCS:.c=.o)
 # Main target
 all: $(LIBFT) $(NAME)
 
-# Compiling libft
+# Compiling Libft
 $(LIBFT):
 		@echo "$(GREEN)Compiling libft...$(RESET)"
 		@$(MAKE) -C $(LIBFT_DIR)

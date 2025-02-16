@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:12:02 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/14 15:11:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/14 18:53:00 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	if (!current)
 		return (-1);
 	current->expandable = (quote_type == '"');
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -67,6 +68,7 @@ int	handle_word(t_token **token, char *input, int *i)
 	if (!current)
 		return (-1);
 	current->expandable = 1;
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	(*i)--;
 	return (1);
