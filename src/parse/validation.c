@@ -6,8 +6,13 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 16:01:41 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/15 16:11:32 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/19 21:27:23 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+//bool	validation(t_token **tokenize)
+//{
+//
+//}

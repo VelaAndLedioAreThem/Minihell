@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/14 18:52:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/17 16:40:20 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,11 @@ int	handle_double_operator(t_token **head, char *input, int *i)
 		return (0);
 	next_char = input[*i + 1];
 	result = handle_double_operator_utils(&current, input, i, next_char);
-	printf("Token: %s\n", current->value);
 	if (result == 1)
+	{
 		append_node(head, current);
+		printf("%s\n", current->value);
+	}
 	return (result);
 }
 

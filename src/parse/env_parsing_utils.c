@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 00:37:42 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/17 00:26:55 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/19 19:15:31 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	*join_arguments(t_args *arg)
 
 static int	quotes(char	*input, int i, t_args *parse)
 {
-	if (input[i] == '"' && (i == 0 || input[i - 1] != '\\'))
+	if (input[i] == '"')
 	{
 		if (!parse->single_quotes)
 		{
@@ -39,11 +39,11 @@ static int	quotes(char	*input, int i, t_args *parse)
 			if (parse->double_quotes)
 				parse->last_quotes = '"';
 			else if (parse->last_quotes == '"')
-					parse->last_quotes = 0;
+				parse->last_quotes = 0;
 		}
 		return (1);
 	}
-	if (input[i] == '\'' && (i == 0 || input[i - 1] != '\''))
+	if (input[i] == '\'')
 	{
 		if (!parse->double_quotes)
 		{
@@ -51,7 +51,7 @@ static int	quotes(char	*input, int i, t_args *parse)
 			if (parse->single_quotes)
 				parse->last_quotes = '\'';
 			else if (parse->last_quotes)
-					parse->last_quotes = 0;
+				parse->last_quotes = 0;
 		}
 		return (1);
 	}
@@ -98,19 +98,25 @@ char	*parse_env(char *input, t_env *env_list, t_args *arg)
 	t_args		parse;
 	int			i;
 
-	i = -1;
+	i = 0;
 	parse = (t_args){arg->argc, arg->argv, 0, input, 0, ft_strdup(""), 0, 0, 0};
-	while (input[++i])
+	while (input[i])
 	{
 		if (quotes(input, i, &parse))
+		{
+			i++;
 			continue ;
-		if (input[i] == '$' && input[i + 1] && input[i + 1] != ' ' && input[i + 1] != '"'
-			&& input[i + 1] != '\'')
+		}
+		if (input[i] == '$' && input[i + 1] && input[i + 1] != ' '
+			&& input[i + 1] != '"' && input[i + 1] != '\'')
 		{
 			parse.result = handle_env_part(&parse, &i, env_list);
 			parse.start = i;
-			continue ;
 		}
+		else
+			i++;
+		if (i > ft_strlen(input))
+			i = ft_strlen(input);
 	}
 	handle_remaining(&parse, &i);
 	return (parse.result);

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/17 00:18:13 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/19 22:12:29 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -126,6 +126,9 @@ char		*parse_env(char *input, t_env *env_list, t_args *arg);
 char		*join_arguments(t_args *arg);
 char		*get_env_value(t_env *env_list, char *name);
 char		*join_arguments(t_args *arg);
+
+// Validation
+bool		validation(t_token *tokens);
 
 // Free functions
 void		free_env_list(t_env *env_list);
