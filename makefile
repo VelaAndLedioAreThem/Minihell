@@ -1,35 +1,92 @@
-NAME = minishell
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/08/08 16:46:30 by eseferi           #+#    #+#              #
+#    Updated: 2024/04/11 16:49:29 by eseferi          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRC_DIR = src
-OBJ_DIR = obj
-INC_DIR = includes
+# Variables
+CC					=	gcc
+CFLAGS				=	-Wall -Wextra -Iinc  -O3 -g #-fsanitize=address -fno-omit-frame-pointer
 
-SRC = $(wildcard $(SRC_DIR)/*.c) \
-      $(wildcard $(SRC_DIR)/builtins/*.c) \
-      $(wildcard $(SRC_DIR)/parsing/*.c) \
-      $(wildcard $(SRC_DIR)/execution/*.c) \
-      $(wildcard $(SRC_DIR)/utils/*.c)
+RM					=	rm -rf
+MINISHELL			=   minishell
+NAME				=	$(MINISHELL)
 
-OBJ = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+# readline, leaks, valgrind
+RL_PREFIX = $(HOME)/.local/pkg/readline
+RL_CFLAGS = -I $(RL_PREFIX)/inc
+RL_LIBS   = -L $(RL_PREFIX)/lib -lreadline -lhistory -lcurses
+VALGRIND  = valgrind --track-fds=yes --trace-children=yes#--log-file="valog" #--leak-check=full  -s --show-leak-kinds=all #--track-origins=yes
+LEAKS	  = leaks --atExit --
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -I$(INC_DIR)
+# Libraries
+LIBFT				=	libft.a
+LIBFT_DIR			=	lib/libft
+LIBFT_FILE			=	$(LIBFT_DIR)/$(LIBFT)
+CFLAGS				+=	-I $(LIBFT_DIR)/inc
 
-all: $(NAME)
+MAKE_LIB			=	make --no-print-directory -C 
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^ -lreadline
+# Source and Object Files
+VPATH				=	src:inc:src/execution:src/lexer:src/parenthesis:src/parsing:src/expander:src/tree:src/utils:inc
+MINISHELL_INC		=	minishell.h
+MINISHELL_SRC		=	$(shell find src -name '*.c')
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR) $(OBJ_DIR)/builtins $(OBJ_DIR)/parsing $(OBJ_DIR)/execution $(OBJ_DIR)/utils
-	$(CC) $(CFLAGS) -c $< -o $@
+# Object Files
+OBJ_DIR				=	obj
+MINISHELL_OBJ		=	$(addprefix $(OBJ_DIR)/, $(MINISHELL_SRC:.c=.o))
 
-clean:
-	rm -rf $(OBJ_DIR)
+# Rules
+all:				$(NAME)
 
-fclean: clean
-	rm -f $(NAME)
+$(OBJ_DIR)/%.o:		%.c $(MINISHELL_INC)
+					@mkdir -p $(dir $@)
+					@$(CC) $(CFLAGS) $(RL_CFLAGS) -c $< -o $@
 
-re: fclean all
+$(LIBFT_FILE):
+					$(MAKE_LIB) $(LIBFT_DIR)
 
-.PHONY: all clean fclean re
+$(NAME):			$(LIBFT_FILE) $(MINISHELL_OBJ)
+					@$(CC) $(CFLAGS) $(MINISHELL_OBJ) $(LIBFT_FILE) $(RL_LIBS) -o $@
+					@echo "$(GREEN)$(NAME) was successfully created!$(DEFAULT)"
+
+lib_clean:
+					$(MAKE_LIB) $(LIBFT_DIR) clean
+
+lib_fclean:
+					$(MAKE_LIB) $(LIBFT_DIR) fclean
+
+clean:				lib_clean
+					$(RM) $(OBJ_DIR)
+					@echo "$(YELLOW)$(NAME) object files deleted!$(DEFAULT)"
+
+fclean:				clean lib_fclean
+					$(RM) $(NAME)
+					@echo "$(RED)$(NAME) program deleted!$(DEFAULT)"
+					
+re:					fclean all
+
+# Valgrind testing
+valgrind: $(NAME)
+	$(VALGRIND) ./$(NAME)
+
+# Leaks at exit testing
+leaks: $(NAME)
+	$(LEAKS) ./$(NAME)
+
+.SILENT:
+
+.PHONY:				all lib_clean lib_fclean clean fclean re
+
+# COLORS DEFINITION
+RED				= \033[1;31m
+DEFAULT			= \033[0m
+GREEN			= \033[1;32m
+BOLD			= \033[1m
+YELLOW			= \033[1;33m
