@@ -6,18 +6,20 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/17 16:40:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/26 19:09:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 int	handle_single_operator(t_token **token, char c)
 {
 	t_token		*current;
 
 	if (c == '|')
-		current = create_node("|", TOKEN_OR);
+		current = create_node("|", TOKEN_PIPE);
+	else if (c == '&')
+		current = create_node("&", TOKEN_AND);
 	else if (c == '<')
 		current = create_node("<", TOKEN_REDIRECT_IN);
 	else if (c == '>')
@@ -61,6 +63,12 @@ int	handle_double_operator(t_token **head, char *input, int *i)
 	if (input[*i + 1] == '\0')
 		return (0);
 	next_char = input[*i + 1];
+	if ((input[*i] == '&' && next_char == '&' && input[*i + 2] == '&')
+		|| (input[*i] == '|' && next_char == '|' && input[*i + 2] == '|'))
+	{
+		report_error(ERR_SYNTAX, "invalid operator sequence");
+		return (-1);
+	}
 	result = handle_double_operator_utils(&current, input, i, next_char);
 	if (result == 1)
 	{

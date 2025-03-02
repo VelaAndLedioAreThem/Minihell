@@ -1,18 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validation.c                                       :+:      :+:    :+:   */
+/*   operators_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/15 16:01:41 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/19 21:27:23 by ldurmish         ###   ########.fr       */
+/*   Created: 2025/02/25 17:06:42 by ldurmish          #+#    #+#             */
+/*   Updated: 2025/02/26 00:38:27 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../../include/minishell.h"
 
-//bool	validation(t_token **tokenize)
-//{
-//
-//}
+bool	ft_is_operator(char c)
+{
+	return (c == '|' || c == '&' || c == ';');
+}
+
+bool	ft_is_logical_op(char current, char next)
+{
+	return ((current == '&' && next == '&')
+		|| (current == '|' && next == '|'));
+}

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:21:04 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/15 20:00:55 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/24 02:28:33 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,29 @@ t_token	*free_tokens(t_token *token)
 		token = temp;
 	}
 	return (NULL);
+}
+
+void	report_error(t_errors_code code, char *token)
+{
+	if (code == ERR_UNBALANCED_PAREN)
+	{
+		if (token)
+			printf("minishell: syntax error near unexpected token `%s'\n",
+				token);
+		else
+			printf("minishell: syntax error: unmatched parenthesis\n");
+	}
+	else if (code == ERR_SYNTAX)
+	{
+		if (token)
+			printf("minishell: syntax error near unexpected `%s'\n", token);
+		else
+			printf("minishell: syntax error\n");
+	}
+	else if (code == ERR_UNEXPECTED_TOKEN)
+		printf("minishell: syntax error near unexpected toke `%s'\n", token);
+	else if (code == ERR_MEMORY)
+		printf("minishell: memory allocation failed\n");
+	else if (code == ERR_PARSE)
+		printf("minishell: parse error\n");
 }

@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:12:02 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/19 19:11:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/26 01:28:06 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 static int	get_quote_content(char *input, int *i,
 	char quote_type, char **content)
@@ -23,7 +23,10 @@ static int	get_quote_content(char *input, int *i,
 	while (input[*i] && input[*i] != quote_type)
 		(*i)++;
 	if (!input[*i])
+	{
+		report_error(ERR_SYNTAX, "Unmatched parenthesis");
 		return (-1);
+	}
 	len = *i - start;
 	*content = ft_substr(input, start, len);
 	if (!*content)
@@ -41,9 +44,11 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	if (get_quote_content(input, i, quote_type, &content) == -1)
 		return (-1);
 	current = create_node(content, TOKEN_WORD);
-	free(content);
 	if (!current)
+	{
+		free(content);
 		return (-1);
+	}
 	current->expandable = (quote_type == '"');
 	printf("Token: %s\n", current->value);
 	append_node(token, current);

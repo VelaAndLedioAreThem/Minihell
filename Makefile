@@ -11,8 +11,16 @@ LIBFT = $(LIBFT_DIR)/libft.a
 # Directories
 SRC = src/
 PARSE = $(SRC)parse/
-EXEC = $(SRC)exec/
-PARSE_UTILS = $(SRC)utils/parsing/
+ENV = $(PARSE)env/
+STACK = $(PARSE)stack/
+TOKENIZE = $(PARSE)tokenize/
+PARSE_UTILS = $(PARSE)utils/
+NODES = $(PARSE)nodes/
+VALIDATION = $(PARSE)validation/
+PARENTHESIS = $(VALIDATION)parenthesis/
+COMMANDS = $(VALIDATION)commands/
+OPERATORS = $(VALIDATION)operators/
+REDIRECTION = $(VALIDATION)redirections/
 
 # Color Codes
 RESET = \033[0m
@@ -20,9 +28,13 @@ RED = \033[0m;31m
 GREEN = \033[0m;32m
 
 # Source files for minishell
-SRCS = $(SRC)main.c $(PARSE)tokenize.c $(PARSE)nodes.c $(PARSE)tokenize_utils.c \
-	   $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c $(PARSE)tokenize_utils_2.c \
-	   $(PARSE)convert_env.c $(PARSE)env_parsing.c $(PARSE)env_parsing_utils.c \
+SRCS = $(SRC)main.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
+	   $(TOKENIZE)tokenize_utils.c $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c \
+	   $(TOKENIZE)tokenize_utils_2.c $(ENV)convert_env.c $(ENV)env_parsing.c \
+	   $(ENV)env_parsing_utils.c $(STACK)stack.c $(VALIDATION)validation.c \
+	   $(PARENTHESIS)parenthesis_validation.c $(PARENTHESIS)parenthesis.c $(PARENTHESIS)parenthesis_utils.c \
+	   $(COMMANDS)validate_commands.c $(COMMANDS)commands_utils.c $(OPERATORS)operators_utils.c \
+	   $(REDIRECTION)redirections_utils.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)
@@ -43,7 +55,7 @@ $(NAME): $(OBJS) $(LIBFT)
 		@echo "$(GREEN)Minishell compiled successfully$(RESET)"
 
 # Compile individual object files
-%.o: %.c
+$(SRC)%.o: $(SRC)%.c
 		$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 # Clean object files

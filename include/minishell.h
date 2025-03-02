@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/19 22:12:29 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/26 00:38:46 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -47,7 +47,8 @@ typedef enum e_token_type
 	TOKEN_PAREN_OPEN,
 	TOKEN_PAREN_CLOSE,
 	TOKEN_EOF,
-	TOKEN_WILDCARD
+	TOKEN_WILDCARD,
+	TOKEN_SEQUENCING
 }	t_token_type;
 
 typedef struct s_env
@@ -57,11 +58,42 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
+typedef struct s_quote
+{
+	bool			in_single_quotes;
+	bool			in_double_quotes;
+}	t_quotes;
+
+// Parenthesis struct
+typedef struct s_paren
+{
+	bool			has_commands;
+	bool			has_content;
+	char			last_op;
+	bool			has_cmd_before;
+	int				j;
+	bool			has_operator;
+}	t_paren;
+
+// Commands struct
+typedef struct s_cmd
+{
+	bool		in_commands;
+	bool		is_cmd_pos;
+}	t_cmd;
+
+typedef struct s_stack
+{
+	char			name;
+	struct s_stack	*next;
+}	t_stack;
+
 typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
 	int				expandable;
+	t_stack			*top;
 	struct s_token	*next;
 }	t_token;
 
@@ -71,8 +103,20 @@ typedef enum e_ast_type
 	AST_PIPELINE,
 	AST_REDIR,
 	AST_AND_OR,
-	AST_SUBSHELL
+	AST_SUBSHELL,
+	AST_SEQUENCING
 }	t_ast_type;
+
+// Erorrs Messages
+typedef enum e_errors_code
+{
+	ERR_NONE,
+	ERR_UNBALANCED_PAREN,
+	ERR_SYNTAX,
+	ERR_UNEXPECTED_TOKEN,
+	ERR_MEMORY,
+	ERR_PARSE
+}	t_errors_code;
 
 typedef struct s_command
 {
@@ -126,17 +170,46 @@ char		*parse_env(char *input, t_env *env_list, t_args *arg);
 char		*join_arguments(t_args *arg);
 char		*get_env_value(t_env *env_list, char *name);
 char		*join_arguments(t_args *arg);
+char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 
 // Validation
 bool		validation(t_token *tokens);
+bool		validation_parenthesis(t_token *tokenize);
 
-// Free functions
+// Parenthesis
+bool		check_parenthesis(t_token *token, char *input, int i,
+				t_quotes *quote);
+void		process_quotes(char c, t_quotes *quote);
+bool		is_valid_command_char(char c);
+bool		is_command_or_arg_char(char c);
+
+// Operators
+bool		ft_is_operator(char c);
+bool		ft_is_logical_op(char current, char next);
+
+// Redirections
+bool		ft_is_redirection(char c);
+
+//Commands
+bool		ft_is_commands_position(char *input, int i);
+bool		validate_commands(t_token *tokenize);
+bool		is_valid_command_start(char c);
+
+// Stack operations
+void		push(t_token *stack, char data);
+void		initialize_stack(t_token *stack);
+char		pop(t_token *stack);
+void		free_stack(t_token *stack);
+bool		is_empty(t_token *stack);
+
+// Errors and Free functions
 void		free_env_list(t_env *env_list);
-int			ft_isspace(int num);
 t_token		*free_tokens(t_token *token);
-char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
+void		report_error(t_errors_code code, char *token);
+void		free_stack(t_token *token);
 
 // Utils functions
 int			ft_strcmp(char *s1, char *s2);
-
+int			count_parenthesis(t_token *tokens);
+int			ft_isspace(int num);
 #endif
