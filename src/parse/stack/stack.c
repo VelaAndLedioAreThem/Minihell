@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/22 01:07:35 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/23 23:29:35 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/04 16:45:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void	initialize_stack(t_token *stack)
 {

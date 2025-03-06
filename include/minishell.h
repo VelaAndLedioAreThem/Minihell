@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/26 00:38:46 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/05 01:04:02 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -65,6 +65,13 @@ typedef struct s_quote
 }	t_quotes;
 
 // Parenthesis struct
+typedef struct s_open_paren
+{
+	bool			has_commands;
+	bool			expecting_commands;
+	int				i;
+}	t_open_paren;
+
 typedef struct s_paren
 {
 	bool			has_commands;
@@ -180,12 +187,32 @@ bool		validation_parenthesis(t_token *tokenize);
 bool		check_parenthesis(t_token *token, char *input, int i,
 				t_quotes *quote);
 void		process_quotes(char c, t_quotes *quote);
-bool		is_valid_command_char(char c);
-bool		is_command_or_arg_char(char c);
+bool		valid_before_open_paren(char c);
+bool		is_valid_after_open_paren(char c);
+int			find_matching_paren(t_token *token, char *input, int start_pos);
+bool		validate_paren_content(char *input, int start_pos, int end_pos,
+				t_token *token);
+bool		validate_nested_paren(char *input, int *i, int end,
+				t_token *token);
+bool		validate_op_in_paren(char *input, t_open_paren *paren,
+				t_token *token);
+bool		validate_pipe_in_paren(char *input, t_open_paren *paren,
+				t_token *token);
+bool		validate_seq_in_paren(char *input, t_open_paren *paren,
+				t_token *token);
+bool		validate_redirect_in_paren(char *input, t_open_paren *paren,
+				int end, t_token *token);
+bool		validate_redirect_or_command(char *input, t_open_paren *paren,
+				int end, t_token *token);
+bool		validate_paren_content_utils(t_open_paren *paren, t_token *token);
 
 // Operators
 bool		ft_is_operator(char c);
 bool		ft_is_logical_op(char current, char next);
+bool		validate_logical_op(t_token *tokens);
+
+// Quotes
+bool		validation_quotes(t_token *tokens);
 
 // Redirections
 bool		ft_is_redirection(char c);
@@ -194,6 +221,11 @@ bool		ft_is_redirection(char c);
 bool		ft_is_commands_position(char *input, int i);
 bool		validate_commands(t_token *tokenize);
 bool		is_valid_command_start(char c);
+bool		is_valid_command_char(char c);
+bool		is_command_or_arg_char(char c);
+
+// Wildcards
+bool		ft_is_wildcard(char c);
 
 // Stack operations
 void		push(t_token *stack, char data);

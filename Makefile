@@ -21,6 +21,8 @@ PARENTHESIS = $(VALIDATION)parenthesis/
 COMMANDS = $(VALIDATION)commands/
 OPERATORS = $(VALIDATION)operators/
 REDIRECTION = $(VALIDATION)redirections/
+QUOTES = $(VALIDATION)quotes/
+WILDCARD = $(VALIDATION)wildcards/
 
 # Color Codes
 RESET = \033[0m
@@ -34,7 +36,8 @@ SRCS = $(SRC)main.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(ENV)env_parsing_utils.c $(STACK)stack.c $(VALIDATION)validation.c \
 	   $(PARENTHESIS)parenthesis_validation.c $(PARENTHESIS)parenthesis.c $(PARENTHESIS)parenthesis_utils.c \
 	   $(COMMANDS)validate_commands.c $(COMMANDS)commands_utils.c $(OPERATORS)operators_utils.c \
-	   $(REDIRECTION)redirections_utils.c \
+	   $(OPERATORS)validation_logical_operators.c $(REDIRECTION)redirections_utils.c $(QUOTES)validation_quotes.c \
+	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)

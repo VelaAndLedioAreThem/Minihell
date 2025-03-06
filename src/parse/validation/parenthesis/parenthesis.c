@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/25 18:05:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 02:53:42 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,19 @@ static bool	validate_open_paren(char *input, int i, t_token *token)
 			report_error(ERR_SYNTAX, "missing operator or space before '(");
 			return (free_stack(token), false);
 		}
+		if (ft_is_redirection(input[i - 1]) || ft_is_wildcard(input[i - 1]))
+		{
+			report_error(ERR_SYNTAX, "invalid token before the '('");
+			return (false);
+		}
+		if (!valid_before_open_paren(input[i - 1]))
+		{
+			report_error(ERR_SYNTAX, "invalid token before '('");
+			return (false);
+		}
 	}
+	if (input[i + 1] && !is_valid_after_open_paren(input[i + 1]))
+		return (report_error(ERR_SYNTAX, "invalid token after '('"), false);
 	return (true);
 }
 
@@ -54,17 +66,33 @@ static bool	validate_command_paren(char *input, int i, t_paren *command)
 	return (true);
 }
 
-static bool	process_open_paren(t_token *token, char *input, int i,
+static int	process_open_paren(t_token *token, char *input, int i,
 	t_paren *commands)
 {
+	int			start_pos;
+	int			end_pos;
+
 	if (i > 0 && !validate_command_paren(input, i, commands))
 	{
 		report_error(ERR_SYNTAX, "invalid command before parenthesis");
 		return (free_stack(token), false);
 	}
 	if (!validate_open_paren(input, i, token))
+		return (-1);
+	start_pos = i + 1;
+	end_pos = find_matching_paren(token, input, start_pos);
+	if (end_pos == -1)
+	{
+		report_error(ERR_SYNTAX, "unclosed parenthesis");
 		return (false);
-	return (true);
+	}
+	if (!validate_paren_content(input, start_pos, end_pos, token))
+		return (false);
+	push(token, '(');
+	commands->has_content = true;
+	commands->last_op = ')';
+	commands->has_commands = false;
+	return (end_pos);
 }
 
 bool	check_parenthesis(t_token *token, char *input, int i,

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/25 15:49:24 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/05 01:31:37 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,15 @@ bool	parenthesis_utils(t_token *tokenize)
 	t_quotes	quote;
 	t_token		*stack;
 
-	stack = (t_token *)malloc(sizeof(t_token));
-	if (!stack)
-		return (false);
+	stack = tokenize;
 	quote = (t_quotes){false, false};
 	initialize_stack(stack);
-	while (tokenize && tokenize->value)
+	while (stack && stack->value)
 	{
-		input = tokenize->value;
+		input = stack->value;
 		if (!parenthesis(stack, input, &quote))
 			return (false);
-		tokenize = tokenize->next;
+		stack = stack->next;
 	}
 	if (!is_empty(stack))
 	{

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:08:52 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/25 18:10:41 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/04 16:39:54 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,6 @@ bool	is_command_or_arg_char(char c)
 
 bool	is_valid_command_start(char c)
 {
-	return (ft_isalpha(c) || c == '.' || c == '/' || c == '$' || c == '?'
+	return (ft_isalnum(c) || c == '.' || c == '/' || c == '$' || c == '?'
 		|| c == '#' || c == '_');
 }

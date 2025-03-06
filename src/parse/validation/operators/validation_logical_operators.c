@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validation_operatos.c                              :+:      :+:    :+:   */
+/*   validation_logical_operators.c                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 19:18:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/03 00:19:59 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 03:34:24 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,16 @@ bool	check_tokens(t_token **curr, t_token **next)
 	return (true);
 }
 
+bool	check_logical_op(t_token *tokens)
+{
+	t_token		*curr;
+	t_token		*next;
+
+	curr = tokens;
+	next = NULL;
+	if (!curr->)
+}
+
 bool	validate_logical_op(t_token *tokens)
 {
 	t_token		*next;
@@ -105,6 +115,8 @@ bool	validate_logical_op(t_token *tokens)
 		if (curr->type == TOKEN_AND || curr->type == TOKEN_OR
 			|| curr->type == TOKEN_PIPE)
 		{
+			if (!check_logical_op(tokens))
+				return (false);
 			if (!check_tokens(&curr, &next))
 				return (false);
 		}

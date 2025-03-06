@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/26 19:16:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/05 01:56:06 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,7 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 			return ;
 		}
 		if (!validation(tokens))
-		{
-			free_tokens(tokens);
 			return ;
-		}
 	}
 }
 
@@ -57,11 +54,6 @@ int	main(int argc, char **argv, char **envp)
 		if (!input)
 		{
 			printf("exit\n");
-			exit(0);
-		}
-		if (ft_strcmp(input, "exit") == 0)
-		{
-			free(input);
 			exit(0);
 		}
 		handle_input(input, env_list, argc, argv);
