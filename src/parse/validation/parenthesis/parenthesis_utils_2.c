@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/04 03:13:29 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 20:16:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,92 @@ bool	validate_paren_content_utils(t_open_paren *paren, t_token *token)
 		report_error(ERR_SYNTAX, "missing command after operator");
 		free_stack(token);
 		return (false);
+	}
+	return (true);
+}
+
+int	find_matching_paren(t_token *token, char *input, int start_pos)
+{
+	int			paren_count;
+	int			j;
+	t_quotes	temp_quote;
+	t_token		*curr;
+	int			total_pos;
+
+	paren_count = 1;
+	curr = token;
+	while (curr && start_pos >= ft_strlen(curr->value))
+	{
+		start_pos -= ft_strlen(curr->value);
+		curr = curr->next;
+	}
+	j = start_pos;
+	temp_quote = (t_quotes){false, false};
+	total_pos = 0;
+	while (curr)
+	{
+		input = curr->value;
+		while (input[j] != '\0')
+		{
+			process_quotes(input[j], &temp_quote);
+			if (!temp_quote.in_double_quotes && !temp_quote.in_single_quotes)
+			{
+				if (input[j] == '(')
+					paren_count++;
+				else if (input[j] == ')')
+					paren_count--;
+			}
+			if (paren_count == 0)
+				return (total_pos + j);
+			j++;
+		}
+		total_pos += ft_strlen(curr->value);
+		j = 0;
+		curr = curr->next;
+	}
+	return (-1);
+}
+
+bool	check_closed_paren(char *input, int i, t_token *token)
+{
+	if (!ft_isspace(input[i + 1]) && !is_valid_close_paren(input[i + 1])
+		&& !ft_is_redirection(input[i + 1]) && !ft_is_wildcard(input[i + 1]))
+	{
+		report_error(ERR_SYNTAX, "invalid token after ')'");
+		return (free_stack(token), false);
+	}
+	if (ft_is_redirection_op(input[i], input[i + 1]))
+	 return (true);
+	if (ft_is_wildcard(input[i + 1]) && !ft_isspace(input[i + 1]))
+	{
+		report_error(ERR_SYNTAX, "missing space after ')'");
+		return (free_stack(token), false);
+	}
+	return (true);
+}
+
+bool	process_close_paren(char *input, int i, t_token *token,
+	t_paren *command)
+{
+	if (!is_empty(token))
+	{
+		report_error(ERR_UNEXPECTED_TOKEN, ")");
+		return (free_stack(token), false);
+	}
+	if (!command->has_content)
+	{
+		report_error(ERR_SYNTAX, "empty parenthesis");
+		return (free_stack(token), false);
+	}
+	if (input[i + 1])
+	{
+		if (is_command_or_arg_char(input[i + 1]))
+		{
+			report_error(ERR_SYNTAX, "missing operator or space after ')'");
+			return (free_stack(token), false);
+		}
+		if (!check_closed_paren(input, i, token))
+			return (false);
 	}
 	return (true);
 }

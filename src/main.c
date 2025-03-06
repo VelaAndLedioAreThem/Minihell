@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/05 01:56:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 22:50:58 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ int	main(int argc, char **argv, char **envp)
 	env_list = init_env_list(envp);
 	while (1)
 	{
-		input = readline("minishell$: ");
-		if (!input)
+		input = readline("minishell$: "); if (!input)
 		{
 			printf("exit\n");
 			exit(0);

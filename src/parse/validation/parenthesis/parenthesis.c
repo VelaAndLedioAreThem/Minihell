@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 02:53:42 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 22:29:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,11 @@ bool	check_parenthesis(t_token *token, char *input, int i,
 			if (new_pos <= 0)
 				return (false);
 			i = new_pos;
+		}
+		else if (input[i] == ')')
+		{
+			if (!process_close_paren(input, i, token, &commands))
+				return (false);
 		}
 	}
 	return (true);

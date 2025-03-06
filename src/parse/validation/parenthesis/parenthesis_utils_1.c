@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 23:59:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/04 16:58:40 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 22:58:08 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,10 +72,10 @@ bool	validate_pipe_in_paren(char *input, t_open_paren *paren, t_token *token)
 bool	validate_nested_paren(char *input, int *i, int end,
 	t_token *token)
 {
-	int		nested_start;
 	int		paren_count;
 
-	nested_start = *i + 1;
+	if (*i >= end)
+		return (false);
 	paren_count = 1;
 	(*i)++;
 	while (*i < end && paren_count > 0)
@@ -92,7 +92,7 @@ bool	validate_nested_paren(char *input, int *i, int end,
 		free_stack(token);
 		return (false);
 	}
-	return (validate_nested_paren(input, &nested_start, *i - 1, token));
+	return (true);
 }
 
 bool	validate_op_in_paren(char *input, t_open_paren *paren, t_token *token)

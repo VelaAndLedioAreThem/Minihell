@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/05 01:04:02 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 20:20:30 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -205,6 +205,9 @@ bool		validate_redirect_in_paren(char *input, t_open_paren *paren,
 bool		validate_redirect_or_command(char *input, t_open_paren *paren,
 				int end, t_token *token);
 bool		validate_paren_content_utils(t_open_paren *paren, t_token *token);
+bool		is_valid_close_paren(char c);
+bool		process_close_paren(char *input, int i, t_token *token,
+				t_paren *command);
 
 // Operators
 bool		ft_is_operator(char c);
@@ -216,6 +219,7 @@ bool		validation_quotes(t_token *tokens);
 
 // Redirections
 bool		ft_is_redirection(char c);
+bool		ft_is_redirection_op(char current, char next);
 
 //Commands
 bool		ft_is_commands_position(char *input, int i);

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 21:09:52 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/05 02:07:50 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/06 22:55:38 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,46 +23,10 @@ bool	is_valid_after_open_paren(char c)
 	return (ft_isalnum(c) || c == '(' || c == '$');
 }
 
-int	find_matching_paren(t_token *token, char *input, int start_pos)
+bool	is_valid_close_paren(char c)
 {
-	int			paren_count;
-	int			j;
-	t_quotes	temp_quote;
-	t_token		*curr;
-	int			total_pos;
-
-	paren_count = 1;
-	curr = token;
-	while (curr && start_pos >= ft_strlen(curr->value))
-	{
-		start_pos -= ft_strlen(curr->value);
-		curr = curr->next;
-	}
-	j = start_pos;
-	temp_quote = (t_quotes){false, false};
-	total_pos = 0;
-	while (curr)
-	{
-		input = curr->value;
-		while (input[j] != '\0')
-		{
-			process_quotes(input[j], &temp_quote);
-			if (!temp_quote.in_double_quotes && !temp_quote.in_single_quotes)
-			{
-				if (input[j] == '(')
-					paren_count++;
-				else if (input[j] == ')')
-					paren_count--;
-			}
-			if (paren_count == 0)
-				return (total_pos + j);
-			j++;
-		}
-		total_pos += ft_strlen(curr->value);
-		j = 0;
-		curr = curr->next;
-	}
-	return (-1);
+	return (ft_isspace(c) || c == '|' || c == '&' || c == ')' || c == ';'
+		|| c == '\0');
 }
 
 static bool	skip_whitespaces(char *input, int *i, int end)
@@ -89,6 +53,8 @@ bool	validate_paren_content(char *input, int start, int end, t_token *token)
 			paren.expecting_commands = false;
 			continue ;
 		}
+		if (paren.i + 1 >= (int)ft_strlen(input))
+			return (false);
 		if (validate_op_in_paren(input, &paren, token))
 			continue ;
 		if (validate_pipe_in_paren(input, &paren, token))
