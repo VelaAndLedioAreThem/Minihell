@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 23:59:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 22:58:08 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/07 19:57:44 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,19 +72,55 @@ bool	validate_pipe_in_paren(char *input, t_open_paren *paren, t_token *token)
 bool	validate_nested_paren(char *input, int *i, int end,
 	t_token *token)
 {
-	int		paren_count;
+	int			paren_count;
+	t_token		*curr;
+	int			start;
+	t_quotes	quotes;
 
-	if (*i >= end)
-		return (false);
 	paren_count = 1;
-	(*i)++;
-	while (*i < end && paren_count > 0)
+	start = *i + 1;
+	quotes = (t_quotes){false, false};
+	while (start < end && input[start])
 	{
-		if (input[*i] == '(')
-			paren_count++;
-		else if (input[*i] == ')')
-			paren_count--;
-		(*i)++;
+		process_quotes(input[start], &quotes);
+		if (!quotes.in_double_quotes && !quotes.in_single_quotes)
+		{
+			if (input[start] == '(')
+				paren_count++;
+			else if (input[start] == ')')
+			{
+				paren_count--;
+				if (paren_count == 0)
+				{
+					*i = start;
+					return (true);
+				}
+			}
+		}
+		start++;
+	}
+	curr = token->next;
+	while (curr && paren_count > 0)
+	{
+		start = 0;
+		input = curr->value;
+		while (input[start] && paren_count > 0)
+		{
+			process_quotes(input[start], &quotes);
+			if (!quotes.in_single_quotes && !quotes.in_double_quotes)
+			{
+				if (input[start] == '(')
+					paren_count++;
+				else if (input[start] == ')')
+				{
+					paren_count--;
+					if (paren_count == 0)
+						return (true);
+				}
+			}
+			start++;
+		}
+		curr = curr->next;
 	}
 	if (paren_count > 0)
 	{

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 21:09:52 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 22:55:38 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/07 14:06:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,6 @@ bool	validate_paren_content(char *input, int start, int end, t_token *token)
 			paren.expecting_commands = false;
 			continue ;
 		}
-		if (paren.i + 1 >= (int)ft_strlen(input))
-			return (false);
 		if (validate_op_in_paren(input, &paren, token))
 			continue ;
 		if (validate_pipe_in_paren(input, &paren, token))

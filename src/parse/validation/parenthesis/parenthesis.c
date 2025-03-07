@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 22:29:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/07 14:40:30 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,33 @@ static bool	validate_command_paren(char *input, int i, t_paren *command)
 	return (true);
 }
 
+int	check_matching_paren(char *input, int i, t_token *token, int start)
+{
+	t_token		*next_token;
+	int			end_pos;
+
+	if (i + 1 >= (int)ft_strlen(input))
+	{
+		start = 0;
+		next_token = token->next;
+		if (!next_token)
+		{
+			report_error(ERR_SYNTAX, "unmatched parenthesis");
+			return (-1);
+		}
+		end_pos = find_matching_paren(next_token, next_token->value, start);
+		if (end_pos != -1)
+			return (end_pos + ft_strlen(input));
+	}
+	else
+	{
+		start = i + 1;
+		end_pos = find_matching_paren(token, input, start);
+		return (end_pos);
+	}
+	return (-1);
+}
+
 static int	process_open_paren(t_token *token, char *input, int i,
 	t_paren *commands)
 {
@@ -79,8 +106,8 @@ static int	process_open_paren(t_token *token, char *input, int i,
 	}
 	if (!validate_open_paren(input, i, token))
 		return (-1);
-	start_pos = i + 1;
-	end_pos = find_matching_paren(token, input, start_pos);
+	start_pos = 0;
+	end_pos = check_matching_paren(input, i, token, start_pos);
 	if (end_pos == -1)
 	{
 		report_error(ERR_SYNTAX, "unclosed parenthesis");
