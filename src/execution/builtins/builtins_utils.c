@@ -67,12 +67,12 @@ int execute_cd(t_data *data, char *path)
         ft_putstr_fd("\n", STDERR_FILENO);
         return 1;
     }
-    char *new_dir = get_root_directory();
+    char **new_dir = get_root_directory();
     if (new_dir)
     {
         if (data->curr_dir)
             free(data->curr_dir);
-        data->curr_dir = new_dir;
+        data->curr_dir = *new_dir;
     }
     return 0;
 }

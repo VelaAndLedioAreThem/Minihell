@@ -1,67 +1,57 @@
 #include "minishell.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
+#include <errno.h>
 
-/*
- * get_input_file - Traverses tree (assumed to be the left branch) for input redirection.
- * Opens the specified file for reading. Returns its file descriptor or -1 on error.
- * If no redirection is found, returns STDIN_FILENO.
- */
-int get_input_file(t_tree *tree)
+int get_input_file(t_tree *tree, t_data *data)
 {
-    t_tree *curr = tree->right;
+    t_tree *node = tree->right;
     int fd = STDIN_FILENO;
-    char *last_file = NULL;
-    while (curr)
+
+    while (node)
     {
-        // Check for input redirection token (e.g., T_RED_INP)
-        if (curr->type == T_RED_INP)
+        if (node->type == T_RED_INP)
         {
-            last_file = curr->value;
+            fd = open(node->value, O_RDONLY);
+            if (fd < 0)
+            {
+                perror(node->value);
+                return -1;
+            }
         }
-        curr = curr->right;
-    }
-    if (last_file)
-    {
-        fd = open(last_file, O_RDONLY);
-        if (fd < 0)
+        else if (node->type == T_DELIM)
         {
-            ft_putstr_fd("minishell: ", STDERR_FILENO);
-            ft_putendl_fd(last_file, STDERR_FILENO);
-            return -1;
+            fd = handle_heredoc(node->value, data);
+            if (fd < 0)
+                return -1;
         }
+        node = node->right;
     }
-    return fd;    
+    return fd;
 }
 
 int get_output_file(t_tree *tree)
 {
-    t_tree *curr = tree->right;
+    t_tree *node = tree->right;
     int fd = STDOUT_FILENO;
-    char *last_file = NULL;
-    int redir_type = -1; // Track type during loop
 
-    while (curr) {
-        if (curr->type == T_RED_OUT || curr->type == T_APPEND) {
-            last_file = curr->value;
-            redir_type = curr->type; // Store type
-        }
-        curr = curr->right;
-    }
-    if (last_file) {
-        int flags = O_WRONLY | O_CREAT;
-        if (redir_type == T_RED_OUT) // Use tracked type
-            flags |= O_TRUNC;
-        else if (redir_type == T_APPEND)
-            flags |= O_APPEND;
-        fd = open(last_file, flags, 0644);
-        if (fd < 0)
+    while (node)
+    {
+        if (node->type == T_RED_OUT || node->type == T_APPEND)
         {
-            ft_putstr_fd("minishell: ", STDERR_FILENO);
-            ft_putendl_fd(last_file, STDERR_FILENO);
-            return -1;
+            if (fd != STDOUT_FILENO)
+                close(fd);
+            if (node->type == T_RED_OUT)
+                fd = open(node->value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            else
+                fd = open(node->value, O_WRONLY | O_CREAT | O_APPEND, 0644);
+            if (fd < 0)
+            {
+                perror(node->value);
+                return -1;
+            }
         }
+        node = node->right;
     }
     return fd;
 }

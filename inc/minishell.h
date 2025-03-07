@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 22:00:33 by eseferi           #+#    #+#             */
-/*   Updated: 2024/04/11 15:21:27 by eseferi          ###   ########.fr       */
+/*   Updated: 2025/03/07 19:22:22 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,8 +225,10 @@ void		close_pipe(int pipe_fd[2]);
 int			execute_pipe(t_data *data, t_tree *tree);
 
 /* execute_redin.c */
-int			get_input_file(t_tree *tree);
-
+int get_input_file(t_tree *tree, t_data *data);
+void handle_sigint_heredoc(int sig);
+char *ft_strjoin_free(char *s1, char *s2);
+int in_quotes(char *s, int pos);
 /* execute_redout.c */
 int			get_output_file(t_tree *tree);
 
@@ -571,7 +573,7 @@ void execute_pipeline(char **commands[], int num_commands);
 void handle_redirections(t_data *data, t_tree *tree);
 /* utils/my_strcmp.c prototypes */
 int my_strcmp(const char *s1, const char *s2);
-
+int handle_heredoc(const char *delimiter, t_data *data);
 /* utils/free_tokens.c prototypes */
 
 /* utils/error_handling.c prototypes */

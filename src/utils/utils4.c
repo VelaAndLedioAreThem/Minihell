@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils4.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ipetruni <ipetruni@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 12:55:49 by ipetruni          #+#    #+#             */
-/*   Updated: 2023/11/23 13:06:47 by ipetruni         ###   ########.fr       */
+/*   Updated: 2025/03/07 19:22:06 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,10 @@ int	arraylen(char **str)
 	while (str[i])
 		i++;
 	return (i);
+}
+char *ft_strjoin_free(char *s1, char *s2)
+{
+    char *result = ft_strjoin(s1, s2);
+    free(s1);
+    return result;
 }
