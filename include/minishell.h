@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/09 00:48:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:05:16 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -225,6 +225,7 @@ bool		is_valid_close_paren(char c);
 bool		process_close_paren(char *input, int i, t_token *token,
 				t_paren *command);
 bool		skip_whitespaces(char *input, int *i, int end);
+bool		check_next_token(t_token *next);
 
 // Operators
 bool		ft_is_operator(char c);

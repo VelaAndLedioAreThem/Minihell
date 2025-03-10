@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/09 03:11:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/10 16:02:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,5 +129,7 @@ bool	process_close_paren(char *input, int i, t_token *token,
 		if (!check_closed_paren(input, i, token))
 			return (false);
 	}
+	else if (!check_next_token(token->next))
+		return (false);
 	return (true);
 }
