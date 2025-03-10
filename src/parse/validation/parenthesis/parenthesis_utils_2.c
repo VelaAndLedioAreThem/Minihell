@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/07 14:27:24 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/09 03:11:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ bool	check_closed_paren(char *input, int i, t_token *token)
 		return (free_stack(token), false);
 	}
 	if (ft_is_redirection_op(input[i], input[i + 1]))
-	 return (true);
+		return (true);
 	if (ft_is_wildcard(input[i + 1]) && !ft_isspace(input[i + 1]))
 	{
 		report_error(ERR_SYNTAX, "missing space after ')'");
@@ -109,7 +109,7 @@ bool	check_closed_paren(char *input, int i, t_token *token)
 bool	process_close_paren(char *input, int i, t_token *token,
 	t_paren *command)
 {
-	if (!is_empty(token))
+	if (is_empty(token))
 	{
 		report_error(ERR_UNEXPECTED_TOKEN, ")");
 		return (free_stack(token), false);

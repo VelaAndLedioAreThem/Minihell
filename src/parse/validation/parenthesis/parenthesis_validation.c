@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/05 01:31:37 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/09 01:05:36 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@ void	process_quotes(char c, t_quotes *quote)
 		quote->in_single_quotes = !quote->in_single_quotes;
 }
 
-bool	parenthesis(t_token *token, char *input, t_quotes *quote)
+bool	parenthesis(t_token *token, char *input, t_paren *commands)
 {
 	int			i;
 
 	i = 0;
 	while (input[i] != '\0')
 	{
-		process_quotes(input[i], quote);
-		if (!check_parenthesis(token, input, i, quote))
+		process_quotes(input[i], &commands->quote);
+		if (!check_parenthesis(token, input, i, commands))
 			return (false);
 		i++;
 	}
@@ -38,16 +38,16 @@ bool	parenthesis(t_token *token, char *input, t_quotes *quote)
 bool	parenthesis_utils(t_token *tokenize)
 {
 	char		*input;
-	t_quotes	quote;
 	t_token		*stack;
+	t_paren		commands;
 
 	stack = tokenize;
-	quote = (t_quotes){false, false};
+	commands = (t_paren){false, false, '\0', false, 0, false, {false, false}};
 	initialize_stack(stack);
 	while (stack && stack->value)
 	{
 		input = stack->value;
-		if (!parenthesis(stack, input, &quote))
+		if (!parenthesis(stack, input, &commands))
 			return (false);
 		stack = stack->next;
 	}

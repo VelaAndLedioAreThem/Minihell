@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/07 14:40:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/09 00:47:24 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,28 +123,27 @@ static int	process_open_paren(t_token *token, char *input, int i,
 }
 
 bool	check_parenthesis(t_token *token, char *input, int i,
-	t_quotes *quote)
+	t_paren *commands)
 {
-	t_paren		commands;
 	int			new_pos;
 
-	commands = (t_paren){false, false, '\0', false, 0, false};
-	if (!quote->in_single_quotes && !quote->in_double_quotes)
+	if (!commands->quote.in_single_quotes
+		&& !commands->quote.in_double_quotes)
 	{
-		if (!commands.has_commands && is_valid_command_char(input[i]))
-			commands.has_commands = true;
-		else if (commands.has_commands && ft_isspace(input[i]))
-			commands.has_commands = false;
+		if (!commands->has_commands && is_valid_command_char(input[i]))
+			commands->has_commands = true;
+		else if (commands->has_commands && ft_isspace(input[i]))
+			commands->has_commands = false;
 		if (input[i] == '(')
 		{
-			new_pos = process_open_paren(token, input, i, &commands);
+			new_pos = process_open_paren(token, input, i, commands);
 			if (new_pos <= 0)
 				return (false);
 			i = new_pos;
 		}
 		else if (input[i] == ')')
 		{
-			if (!process_close_paren(input, i, token, &commands))
+			if (!process_close_paren(input, i, token, commands))
 				return (false);
 		}
 	}

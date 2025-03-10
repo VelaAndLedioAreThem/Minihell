@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 20:20:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/09 00:48:06 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -80,6 +80,7 @@ typedef struct s_paren
 	bool			has_cmd_before;
 	int				j;
 	bool			has_operator;
+	t_quotes		quote;
 }	t_paren;
 
 // Commands struct
@@ -103,6 +104,21 @@ typedef struct s_token
 	t_stack			*top;
 	struct s_token	*next;
 }	t_token;
+
+typedef struct s_nest
+{
+	bool			success;
+	t_token			*token;
+	int				position;
+}	t_nest;
+
+typedef struct s_state
+{
+	t_quotes		quote;
+	t_token			*token;
+	int				pos;
+	int				paren_count;
+}	t_state;
 
 typedef enum e_ast_type
 {
@@ -185,20 +201,20 @@ bool		validation_parenthesis(t_token *tokenize);
 
 // Parenthesis
 bool		check_parenthesis(t_token *token, char *input, int i,
-				t_quotes *quote);
+				t_paren *commands);
 void		process_quotes(char c, t_quotes *quote);
 bool		valid_before_open_paren(char c);
 bool		is_valid_after_open_paren(char c);
 int			find_matching_paren(t_token *token, char *input, int start_pos);
 bool		validate_paren_content(char *input, int start_pos, int end_pos,
 				t_token *token);
-bool		validate_nested_paren(char *input, int *i, int end,
+t_nest		validate_nested_paren(char *input, int start, int end,
 				t_token *token);
-bool		validate_op_in_paren(char *input, t_open_paren *paren,
+bool		op_paren(char *input, t_open_paren *paren,
 				t_token *token);
-bool		validate_pipe_in_paren(char *input, t_open_paren *paren,
+bool		pipe_paren(char *input, t_open_paren *paren,
 				t_token *token);
-bool		validate_seq_in_paren(char *input, t_open_paren *paren,
+bool		seq_paren(char *input, t_open_paren *paren,
 				t_token *token);
 bool		validate_redirect_in_paren(char *input, t_open_paren *paren,
 				int end, t_token *token);
@@ -208,6 +224,7 @@ bool		validate_paren_content_utils(t_open_paren *paren, t_token *token);
 bool		is_valid_close_paren(char c);
 bool		process_close_paren(char *input, int i, t_token *token,
 				t_paren *command);
+bool		skip_whitespaces(char *input, int *i, int end);
 
 // Operators
 bool		ft_is_operator(char c);
