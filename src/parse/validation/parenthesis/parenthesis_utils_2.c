@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 16:14:37 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/12 16:57:15 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,15 @@ bool	process_close_paren(char *input, int i, t_token *token,
 	t_paren *command)
 {
 	if (is_empty(token))
-		return (report_error(ERR_UNEXPECTED_TOKEN, ")"),
-			free_stack(token), false);
+	{
+		report_error(ERR_UNEXPECTED_TOKEN, ")");
+		return (free_stack(token), false);
+	}
 	if (!command->has_content)
-		return (report_error(ERR_SYNTAX, "empty parenthesis"),
-			free_stack(token), false);
+	{
+		report_error(ERR_SYNTAX, "empty parenthesis");
+		return (free_stack(token), false);
+	}
 	if (input[i + 1])
 	{
 		if (is_command_or_arg_char(input[i + 1]))
@@ -80,14 +84,10 @@ bool	process_close_paren(char *input, int i, t_token *token,
 			report_error(ERR_SYNTAX, "missing operator or space after ')'");
 			return (free_stack(token), false);
 		}
-		if (!check_after_close_paren(input, &i, token))
-			return (false);
 		if (!check_closed_paren(input, i, token))
 			return (false);
 	}
 	else if (!check_next_token(token->next))
 		return (false);
-	pop(token);
-	command->has_content = false;
 	return (true);
 }

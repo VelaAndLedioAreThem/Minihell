@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 19:18:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 20:21:18 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/12 21:38:45 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,25 @@
 static bool	check_sequencing(t_token **curr, t_token **next)
 {
 	if ((*curr)->type == TOKEN_AND && ft_strcmp((*curr)->value, "&&") == 0
-		&& (*next)->type == TOKEN_SEQUENCING
 		&& ft_strcmp((*next)->value, ";") == 0)
 	{
 		report_error(ERR_SYNTAX, "invalid operator sequence &&;");
 		return (false);
 	}
 	if ((*curr)->type == TOKEN_OR && ft_strcmp((*curr)->value, "||") == 0
-		&& (*next)->type == TOKEN_SEQUENCING
 		&& ft_strcmp((*next)->value, ";") == 0)
 	{
 		report_error(ERR_SYNTAX, "invalid operator sequence ||;");
 		return (false);
 	}
-	if ((*curr)->type == TOKEN_SEQUENCING && ft_strcmp((*curr)->value, ";") == 0
-		&& (*next)->type == TOKEN_OR && ft_strcmp((*next)->value, "||") == 0)
+	if (ft_strcmp((*curr)->value, ";") == 0 && (*next)->type == TOKEN_OR
+		&& ft_strcmp((*next)->value, "||") == 0)
 	{
 		report_error (ERR_SYNTAX, "invalid operator sequence ;||");
 		return (false);
 	}
-	if ((*curr)->type == TOKEN_SEQUENCING && ft_strcmp((*curr)->value, ";") == 0
-		&& (*next)->type == TOKEN_AND && ft_strcmp((*next)->value, "&&") == 0)
+	if (ft_strcmp((*curr)->value, ";") == 0 && (*next)->type == TOKEN_AND
+		&& ft_strcmp((*next)->value, "&&") == 0)
 		return (report_error(ERR_SYNTAX, "invalid operator sequence ;&&"),
 			false);
 	return (true);
@@ -44,8 +42,7 @@ static bool	check_sequencing(t_token **curr, t_token **next)
 static bool	check_tokens_utils(t_token **curr, t_token **next)
 {
 	if ((*curr)->type == TOKEN_OR && ft_strcmp((*curr)->value, "||") == 0
-		&& (*next)->type == TOKEN_OR
-		&& ft_strcmp((*next)->value, "|") == 0)
+		&& (*next)->type == TOKEN_OR && ft_strcmp((*next)->value, "|") == 0)
 	{
 		report_error(ERR_SYNTAX, "invalid operator sequence |||");
 		return (false);
@@ -68,8 +65,7 @@ static bool	check_tokens_utils(t_token **curr, t_token **next)
 bool	check_tokens(t_token **curr, t_token **next)
 {
 	if ((*next) && ((*next)->type == TOKEN_AND || (*next)->type == TOKEN_OR
-			|| (*next)->type == TOKEN_PIPE
-			|| (*next)->type == TOKEN_SEQUENCING))
+			|| (*next)->type == TOKEN_PIPE))
 	{
 		if ((*curr)->type == TOKEN_AND && ft_strcmp((*curr)->value, "&&") == 0
 			&& (*next)->type == TOKEN_AND

@@ -23,6 +23,7 @@ OPERATORS = $(VALIDATION)operators/
 REDIRECTION = $(VALIDATION)redirections/
 QUOTES = $(VALIDATION)quotes/
 WILDCARD = $(VALIDATION)wildcards/
+PIPES = $(VALIDATION)pipes/
 
 # Color Codes
 RESET = \033[0m
@@ -39,6 +40,7 @@ SRCS = $(SRC)main.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(OPERATORS)validation_logical_operators.c $(REDIRECTION)redirections_utils.c $(QUOTES)validation_quotes.c \
 	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 	   $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c $(PARENTHESIS)close_paren_utils.c \
+	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c\
 
 # Object files
 OBJS = $(SRCS:.c=.o)

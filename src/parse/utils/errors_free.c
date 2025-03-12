@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:21:04 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/24 02:28:33 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/12 21:01:00 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	report_error(t_errors_code code, char *token)
 			printf("minishell: syntax error\n");
 	}
 	else if (code == ERR_UNEXPECTED_TOKEN)
-		printf("minishell: syntax error near unexpected toke `%s'\n", token);
+		printf("minishell: syntax error near unexpected token `%s'\n", token);
 	else if (code == ERR_MEMORY)
 		printf("minishell: memory allocation failed\n");
 	else if (code == ERR_PARSE)

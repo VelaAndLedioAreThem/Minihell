@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/11 19:40:01 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/12 20:27:27 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -48,7 +48,6 @@ typedef enum e_token_type
 	TOKEN_PAREN_CLOSE,
 	TOKEN_EOF,
 	TOKEN_WILDCARD,
-	TOKEN_SEQUENCING
 }	t_token_type;
 
 typedef struct s_env
@@ -104,6 +103,13 @@ typedef struct s_token
 	t_stack			*top;
 	struct s_token	*next;
 }	t_token;
+
+typedef struct s_pipe
+{
+	t_token		*curr;
+	t_token		*prev;
+	bool		expecting_command;
+}	t_pipe;
 
 typedef struct s_nest
 {
@@ -252,6 +258,9 @@ bool		is_command_or_arg_char(char c);
 
 // Wildcards
 bool		ft_is_wildcard(char c);
+
+// Pipes
+bool		pipes(t_token *tokenize);
 
 // Stack operations
 void		push(t_token *stack, char data);
