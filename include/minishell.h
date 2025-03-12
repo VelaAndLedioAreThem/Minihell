@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/10 16:05:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/11 19:40:01 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -226,6 +226,10 @@ bool		process_close_paren(char *input, int i, t_token *token,
 				t_paren *command);
 bool		skip_whitespaces(char *input, int *i, int end);
 bool		check_next_token(t_token *next);
+bool		check_after_close_paren(char *input, int *i, t_token *token);
+bool		it_is_log_or_pipe(char *input, int *i, t_token *token);
+bool		it_is_logical_op(char *input, int *i, int *j, t_token *token);
+bool		it_is_pipe(char *input, int *i, int *j, t_token *token);
 
 // Operators
 bool		ft_is_operator(char c);
