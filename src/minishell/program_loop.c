@@ -14,6 +14,7 @@
 void start_loop(t_data *data)
 {
     char *line;
+    char *str;
     char *prompt;
 
     while (42)
@@ -22,7 +23,10 @@ void start_loop(t_data *data)
         // Generate prompt with current directory
         char cwd[PATH_MAX];
         if (getcwd(cwd, sizeof(cwd)) != NULL)
-            prompt = ft_strjoin(cwd, "$ ");
+        {
+            str = ft_strjoin("minihell:",cwd);
+            prompt = ft_strjoin(str,"$ ");
+        }
         else
             prompt = ft_strdup("minishell$ "); // Fallback
         

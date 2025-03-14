@@ -4,7 +4,7 @@ int execute_word(t_data *data, t_tree *tree)
 {
     
     // Get input and output file descriptors
-    int fd_in = get_input_file(tree);
+    int fd_in = get_input_file(data, tree);
     int fd_out = get_output_file(tree);
     
     if (fd_in < 0 || fd_out < 0)

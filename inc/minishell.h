@@ -227,8 +227,8 @@ void		close_pipe(int pipe_fd[2]);
 int			execute_pipe(t_data *data, t_tree *tree);
 
 /* execute_redin.c */
-int			get_input_file(t_tree *tree);
-
+int get_input_file(t_data *data, t_tree *tree);
+int create_heredoc_temp_file(char *delimiter, t_data *data);
 /* execute_redout.c */
 int			get_output_file(t_tree *tree);
 
