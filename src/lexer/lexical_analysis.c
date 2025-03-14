@@ -47,8 +47,6 @@ int	set_token_type(t_data *data)
 	fix_tokens(&data->token_list, data);
 	if (syntax_errors(data->token_list, data))
 		return (data->exit_status = 258, 1);
-	if (execute_delim(&data->token_list, data))
-		return (g_child_pid = 0, 1);
 	if (find_parenthesis(data->input_line))
 		update_input_line(data);
 	if (lexic_with_parenth(data)) {

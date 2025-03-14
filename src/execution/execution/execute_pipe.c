@@ -1,5 +1,5 @@
 #include "minishell.h"
-// execute_pipe.c - Updated implementation
+/* Execute a pipe command */
 int execute_pipe(t_data *data, t_tree *tree) {
     int fd[2];
     pid_t left_pid, right_pid;
@@ -10,29 +10,41 @@ int execute_pipe(t_data *data, t_tree *tree) {
         return (data->exit_status = 1);
     }
 
-    // Left process (writes to pipe)
+    // Fork for left command
     if ((left_pid = fork()) == 0) {
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
         exit(execute(data, tree->left));
+    } else if (left_pid < 0) {
+        perror("minishell: fork");
+        close(fd[0]);
+        close(fd[1]);
+        return (data->exit_status = 1);
     }
 
-    // Right process (reads from pipe)
+    // Fork for right command
     if ((right_pid = fork()) == 0) {
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
         exit(execute(data, tree->right));
+    } else if (right_pid < 0) {
+        perror("minishell: fork");
+        close(fd[0]);
+        close(fd[1]);
+        kill(left_pid, SIGTERM); // Cleanup left child
+        return (data->exit_status = 1);
     }
 
-    // Parent closes pipe and waits
+    // Parent process
     close(fd[0]);
     close(fd[1]);
+
     waitpid(left_pid, &left_status, 0);
     waitpid(right_pid, &right_status, 0);
 
-    // Set exit status to the rightmost command's status
+    // Set exit status to the right child's exit code (last command)
     if (WIFEXITED(right_status))
         data->exit_status = WEXITSTATUS(right_status);
     else

@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/*
- * get_env_value - Returns the value of the environment variable with the given key.
- */
+
 char *get_env_value(t_envir *env_list, const char *key)
 {
     while (env_list)
@@ -16,9 +14,7 @@ char *get_env_value(t_envir *env_list, const char *key)
     return NULL;
 }
 
-/*
- * print_env_list - Prints all environment variables in the format "VAR=VALUE".
- */
+
 void print_env_list(t_envir *env_list, int fd_out, int export_filter)
 {
     while (env_list)
@@ -33,13 +29,9 @@ void print_env_list(t_envir *env_list, int fd_out, int export_filter)
     }
 }
 
-/*
- * env - Builds an array of strings from the environment list.
- * Each element is of the form "VAR=VALUE". The returned array must be freed.
- */
+
 char **env(t_envir **lst)
 {
-    // Count only visible vars
     t_envir *tmp = *lst;
     int count = 0;
     while (tmp) {
@@ -47,7 +39,6 @@ char **env(t_envir **lst)
         tmp = tmp->next;
     }
 
-    // Create array with only visible vars
     char **envp = malloc((count + 1) * sizeof(char *));
     tmp = *lst;
     int i = 0;
@@ -61,9 +52,6 @@ char **env(t_envir **lst)
     return envp;
 }
 
-/*
- * incr_shell_lvl - Increments the SHLVL environment variable.
- */
 void incr_shell_lvl(t_data *data)
 {
     char *shlvl_str = get_env_value(data->env_list, "SHLVL");
@@ -82,7 +70,6 @@ void incr_shell_lvl(t_data *data)
         }
         tmp = tmp->next;
     }
-    /* If SHLVL is not found, add it */
     t_envir *new_env = malloc(sizeof(t_envir));
     if (new_env)
     {
@@ -116,7 +103,6 @@ void set_env_var(t_data *data, const char *var_name, const char *var_value)
         }
         env = env->next;
     }
-    // If variable doesn't exist, add it
     t_envir *new_env = malloc(sizeof(t_envir));
     if (!new_env)
         return;

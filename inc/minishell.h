@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 22:00:33 by eseferi           #+#    #+#             */
-/*   Updated: 2025/03/07 19:22:22 by vszpiech         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:21:27 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,8 @@ typedef struct s_data {
 	char			*curr_dir;
 	char			**root_directory;
 	char			*exit_str;
+	char    **heredoc_files; // Array of temp file paths
+    int     heredoc_count;   // Number of heredoc temp files
 }				t_data;
 
 typedef struct s_token
@@ -186,13 +188,13 @@ void		execute_env(t_envir **env, int fd_out);
 /* execute_buildins3.c */
 int			execute_cd(t_data *data, char *path);
 int			execute_unset(t_data *data, t_tree *tree);
+int process_heredocs(t_data *data, t_tree *tree);
 
 /* execute_delim.c */
 void		create_temp_filename(t_heredoc_info *info);
 int			process_heredoc(t_heredoc_info *info, t_data *data);
-int			execute_delim(t_token **head, t_data *data);
-void		add_heredoc_file(t_data *data, char *filename, int id);
-void		free_heredoc_info(t_heredoc_info *info);
+void add_heredoc_file(t_data *data, char *filename, int id);
+	void		free_heredoc_info(t_heredoc_info *info);
 
 /* execute_echo.c */
 int			echo_handle_option(char **args);
@@ -225,10 +227,8 @@ void		close_pipe(int pipe_fd[2]);
 int			execute_pipe(t_data *data, t_tree *tree);
 
 /* execute_redin.c */
-int get_input_file(t_tree *tree, t_data *data);
-void handle_sigint_heredoc(int sig);
-char *ft_strjoin_free(char *s1, char *s2);
-int in_quotes(char *s, int pos);
+int			get_input_file(t_tree *tree);
+
 /* execute_redout.c */
 int			get_output_file(t_tree *tree);
 
@@ -573,7 +573,7 @@ void execute_pipeline(char **commands[], int num_commands);
 void handle_redirections(t_data *data, t_tree *tree);
 /* utils/my_strcmp.c prototypes */
 int my_strcmp(const char *s1, const char *s2);
-int handle_heredoc(const char *delimiter, t_data *data);
+
 /* utils/free_tokens.c prototypes */
 
 /* utils/error_handling.c prototypes */

@@ -3,27 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 20:34:12 by eseferi           #+#    #+#             */
-/*   Updated: 2025/03/07 19:31:38 by vszpiech         ###   ########.fr       */
+/*   Updated: 2024/04/11 15:44:55 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static void sigint_handler(int sig) {
+	(void)sig;
+	if (g_child_pid == 0) {
+		// Interactive shell: handle Ctrl+C
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	} else {
+		// Child process is running: forward SIGINT and avoid prompt redisplay
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		kill(g_child_pid, SIGINT);
+	}
+}
 void	handle_signal(void)
 {
-	struct sigaction	sa;
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
 
-	sa.sa_handler = handle_c;
-	sa.sa_flags = SA_RESTART | SA_SIGINFO;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGTSTP, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
+	// Setup SIGINT handler
+	sa_int.sa_handler = sigint_handler;
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_int, NULL);
+
+	// Ignore SIGQUIT in the parent shell
+	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_quit, NULL);
 }
-
 void	handle_sigint(int signo)
 {
 	if (signo == SIGINT)

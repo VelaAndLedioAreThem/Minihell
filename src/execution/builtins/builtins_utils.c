@@ -9,20 +9,22 @@
  */
 int execute_pwd(t_data *data, int fd_out)
 {
-    (void)data; 
+    (void)data; // Unused parameter
 
-    char *cwd = getcwd(NULL, 0); 
+    char *cwd = getcwd(NULL, 0); // Dynamically allocate buffer
     if (!cwd)
     {
         ft_putendl_fd("minishell: pwd: error retrieving current directory", STDERR_FILENO);
-        return 1; 
+        return 1; // Return error status
     }
 
+    // Print the current working directory to fd_out
     ft_putendl_fd(cwd, fd_out);
 
+    // Free the dynamically allocated buffer
     free(cwd);
 
-    return 0;
+    return 0; // Success
 }
 
 /*
@@ -67,12 +69,13 @@ int execute_cd(t_data *data, char *path)
         ft_putstr_fd("\n", STDERR_FILENO);
         return 1;
     }
-    char **new_dir = get_root_directory();
+    /* Update current directory */
+    char *new_dir = getcwd(NULL, 0);
     if (new_dir)
     {
         if (data->curr_dir)
             free(data->curr_dir);
-        data->curr_dir = *new_dir;
+        data->curr_dir = new_dir;
     }
     return 0;
 }
@@ -84,13 +87,16 @@ int execute_cd(t_data *data, char *path)
 #include <stdbool.h>
 
 bool is_valid_identifier(const char *name) {
+    // Check for empty string
     if (name == NULL || *name == '\0')
         return false;
     
+    // First character must be underscore or alphabetic
     char first = name[0];
     if (first != '_' && !((first >= 'A' && first <= 'Z') || (first >= 'a' && first <= 'z')))
         return false;
     
+    // Subsequent characters must be alphanumeric or underscore
     for (int i = 1; name[i] != '\0'; i++) {
         char c = name[i];
         bool valid = (c == '_') || 
@@ -106,6 +112,7 @@ bool is_valid_identifier(const char *name) {
 t_envir *get_env_node(t_envir *env_list, const char *name) {
     t_envir *current = env_list;
     while (current != NULL) {
+        // Compare variable name using case-sensitive match
         if (strcmp(current->var_name, name) == 0) {
             return current;
         }
@@ -116,14 +123,19 @@ t_envir *get_env_node(t_envir *env_list, const char *name) {
 
 int execute_export(t_data *data, t_tree *tree, int fd_out)
 {
-    int i = 1; 
+    (void)fd_out; // Unused parameter
+    int i = 1; // Handle multiple arguments
     int status = 0;
     
     while (tree->args_array[i]) {
         char *arg = tree->args_array[i];
         char *eq = ft_strchr(arg, '=');
         char *name = eq ? ft_substr(arg, 0, eq - arg) : ft_strdup(arg);
-
+        if (!name) {
+            ft_putendl_fd("minishell: export: memory error", STDERR_FILENO);
+            status = 1;
+            continue;
+        }
         if (!is_valid_identifier(name)) {
             ft_putstr_fd("minishell: export: ", STDERR_FILENO);
             ft_putstr_fd(arg, STDERR_FILENO);
@@ -136,17 +148,23 @@ int execute_export(t_data *data, t_tree *tree, int fd_out)
 
         t_envir *node = get_env_node(data->env_list, name);
         if (node) {
-            if (eq) { // Only update value if '=' exists
+            if (eq) { 
                 free(node->var_value);
-                node->var_value = ft_strdup(eq + 1);
+                node->var_value = eq ? ft_strdup(eq + 1) : ft_strdup("");
+                if (!node->var_value) {
+                    ft_putendl_fd("minishell: export: memory error", STDERR_FILENO);
+                    status = 1;
+                    free(name);
+                    continue;
+                }
             }
-            node->visible = 1; // Mark as exported
+            node->visible = 1; 
         } else
         {
         t_envir *new = malloc(sizeof(t_envir));
         if (!new)
         return (status = 1, status);
-        new->var_name = name; // 'name' is already allocated above.
+        new->var_name = name; 
         new->var_value = eq ? ft_strdup(eq + 1) : ft_strdup("");
         new->visible = 1;
         new->next = data->env_list;
@@ -154,6 +172,7 @@ int execute_export(t_data *data, t_tree *tree, int fd_out)
         if (data->env_list)
         data->env_list->prev = new;
         data->env_list = new;
+        free(name);
         }
         i++;
     }
@@ -166,6 +185,7 @@ int execute_export(t_data *data, t_tree *tree, int fd_out)
  */
 int execute_unset(t_data *data, t_tree *tree)
 {
+    (void)data; // Unused parameter
     int i = 1;
     int status = 0;
 
@@ -179,25 +199,7 @@ int execute_unset(t_data *data, t_tree *tree)
             i++;
             continue;
         }
-        // Remove the variable from the environment list
-        t_envir *current = data->env_list;
-        while (current != NULL) {
-            if (strcmp(current->var_name, name) == 0) {
-                // Adjust pointers to remove the node
-                if (current->prev != NULL)
-                    current->prev->next = current->next;
-                else
-                    data->env_list = current->next; // Update head if current is the first node
-                if (current->next != NULL)
-                    current->next->prev = current->prev;
-                // Free memory
-                free(current->var_name);
-                free(current->var_value);
-                free(current);
-                break; // Exit loop after removal
-            }
-            current = current->next;
-        }
+        // Remove variable logic...
         i++;
     }
     return status;

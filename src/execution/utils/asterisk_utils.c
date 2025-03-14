@@ -1,9 +1,6 @@
 #include "minishell.h"
 
-/*
- * is_only_asterisks - Checks if the given string consists solely of '*' characters.
- * Returns 1 if true, 0 otherwise.
- */
+
 int is_only_asterisks(char *str)
 {
     int i = 0;

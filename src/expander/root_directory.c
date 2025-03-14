@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   root_directory.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: eseferi <eseferi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 03:19:23 by eseferi           #+#    #+#             */
-/*   Updated: 2025/03/06 18:24:33 by vszpiech         ###   ########.fr       */
+/*   Updated: 2024/04/11 13:17:53 by eseferi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	**read_directory(DIR *d, char **root_directory)
 			if (root_directory[i] == NULL)
 			{
 				while (i > 0)
-				ft_strdel(&root_directory[--i]);
+					ft_strdel(&root_directory[--i]);
 				free(root_directory);
 				closedir(d);
 				return (NULL);
@@ -93,13 +93,13 @@ int	count_root_directory(void)
 	int				count;
 
 	count = 0;
-	d = opendir(".");
+	d = opendir("/");
 	if (d)
 	{
 		dir = readdir(d);
 		while (dir != NULL)
 		{
-            if (ft_strncmp(dir->d_name, ".", 1))
+			if (ft_strcmp(dir->d_name, ".") && ft_strcmp(dir->d_name, ".."))
 				count++;
 			dir = readdir(d);
 		}

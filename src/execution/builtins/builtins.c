@@ -7,7 +7,6 @@ typedef struct s_builtin {
     t_builtin_func  func;
 } t_builtin;
 
-/* Builtin: export */
 static int builtin_export(t_data *data, t_tree *tree, int fd_out)
 {
     if (!tree->args_array[1])
@@ -17,29 +16,29 @@ static int builtin_export(t_data *data, t_tree *tree, int fd_out)
     return 1;
 }
 
-/* Builtin: unset */
+
 static int builtin_unset(t_data *data, t_tree *tree, int fd_out)
 {
+    (void)fd_out;
     if (execute_unset(data, tree))
         return (data->exit_status = 1, 1);
     return 1;
 }
 
-/* Builtin: env */
 static int builtin_env(t_data *data, t_tree *tree, int fd_out)
 {
-    print_env_list(data->env_list, fd_out, 0); // No filter
+    (void)tree;
+    print_env_list(data->env_list, fd_out, 0); 
     return 1;
 }
 
-/* Builtin: cd */
 static int builtin_cd(t_data *data, t_tree *tree, int fd_out)
 {
-    (void)fd_out; // Ignore fd_out for error messages
+    (void)fd_out; 
     char *path = tree->args_array[1];
-    char *oldpwd = getcwd(NULL, 0); // Get current directory before changing
+    char *oldpwd = getcwd(NULL, 0); 
 
-    if (!path || !ft_strcmp(path, "~")) // Handle "cd" or "cd ~"
+    if (!path || !ft_strcmp(path, "~"))
     {
         path = get_env_value(data->env_list, "HOME");
         if (!path)
@@ -49,7 +48,7 @@ static int builtin_cd(t_data *data, t_tree *tree, int fd_out)
             return (data->exit_status = 1, 1);
         }
     }
-    else if (!ft_strcmp(path, "-")) // Handle "cd -"
+    else if (!ft_strcmp(path, "-")) 
     {
         path = get_env_value(data->env_list, "OLDPWD");
         if (!path)
@@ -58,7 +57,7 @@ static int builtin_cd(t_data *data, t_tree *tree, int fd_out)
             free(oldpwd);
             return (data->exit_status = 1, 1);
         }
-        ft_putendl_fd(path, STDOUT_FILENO); // Print OLDPWD as per POSIX
+        ft_putendl_fd(path, STDOUT_FILENO); 
     }
 
     if (execute_cd(data, path))
@@ -67,7 +66,6 @@ static int builtin_cd(t_data *data, t_tree *tree, int fd_out)
         return (data->exit_status = 1, 1);
     }
 
-    // Update OLDPWD
     set_env_var(data, "OLDPWD", oldpwd);
     free(oldpwd);
     return 1;
@@ -76,6 +74,7 @@ static int builtin_cd(t_data *data, t_tree *tree, int fd_out)
 /* Builtin: pwd */
 static int builtin_pwd(t_data *data, t_tree *tree, int fd_out)
 {
+    (void)tree;
     if (execute_pwd(data, fd_out))
         return (data->exit_status = 1, 1);
     return 1;
@@ -92,6 +91,7 @@ static int builtin_echo(t_data *data, t_tree *tree, int fd_out)
 /* Builtin: exit */
 static int builtin_exit(t_data *data, t_tree *tree, int fd_out)
 {
+    (void)fd_out;
     if (execute_exit(data, tree))
         return (data->exit_status = 1, 1);
     return 1;
