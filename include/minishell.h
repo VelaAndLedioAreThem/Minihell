@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 20:27:27 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:19:11 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -261,6 +261,10 @@ bool		ft_is_wildcard(char c);
 
 // Pipes
 bool		pipes(t_token *tokenize);
+bool		is_operator_token(t_token *prev);
+bool		has_whitespace_between(t_token *prev, t_token *curr);
+bool		is_only_whitespaces(char *str);
+bool		return_pipes_mssg(bool *expecting_cmd);
 
 // Stack operations
 void		push(t_token *stack, char data);

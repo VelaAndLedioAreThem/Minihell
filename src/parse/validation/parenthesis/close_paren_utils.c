@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:49:59 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/11 16:14:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/12 16:27:11 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ bool	it_is_operator(char *input, int *i, int *j, t_token *token)
 		}
 		else if (input[*i + 2] == input[*i + 3])
 		{
-			if (!it_is_logical_op(input, i, j ,token))
+			if (!it_is_logical_op(input, i, j, token))
 				return (false);
 		}
 		else if (input[*i + 1] && input[*i + 2] != '|')

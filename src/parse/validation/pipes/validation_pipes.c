@@ -6,27 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:22:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 21:45:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:20:04 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
-
-bool	is_only_whitespaces(char *str)
-{
-	int			i;
-
-	i = 0;
-	if (!str)
-		return (false);
-	while (str[i] != '\0')
-	{
-		if (!ft_isspace(str[i]))
-			return (false);
-		i++;
-	}
-	return (true);
-}
 
 bool	check_pipe_followed_by_logical(t_token *curr)
 {
@@ -45,6 +29,35 @@ bool	check_pipe_followed_by_logical(t_token *curr)
 			report_error(ERR_SYNTAX, "invalid operator sequence");
 		return (false);
 	}
+	return (true);
+}
+
+bool	check_operator_before_pipe(t_token *prev, t_token *curr)
+{
+	t_token		*check;
+	bool		has_word;
+
+	if (!is_operator_token(prev))
+		return (true);
+	if (prev->type == TOKEN_REDIRECT_OUT && ft_strcmp(prev->value, ">") == 0
+		&& !has_whitespace_between(prev, curr))
+		return (true);
+	if (prev->type == TOKEN_APPEND && ft_strcmp(prev->value, ">>") == 0
+		&& !has_whitespace_between(prev, curr))
+		return (true);
+	check = prev->next;
+	has_word = false;
+	while (check && check != curr)
+	{
+		if (check->type == TOKEN_WORD && !is_only_whitespaces(check->value))
+		{
+			has_word = true;
+			break ;
+		}
+		check = check->next;
+	}
+	if (!has_word)
+		return (report_error(ERR_SYNTAX, "token '|'"), false);
 	return (true);
 }
 
@@ -75,6 +88,22 @@ bool	validate_pipe_position(t_token *prev, t_token *curr)
 	return (true);
 }
 
+bool	has_expecting_command(t_token *curr, bool *expecting_command)
+{
+	if (curr->type == TOKEN_WORD && is_only_whitespaces(curr->value))
+		*expecting_command = false;
+	else if (curr->type == TOKEN_REDIRECT_IN || curr->type == TOKEN_REDIRECT_OUT
+		|| curr->type == TOKEN_APPEND || curr->type == TOKEN_HEREDOC)
+		return (true);
+	else if (curr->type == TOKEN_AND || curr->type == TOKEN_OR
+		|| curr->type == TOKEN_PIPE)
+	{
+		report_error(ERR_SYNTAX, "missing command");
+		return (false);
+	}
+	return (true);
+}
+
 bool	pipes(t_token *tokenize)
 {
 	t_pipe		pipe;
@@ -95,8 +124,11 @@ bool	pipes(t_token *tokenize)
 				return (false);
 			pipe.expecting_command = true;
 		}
+		else if (pipe.expecting_command
+			&& !has_expecting_command(pipe.curr, &pipe.expecting_command))
+			return (false);
 		pipe.prev = pipe.curr;
 		pipe.curr = pipe.curr->next;
 	}
-	return (true);
+	return (return_pipes_mssg(&pipe.expecting_command));
 }
