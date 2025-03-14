@@ -39,33 +39,33 @@ int get_input_file(t_data *data, t_tree *tree) {
     }
     return fd;
 }
-int get_output_file(t_tree *tree)
-{
-    t_tree *curr = tree->left;
-    int fd = STDOUT_FILENO;
+int get_output_file(t_tree *tree) {
+    t_tree *curr = tree->right; // Start with right child
     char *last_file = NULL;
     int redir_type = -1;
+    int fd = STDOUT_FILENO;
 
     while (curr) {
         if (curr->type == T_RED_OUT || curr->type == T_APPEND) {
             last_file = curr->value;
-            redir_type = curr->type; 
+            redir_type = curr->type;
         }
-        curr = curr->left;
+        curr = curr->right; // Traverse right children
     }
+
     if (last_file) {
         int flags = O_WRONLY | O_CREAT;
-        if (redir_type == T_RED_OUT) 
+        if (redir_type == T_RED_OUT)
             flags |= O_TRUNC;
         else if (redir_type == T_APPEND)
             flags |= O_APPEND;
+
         fd = open(last_file, flags, 0644);
-      // In get_input_file() and get_output_file():
         if (fd < 0) {
             ft_putstr_fd("minishell: ", STDERR_FILENO);
             ft_putstr_fd(last_file, STDERR_FILENO);
             ft_putstr_fd(": ", STDERR_FILENO);
-            ft_putendl_fd(strerror(errno), STDERR_FILENO); // Critical for debugging
+            ft_putendl_fd(strerror(errno), STDERR_FILENO);
             return -1;
         }
     }
