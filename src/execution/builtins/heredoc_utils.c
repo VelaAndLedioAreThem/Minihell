@@ -28,6 +28,9 @@ int create_heredoc_temp_file(char *delimiter, t_data *data) {
     data->heredoc_count++;
 
     // Set up SIGINT handler
+    g_heredoc_sigint = 0;
+
+    // Set up signal handler
     struct sigaction sa_new, sa_old;
     sa_new.sa_handler = sigint_handler;
     sigemptyset(&sa_new.sa_mask);
