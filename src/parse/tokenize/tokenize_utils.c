@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/26 19:09:57 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 20:22:50 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ int	handle_single_operator(t_token **token, char c)
 
 	if (c == '|')
 		current = create_node("|", TOKEN_PIPE);
-	else if (c == '&')
-		current = create_node("&", TOKEN_AND);
+	else if (c == ' ')
+		current = create_node(" ", TOKEN_WHITESPACE);
 	else if (c == '<')
 		current = create_node("<", TOKEN_REDIRECT_IN);
 	else if (c == '>')

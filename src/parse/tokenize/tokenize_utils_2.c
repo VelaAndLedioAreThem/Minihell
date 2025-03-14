@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:12:02 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/26 01:28:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 21:25:04 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,5 +76,26 @@ int	handle_word(t_token **token, char *input, int *i)
 	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	(*i)--;
+	return (1);
+}
+
+int	handle_whitespace(t_token **token, char *input, int *i)
+{
+	int		start;
+	char	*whitespace;
+	t_token	*curr;
+
+	start = *i;
+	while (input[*i] && ft_isspace(input[*i]))
+		(*i)++;
+	whitespace = ft_substr(input, start, *i - start);
+	if (!whitespace)
+		return (-1);
+	curr = create_node(whitespace, TOKEN_WHITESPACE);
+	free(whitespace);
+	if (!curr)
+		return (-1);
+	printf("TOKEN: Whitespace\n");
+	append_node(token, curr);
 	return (1);
 }

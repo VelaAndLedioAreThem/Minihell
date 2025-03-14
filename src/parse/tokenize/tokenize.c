@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:33:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/26 01:10:13 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 22:11:36 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_token	*tokenize(char *input)
 	{
 		if (ft_isspace(input[i]))
 		{
-			i++;
+			status = handle_whitespace(&token, input, &i);
 			continue ;
 		}
 		status = tokenize_utils(&token, input, &i);

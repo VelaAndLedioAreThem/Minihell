@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/14 00:19:11 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/14 21:20:16 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -48,6 +48,7 @@ typedef enum e_token_type
 	TOKEN_PAREN_CLOSE,
 	TOKEN_EOF,
 	TOKEN_WILDCARD,
+	TOKEN_WHITESPACE
 }	t_token_type;
 
 typedef struct s_env
@@ -191,6 +192,7 @@ int			handle_double_operator(t_token **head, char *input, int *i);
 int			handle_single_operator(t_token **token, char c);
 int			handle_word(t_token **token, char *input, int *i);
 int			handle_quotes(t_token **token, char *input, int *i);
+int			handle_whitespace(t_token **token, char *input, int *i);
 
 // Environmental variables
 t_env		*init_env_list(char **envp);
