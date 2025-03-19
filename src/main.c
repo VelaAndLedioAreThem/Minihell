@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 00:35:49 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:13:00 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,19 @@
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
 	t_token			*tokens;
-	//char			*expandable;
-//	t_args			arg;
-	
-	(void)argc;
-	(void)argv;
-	(void)env_list;
-	//arg.exit_status = 0;
+	char			*expandable;
+	t_args			arg;
+
+	arg.exit_status = 0;
 	if (*input)
 	{
 		add_history(input);
-		/*
 		arg.argc = argc - 1;
-		arg.argv = argv;*/
+		arg.argv = argv;
 		printf("The original output is : %s\n", input);
-		//expandable = parse_env(input, env_list, &arg);
+		expandable = parse_env(input, env_list, &arg);
 		printf("Tokenizing value\n");
-		tokens = tokenize(input);
+		tokens = tokenize(expandable);
 		if (!tokens)
 		{
 			free_tokens(tokens);

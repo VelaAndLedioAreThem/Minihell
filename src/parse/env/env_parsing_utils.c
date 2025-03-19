@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 00:37:42 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/19 19:15:31 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:11:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 char	*join_arguments(t_args *arg)
 {

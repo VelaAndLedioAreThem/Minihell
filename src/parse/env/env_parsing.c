@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/16 23:22:26 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 18:10:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 static char	*handle_special_utils(char *input, char *str, int *i, t_args *arg)
 {
