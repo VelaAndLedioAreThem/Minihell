@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:22:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/15 14:52:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:31:46 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ bool	has_expecting_command(t_token *curr, bool *expecting_command)
 	{
 		next = curr->next;
 		if (!next)
-			return (report_error(ERR_SYNTAX, "n"), false);
+			return (report_error(ERR_SYNTAX, "newline"), false);
 		while (next && next->type == TOKEN_WORD
 			&& is_only_whitespaces(next->value))
 			next = next->next;

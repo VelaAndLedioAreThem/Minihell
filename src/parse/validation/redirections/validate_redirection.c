@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:11:15 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/18 01:47:49 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:22:54 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,17 +117,8 @@ bool	validate_redirection(t_token *tokenize)
 			if (!check_adjacent_redirection(&curr))
 				return (false);
 			next = curr->next;
-			while (next && next->type == TOKEN_WHITESPACE)
-				next = next->next;
-			if (!next || (next->type != TOKEN_WORD
-					&& next->type != TOKEN_PROCESSED))
-			{
-				if (!next)
-					report_error(ERR_UNEXPECTED_TOKEN, "newline");
-				else
-					report_error(ERR_UNEXPECTED_TOKEN, curr->value);
-				return (false);
-			}
+			if (!validate_next_redirect(&next, &curr))
+				return (true);
 		}
 		curr = curr->next;
 	}

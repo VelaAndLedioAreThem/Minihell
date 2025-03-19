@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 16:01:41 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/17 18:56:54 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 14:52:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ bool	validation(t_token *tokenize)
 {
 	if (!validate_logical_op(tokenize))
 	{
-		//free_tokens(tokenize);
+		free_tokens(tokenize);
 		return (false);
 	}
 	if (!validate_commands(tokenize))

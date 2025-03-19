@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 02:20:13 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 15:19:18 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -255,6 +255,7 @@ bool		validation_quotes(t_token *tokens);
 // Redirections
 bool		ft_is_redirection(char c);
 bool		ft_is_redirection_op(char current, char next);
+bool		validate_next_redirect(t_token **next, t_token **curr);
 
 //Commands
 bool		ft_is_commands_position(char *input, int i);
