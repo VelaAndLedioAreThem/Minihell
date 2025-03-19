@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:22:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/14 22:37:54 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/15 14:52:20 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,12 @@ bool	check_operator_before_pipe(t_token *prev, t_token *curr)
 	return (true);
 }
 
-bool	validate_pipe_position(t_token *prev, t_token *curr)
+bool	validate_pipe_position(t_token *prev, t_token *curr, t_token *head)
 {
 	t_token		*next;
 
-	if (prev == NULL
-		|| (prev->type == TOKEN_WORD && is_only_whitespaces(prev->value)))
-	{
-		report_error(ERR_UNEXPECTED_TOKEN, "'|'");
+	if (!check_redirection_before_pipe(curr, head))
 		return (false);
-	}
 	if (curr->next == NULL)
 	{
 		report_error(ERR_UNEXPECTED_TOKEN, "'|'");
@@ -101,7 +97,7 @@ bool	has_expecting_command(t_token *curr, bool *expecting_command)
 	{
 		next = curr->next;
 		if (!next)
-			return (false);
+			return (report_error(ERR_SYNTAX, "n"), false);
 		while (next && next->type == TOKEN_WORD
 			&& is_only_whitespaces(next->value))
 			next = next->next;
@@ -121,7 +117,7 @@ bool	pipes(t_token *tokenize)
 {
 	t_pipe		pipe;
 
-	pipe = (t_pipe){tokenize, NULL, false};
+	pipe = (t_pipe){tokenize, NULL, tokenize, false};
 	while (pipe.curr)
 	{
 		if (pipe.curr->type == TOKEN_WORD
@@ -133,7 +129,7 @@ bool	pipes(t_token *tokenize)
 		}
 		if (pipe.curr->type == TOKEN_PIPE)
 		{
-			if (!validate_pipe_position(pipe.prev, pipe.curr))
+			if (!validate_pipe_position(pipe.prev, pipe.curr, pipe.head))
 				return (false);
 			pipe.expecting_command = true;
 		}

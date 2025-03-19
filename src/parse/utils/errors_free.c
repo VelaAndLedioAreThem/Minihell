@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:21:04 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 21:01:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/18 23:49:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ t_token	*free_tokens(t_token *token)
 
 	while (token)
 	{
-		temp = (token)->next;
-		free((token)->value);
+		temp = token->next;
+		free(token->value);
 		free(token);
 		token = temp;
 	}

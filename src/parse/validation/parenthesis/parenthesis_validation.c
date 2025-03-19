@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/09 01:05:36 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:18:42 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,17 @@ bool	parenthesis_utils(t_token *tokenize)
 	while (stack && stack->value)
 	{
 		input = stack->value;
+		if (stack->single_quotes == 1)
+			return (true);
+		else if (stack->double_quotes == 1)
+			return (true);
 		if (!parenthesis(stack, input, &commands))
 			return (false);
 		stack = stack->next;
 	}
 	if (!is_empty(stack))
-	{
-		report_error(ERR_UNEXPECTED_TOKEN, "newline");
-		free_stack(stack);
-		return (false);
-	}
+		return (report_error(ERR_UNEXPECTED_TOKEN, ")"),
+			free_stack(stack), false);
 	free_stack(stack);
 	free(stack);
 	return (true);

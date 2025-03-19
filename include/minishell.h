@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/14 21:20:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 02:20:13 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -32,6 +32,8 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/include/libft.h"
+# define TOKEN_PROCESSED 42
+# define TOKEN_READWRITE 43
 
 // Parsing struct 
 typedef enum e_token_type
@@ -101,6 +103,8 @@ typedef struct s_token
 	char			*value;
 	t_token_type	type;
 	int				expandable;
+	int				double_quotes;
+	int				single_quotes;
 	t_stack			*top;
 	struct s_token	*next;
 }	t_token;
@@ -109,6 +113,7 @@ typedef struct s_pipe
 {
 	t_token		*curr;
 	t_token		*prev;
+	t_token		*head;
 	bool		expecting_command;
 }	t_pipe;
 
@@ -267,6 +272,11 @@ bool		is_operator_token(t_token *prev);
 bool		has_whitespace_between(t_token *prev, t_token *curr);
 bool		is_only_whitespaces(char *str);
 bool		return_pipes_mssg(bool *expecting_cmd);
+bool		check_redirection_before_pipe(t_token *curr, t_token *head);
+
+// Redirect
+bool		validate_redirection(t_token *tokenize);
+bool		check_after_redirection(t_token **curr);
 
 // Stack operations
 void		push(t_token *stack, char data);

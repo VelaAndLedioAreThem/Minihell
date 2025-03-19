@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   close_paren_utils.c                                :+:      :+:    :+:   */
+/*   close_paren.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 16:19:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/10 21:03:38 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 02:21:29 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,6 @@ bool	logical_op_after_paren(char *input, t_token *token, int *j)
 {
 	if (!input[*j])
 		return (false);
-	return (true);
 	if (input[*j] == '&')
 		return (check_op_after_paren(input, token, j));
 	else if (input[*j] == '|')
@@ -114,11 +113,8 @@ bool	check_next_token(t_token *next)
 	char			*next_input;
 	int				j;
 
-	if (!next || next->next)
-	{
-		report_error(ERR_SYNTAX, "unexpected end of input after parenthesis");
-		return (false);
-	}
+	if (!next || !next->next)
+		return (true);
 	next_token = next->next;
 	if (!next->value)
 		return (report_error(ERR_SYNTAX, "null token after parenthesis"),
@@ -127,6 +123,8 @@ bool	check_next_token(t_token *next)
 	j = 0;
 	while (next_input[j] && ft_isspace(next_input[j]))
 		j++;
+	if (!next_input[j])
+		return (true);
 	if (!check_redirect_after_paren(next_input, next_token, &j))
 		return (false);
 	else if (!check_commands_after_paren(next_input, &j))

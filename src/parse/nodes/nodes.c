@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:50:51 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/13 21:50:14 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 00:19:50 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void	append_node(t_token **head, t_token *current_token)
 {

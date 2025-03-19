@@ -41,7 +41,7 @@ SRCS = $(SRC)main.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 	   $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c $(PARENTHESIS)close_paren_utils.c \
 	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c\
-	   $(PIPES)pipes_utils.c \
+	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)

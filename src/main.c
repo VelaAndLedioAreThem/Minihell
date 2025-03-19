@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 19:39:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/19 00:35:49 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		if (!tokens)
 		{
 			free_tokens(tokens);
-			return ;
 		}
 		if (!validation(tokens))
 			return ;
@@ -51,7 +50,8 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = readline("minishell$: ");
-		if (!input) {
+		if (!input)
+		{
 			printf("exit\n");
 			exit(0);
 		}
