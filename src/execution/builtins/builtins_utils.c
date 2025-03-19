@@ -185,13 +185,14 @@ int execute_export(t_data *data, t_tree *tree, int fd_out)
  */
 int execute_unset(t_data *data, t_tree *tree)
 {
-    (void)data; // Unused parameter
     int i = 1;
     int status = 0;
 
-    while (tree->args_array[i]) {
+    while (tree->args_array[i])
+    {
         char *name = tree->args_array[i];
-        if (!is_valid_identifier(name)) {
+        if (!is_valid_identifier(name))
+        {
             ft_putstr_fd("minishell: unset: ", STDERR_FILENO);
             ft_putstr_fd(name, STDERR_FILENO);
             ft_putendl_fd(": not a valid identifier", STDERR_FILENO);
@@ -199,7 +200,25 @@ int execute_unset(t_data *data, t_tree *tree)
             i++;
             continue;
         }
-        // Remove variable logic...
+
+        t_envir *node = get_env_node(data->env_list, name);
+        if (node)
+        {
+            // Adjust previous node's next pointer
+            if (node->prev)
+                node->prev->next = node->next;
+            else
+                data->env_list = node->next; // Update head if node is the first element
+
+            // Adjust next node's prev pointer
+            if (node->next)
+                node->next->prev = node->prev;
+
+            // Free the node's memory
+            free(node->var_name);
+            free(node->var_value);
+            free(node);
+        }
         i++;
     }
     return status;

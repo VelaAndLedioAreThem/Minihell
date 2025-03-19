@@ -44,16 +44,28 @@ void	extend_asterisk(t_token *token, t_data *data)
 		check_matches(token, data->root_directory);
 }
 
-int	match_pattern(const char *pattern, const char *string)
+int match_pattern(const char *pattern, const char *text)
 {
-	if (*pattern == '\0' && *string == '\0')
-		return (1);
-	if (*pattern == '*' && *(pattern + 1) != '\0' && *string == '\0')
-		return (0);
-	if (*pattern == *string)
-		return (match_pattern(pattern + 1, string + 1));
-	if (*pattern == '*')
-		return (match_pattern(pattern + 1, string)
-			|| match_pattern(pattern, string + 1));
-	return (0);
+    if (!pattern || !text) return 0;
+    
+    while (*pattern)
+    {
+        if (*pattern == '*')
+        {
+            pattern++;
+            while (*text && !match_pattern(pattern, text))
+                text++;
+        }
+        else if (*pattern == '?' || *pattern == *text)
+        {
+            pattern++;
+            text++;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return *text == '\0';
 }
+

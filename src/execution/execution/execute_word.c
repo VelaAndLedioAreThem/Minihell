@@ -16,10 +16,21 @@ int execute_word(t_data *data, t_tree *tree)
         data->exit_status = 1;
         return 1;
     }
-    
+
+    char **expanded_args = expand_wildcards_in_args(tree->args_array);
+    if (!expanded_args) {
+        close(fd_in);
+        close(fd_out);
+        return (data->exit_status = 1);
+    }
+
+    char **original_args = tree->args_array;
+    tree->args_array = expanded_args;
     // Try to execute as builtin
     if (handle_builtin(data, tree, fd_out))
     {
+        tree->args_array = original_args;
+        free_2darray(expanded_args);
         if (fd_in != STDIN_FILENO)
             close(fd_in);
         if (fd_out != STDOUT_FILENO)

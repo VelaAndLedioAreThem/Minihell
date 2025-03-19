@@ -184,18 +184,17 @@ char		*get_curr_dir(void);
 char		*get_home_dir(void);
 int			execute_exit(t_data *data, t_tree *tree);
 void		execute_env(t_envir **env, int fd_out);
-
-/* execute_buildins3.c */
+void *ft_realloc(void *ptr, size_t old_size, size_t new_size);	/* execute_buildins3.c */
 int			execute_cd(t_data *data, char *path);
 int			execute_unset(t_data *data, t_tree *tree);
 int process_heredocs(t_data *data, t_tree *tree);
-
+char	*ft_strndup(const char *s, size_t n);
 /* execute_delim.c */
 void		create_temp_filename(t_heredoc_info *info);
 int			process_heredoc(t_heredoc_info *info, t_data *data);
 void add_heredoc_file(t_data *data, char *filename, int id);
 	void		free_heredoc_info(t_heredoc_info *info);
-
+	char **expand_wildcards_in_args(char **args);
 /* execute_echo.c */
 int			echo_handle_option(char **args);
 int			execute_echo(char *args[], int fd_out);
