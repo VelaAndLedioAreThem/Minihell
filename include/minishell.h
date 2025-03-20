@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 15:19:18 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/20 13:20:47 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -136,10 +136,13 @@ typedef enum e_ast_type
 {
 	AST_COMMAND,
 	AST_PIPELINE,
-	AST_REDIR,
-	AST_AND_OR,
-	AST_SUBSHELL,
-	AST_SEQUENCING
+	AST_REDIR_IN,
+	AST_REDIR_OUT,
+	AST_REDIR_APPEND,
+	AST_REDIR_HERDOC,
+	AST_AND,
+	AST_OR,
+	AST_SUBSHELL
 }	t_ast_type;
 
 // Erorrs Messages
@@ -291,6 +294,9 @@ void		free_env_list(t_env *env_list);
 t_token		*free_tokens(t_token *token);
 void		report_error(t_errors_code code, char *token);
 void		free_stack(t_token *token);
+
+// Binary Tree
+t_ast		*parse_tokens(t_token *tokens);
 
 // Utils functions
 int			ft_strcmp(char *s1, char *s2);
