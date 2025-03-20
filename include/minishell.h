@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 13:20:47 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/20 18:01:59 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -297,6 +297,13 @@ void		free_stack(t_token *token);
 
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
+t_ast		*parse_command_line(t_token **curr);
+t_ast		*parse_logic_sequence(t_token **tokens);
+t_ast		*create_ast_node(t_ast_type type, t_token *token);
+void		free_ast(t_ast *node);
+t_ast		*parse_simple_commands(t_token **tokens);
+t_commands	*create_command_struct(void);
+t_ast		*create_command_node(t_token *start, int word_count);
 
 // Utils functions
 int			ft_strcmp(char *s1, char *s2);
