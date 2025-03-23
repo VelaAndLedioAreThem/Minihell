@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:32:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 17:34:37 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/23 20:06:32 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,6 @@ t_ast	*parse_logic_sequence(t_token **tokens)
 	t_ast		*node;
 	t_token		*current;
 
-	if (!tokens || !*tokens)
-		return (NULL);
 	current = *tokens;
 	skip_tree_whitespaces(&current);
 	*tokens = current;

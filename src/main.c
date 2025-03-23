@@ -6,11 +6,13 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 12:41:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/24 00:09:12 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+#define MAX_DEPTH 100  // Adjust if needed for deep trees
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
@@ -31,13 +33,14 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		if (!tokens)
 		{
 			free_tokens(tokens);
+			return ;
 		}
 		if (!validation(tokens))
 			return ;
 		ast = parse_tokens(tokens);
 		if (!ast)
 		{
-			free_tokens(tokens);
+			free_ast(ast);
 			return ;
 		}
 	}
