@@ -6,37 +6,44 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 18:00:04 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:02:45 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-t_ast	*create_command_node(t_token *start, int word_count)
+t_ast	*parse_pipeline_node(t_ast *left, t_token **tokens)
 {
-	t_ast		*node;
 	t_token		*curr;
-	int			i;
+	t_ast		*node;
 
-	node = create_ast_node(AST_COMMAND, start);
+	curr = *tokens;
+	node = create_ast_node(AST_PIPELINE, curr);
 	if (!node)
-		return (NULL);
-	node->cmd = create_command_struct();
-	if (!node->cmd)
-		return (free(node), NULL);
-	node->cmd->args = malloc(sizeof(char *) * (word_count + 1));
-	if (!node->cmd->args)
-		return (free(node->cmd), free(node), NULL);
-	curr = start;
-	i = 0;
-	while (i < word_count)
 	{
-		node->cmd->args[i] = ft_strdup(curr->value);
-		curr = curr->next;
-		i++;
+		free_ast(left);
+		return (NULL);
 	}
-	node->cmd->args[i] = NULL;
+	node->left = left;
+	if (curr->next)
+		curr = curr->next;
+	else
+		return (node);
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	node->right = parse_command_line(tokens);
+	if (!node->right)
+	{
+		free_ast(left);
+		return (NULL);
+	}
 	return (node);
+}
+
+void	skip_tree_whitespaces(t_token **tokens)
+{
+	while (*tokens && (*tokens)->type == TOKEN_WHITESPACE)
+		*tokens = (*tokens)->next;
 }
 
 t_ast	*create_ast_node(t_ast_type type, t_token *token)

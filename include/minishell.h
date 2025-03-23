@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 18:01:59 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:15:14 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -304,6 +304,10 @@ void		free_ast(t_ast *node);
 t_ast		*parse_simple_commands(t_token **tokens);
 t_commands	*create_command_struct(void);
 t_ast		*create_command_node(t_token *start, int word_count);
+void		skip_tree_whitespaces(t_token **tokens);
+t_ast		*parse_redirection(t_token **tokens, t_ast *cmd_node);
+t_ast		*parse_subshell(t_token **tokens);
+t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 
 // Utils functions
 int			ft_strcmp(char *s1, char *s2);

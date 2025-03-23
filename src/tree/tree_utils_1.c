@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 18:23:40 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/23 17:22:02 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,52 @@ t_commands	*create_command_struct(void)
 	return (cmd);
 }
 
+t_ast	*init_subshell_node(t_token **tokens)
+{
+	t_token		*curr;
+	t_ast		*node;
+
+	if (!tokens || !*tokens)
+		return (NULL);
+	curr = *tokens;
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	if (curr->type != TOKEN_PAREN_OPEN)
+		return (NULL);
+	node = create_ast_node(AST_SUBSHELL, curr);
+	if (!node)
+		return (NULL);
+	*tokens = curr->next;
+	skip_tree_whitespaces(tokens);
+	return (node);
+}
+
+t_ast	*parse_subshell(t_token **tokens)
+{
+	t_ast		*node;
+	t_token		*curr;
+
+	node = init_subshell_node(tokens);
+	if (!node)
+		return (NULL);
+	node->left = parse_command_line(tokens);
+	if (!node->left)
+	{
+		free(node);
+		return (NULL);
+	}
+	curr = *tokens;
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	if (!curr || curr->type != TOKEN_PAREN_CLOSE)
+	{
+		free_ast(node);
+		return (NULL);
+	}
+	*tokens = curr->next;
+	return (node);
+}
+
 t_ast	*parse_command_words(t_token **tokens)
 {
 	t_ast		*cmd_node;
@@ -38,12 +84,15 @@ t_ast	*parse_command_words(t_token **tokens)
 	if (!tokens || !*tokens)
 		return (NULL);
 	curr = *tokens;
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
 	start = curr;
 	word_count = 0;
 	while (curr && curr->type == TOKEN_WORD)
 	{
 		word_count++;
 		curr = curr->next;
+		skip_tree_whitespaces(&curr);
 	}
 	if (word_count == 0)
 		return (NULL);
@@ -52,18 +101,6 @@ t_ast	*parse_command_words(t_token **tokens)
 		return (NULL);
 	*tokens = curr;
 	return (cmd_node);
-}
-
-t_ast	*parse_redirection(t_token **tokens, t_ast *cmd_node)
-{
-	t_ast		*node;
-	t_token		*curr;
-	t_ast_type	node_type;
-
-	if (!tokens || !*tokens || !cmd_node)
-		return (NULL);
-	curr = *tokens;
-	return (node);
 }
 
 t_ast	*parse_simple_commands(t_token **tokens)
@@ -88,6 +125,8 @@ t_ast	*parse_simple_commands(t_token **tokens)
 		}
 		cmd_node = redir_node;
 		curr = *tokens;
+		skip_tree_whitespaces(&curr);
+		*tokens = curr;
 	}
 	return (cmd_node);
 }
