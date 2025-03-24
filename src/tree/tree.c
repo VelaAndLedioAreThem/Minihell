@@ -3,14 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:32:24 by ldurmish          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/03/24 14:38:01 by vszpiech         ###   ########.fr       */
-=======
 /*   Updated: 2025/03/23 20:06:32 by ldurmish         ###   ########.fr       */
->>>>>>> parsing
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,16 +31,8 @@ t_ast	*parse_pipeline(t_token **tokens)
 	t_ast		*left;
 	t_token		*curr;
 
-	(void)left;
-	(void)right;
-	(void)curr;
-
 	if (!tokens || !*tokens)
 		return (NULL);
-<<<<<<< HEAD
-	// TODO: Implement pipeline parsing logic here
-	return (NULL);
-=======
 	curr = *tokens;
 	skip_tree_whitespaces(&curr);
 	*tokens = curr;
@@ -93,7 +81,6 @@ t_ast	*init_logic_node(t_ast *left, t_token **tokens)
 	if (!node->right)
 		return (free_ast(left), NULL);
 	return (node);
->>>>>>> parsing
 }
 
 t_ast	*parse_logic_sequence(t_token **tokens)
@@ -101,27 +88,6 @@ t_ast	*parse_logic_sequence(t_token **tokens)
 	t_ast		*left;
 	t_ast		*node;
 	t_token		*current;
-<<<<<<< HEAD
-	(void)right;
-	(void)current;
-	
-	if (!tokens || !*tokens)
-		return (NULL);
-	left = parse_pipeline(tokens);
-	if (!left)
-		return (NULL);
-	// TODO: Implement logic sequence parsing (&&, ||) here
-	return (left);
-}
-
-t_ast	*parse_command_line(t_token **tokens)
-{
-	if (!tokens || !*tokens)
-		return (NULL);
-	return (parse_logic_sequence(tokens));
-}
-
-=======
 
 	current = *tokens;
 	skip_tree_whitespaces(&current);
@@ -145,7 +111,6 @@ t_ast	*parse_command_line(t_token **tokens)
 	return (left);
 }
 
->>>>>>> parsing
 t_ast	*parse_tokens(t_token *tokens)
 {
 	t_token		*curr;
