@@ -3,13 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/20 13:20:47 by ldurmish         ###   ########.fr       */
-/*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/24 18:34:24 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -142,7 +142,8 @@ typedef enum e_ast_type
 	AST_REDIR_HERDOC,
 	AST_AND,
 	AST_OR,
-	AST_SUBSHELL
+	AST_SUBSHELL,
+	AST_EOF
 }	t_ast_type;
 
 // Erorrs Messages
@@ -185,10 +186,36 @@ typedef struct s_ast
 	t_ast_type		type;
 	struct s_ast	*left;
 	struct s_ast	*right;
+	long int		exit_status;
 	t_commands		*cmd;
 	int				operator_type;
 	t_token			*token;
+	char    **heredoc_files; // Array of temp file paths
+	int     heredoc_count;   // Number of heredoc temp files
+	t_env          *env_list;  // Add this line
+
 }	t_ast;
+
+
+// Execution function prototypes
+extern pid_t	g_child_pid;
+void	ft_strdel(char **as);
+char	*find_executable_path(t_ast *data, char *cmd);
+char **expand_wildcards_in_args(char **args);
+int get_output_file(t_ast *tree);
+int get_input_file(t_ast *data, t_ast *tree);
+char **env(t_env **lst);
+int execute_or(t_ast *data, t_ast *tree);
+int execute_and(t_ast *data, t_ast *tree);
+int execute_pipe(t_ast *data, t_ast *tree);
+int handle_builtin(t_ast *data, t_ast *tree, int fd_out);
+int execute_or(t_ast *data, t_ast *tree);
+int execute_word(t_ast *data, t_ast *tree);
+char	*ft_strndup(const char *s, size_t n);
+char *ft_strjoin3(const char *s1, const char *s2, const char *s3);
+void print_env_list(t_env *env_list, int fd_out);
+int execute_export(t_ast *data, t_ast *tree, int fd_out);
+int create_heredoc_temp_file(char *delimiter, t_ast *data);
 
 // Tokenization functions
 t_token		*create_node(char *str, t_token_type type);
@@ -201,7 +228,13 @@ int			handle_single_operator(t_token **token, char c);
 int			handle_word(t_token **token, char *input, int *i);
 int			handle_quotes(t_token **token, char *input, int *i);
 int			handle_whitespace(t_token **token, char *input, int *i);
-
+int execute_unset(t_ast *data, t_ast *tree);
+void print_env_list(t_env *env_list, int fd_out);
+int execute_cd(t_ast *data, char *path);
+void set_env_var(t_ast *data, char *var_name, const char *var_value);
+int execute_pwd(t_ast *data, int fd_out);
+int execute_echo(char *args[], int fd_out);
+int execute_exit(t_ast *data, t_ast *tree);
 // Environmental variables
 t_env		*init_env_list(char **envp);
 char		*gen_env_value(t_env *env_list, char *key);
@@ -299,7 +332,14 @@ void		free_stack(t_token *token);
 t_ast		*parse_tokens(t_token *tokens);
 
 // Utils functions
-int			ft_strcmp(char *s1, char *s2);
+int			ft_strcmp(char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
 int			ft_isspace(int num);
+
+void	clear_data(t_env **data, char **envp);
+void	handle_signal(void);
+void	free_2darray(char **array);
+int execute_tree(t_ast *data,t_ast *tree);
+
+extern pid_t	g_child_pid;
 #endif

@@ -9,9 +9,9 @@
 /*   Updated: 2025/03/20 12:41:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../include/minishell.h"
 
+pid_t g_child_pid = 0;
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
 	t_token			*tokens;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 17:21:58 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/24 18:39:34 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/02/24 20:25:41 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,28 +28,7 @@ int	is_operator(char c)
 	return (0);
 }
 
-char	*ft_strndup(const char *s, size_t n)
-{
-	char	*dup;
-	size_t	len;
-	size_t	i;
-
-	len = 0;
-	while (len < n && s[len])
-		len++;
-	dup = (char *)malloc(sizeof(char) * (len + 1));
-	if (!dup)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		dup[i] = s[i];
-		i++;
-	}
-	dup[len] = '\0';
-	return (dup);
-}
-int	ft_strcmp(char *s1, const char *s2)
+int	ft_strcmp(char *s1, char *s2)
 {
 	int			i;
 
@@ -103,27 +82,4 @@ int	count_parenthesis(t_token *tokens)
 		tokens = tokens->next;
 	}
 	return (total_count);
-}
-
-void ft_strdel(char **as)
-{
-    if (as && *as)
-    {
-        free(*as);
-        *as = NULL;
-    }
-}
-void free_2darray(char **array)
-{
-    int i;
-    
-    if (!array)
-        return;
-    i = 0;
-    while (array[i])
-    {
-        free(array[i]);
-        i++;
-    }
-    free(array);
 }
