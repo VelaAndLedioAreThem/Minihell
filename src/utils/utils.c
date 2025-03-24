@@ -6,11 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 17:21:58 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/24 20:25:41 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:25:58 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "../../include/minishell.h"
 
 int	ft_isspace(int num)
 {
@@ -28,7 +28,7 @@ int	is_operator(char c)
 	return (0);
 }
 
-int	ft_strcmp(char *s1, char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
 	int			i;
 

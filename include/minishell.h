@@ -6,15 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/03/24 18:34:24 by vszpiech         ###   ########.fr       */
-=======
+/*   Updated: 2025/03/24 19:22:59 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/03/23 17:15:14 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
->>>>>>> parsing
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -195,8 +191,8 @@ typedef struct s_ast
 	t_commands		*cmd;
 	int				operator_type;
 	t_token			*token;
-	char    **heredoc_files; // Array of temp file paths
-	int     heredoc_count;   // Number of heredoc temp files
+	char			**heredoc_files; // Array of temp file paths
+	int				heredoc_count;   // Number of heredoc temp files
 	t_env          *env_list;  // Add this line
 
 }	t_ast;
@@ -348,7 +344,7 @@ t_ast		*parse_subshell(t_token **tokens);
 t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 
 // Utils functions
-int			ft_strcmp(char *s1, const char *s2);
+int			ft_strcmp(const char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
 int			ft_isspace(int num);
 
