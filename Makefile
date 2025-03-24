@@ -29,7 +29,11 @@ REDIRECTION = $(VALIDATION)redirections/
 QUOTES = $(VALIDATION)quotes/
 WILDCARD = $(VALIDATION)wildcards/
 PIPES = $(VALIDATION)pipes/
+<<<<<<< HEAD
 TREE = $(SRC)tree/
+=======
+TREE = src/tree/
+>>>>>>> parsing
 
 # Color Codes
 RESET = \033[0m
@@ -47,10 +51,16 @@ SRCS = $(SRC)main.c $(TREE)tree.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 	   $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c $(PARENTHESIS)close_paren_utils.c \
 	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c\
+<<<<<<< HEAD
 	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c $(SIGNALS)signals.c $(EXEC_UTILS)asterisk_utils.c $(EXEC_UTILS)env_utils.c \
 	   $(EXECUTION)exec_handling.c $(EXECUTION)execute_external.c $(EXECUTION)execute_pipe.c $(EXECUTION)execute_word.c $(EXECUTION)execute.c \
 	   $(EXECUTION)expand_wildcard.c \
 	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c $(BUILTINS)heredoc_utils.c $(BUILTINS)redirection_utils.c \
+=======
+	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c $(TREE)parse_commands.c \
+	   $(TREE)parse_redir.c $(TREE)tree.c $(TREE)tree_utils.c \
+	   $(TREE)tree_utils_1.c \
+>>>>>>> parsing
 
 # Object files
 OBJS = $(SRCS:.c=.o)

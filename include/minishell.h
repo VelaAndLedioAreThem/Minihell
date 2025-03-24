@@ -6,7 +6,12 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/03/24 18:34:24 by vszpiech         ###   ########.fr       */
+=======
+/*   Updated: 2025/03/23 17:15:14 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
+>>>>>>> parsing
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,6 +335,17 @@ void		free_stack(t_token *token);
 
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
+t_ast		*parse_command_line(t_token **curr);
+t_ast		*parse_logic_sequence(t_token **tokens);
+t_ast		*create_ast_node(t_ast_type type, t_token *token);
+void		free_ast(t_ast *node);
+t_ast		*parse_simple_commands(t_token **tokens);
+t_commands	*create_command_struct(void);
+t_ast		*create_command_node(t_token *start, int word_count);
+void		skip_tree_whitespaces(t_token **tokens);
+t_ast		*parse_redirection(t_token **tokens, t_ast *cmd_node);
+t_ast		*parse_subshell(t_token **tokens);
+t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 
 // Utils functions
 int			ft_strcmp(char *s1, const char *s2);
