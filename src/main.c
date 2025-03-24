@@ -6,13 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/24 00:09:12 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:04:27 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-#define MAX_DEPTH 100  // Adjust if needed for deep trees
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
