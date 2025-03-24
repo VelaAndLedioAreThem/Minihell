@@ -6,12 +6,21 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:11:54 by ldurmish          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/03/24 19:04:27 by ldurmish         ###   ########.fr       */
+=======
+/*   Updated: 2025/03/24 00:09:12 by ldurmish         ###   ########.fr       */
+>>>>>>> parent of ddfa200 (Binary tree done)
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/minishell.h"
 
+<<<<<<< HEAD
 pid_t g_child_pid = 0;
+=======
+#define MAX_DEPTH 100  // Adjust if needed for deep trees
+
+>>>>>>> parent of ddfa200 (Binary tree done)
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
 	t_token			*tokens;
