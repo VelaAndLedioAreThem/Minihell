@@ -60,6 +60,7 @@ int	main(int argc, char **argv, char **envp)
     char *prompt;
 
 	env_list = init_env_list(envp);
+	handle_signal();
 	while (1)
 	{
         char cwd[PATH_MAX];

@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/25 15:08:49 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/03/25 16:31:20 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,7 @@ int execute_export(t_ast *data, t_ast *tree, int fd_out);
 int create_heredoc_temp_file(char *delimiter, t_ast *data);
 extern void	free_2darray(char **array);
 extern char	*ft_strndup(const char *s, size_t n);
+void	handle_signal(void);
 
 // Tokenization functions
 t_token		*create_node(char *str, t_token_type type);
