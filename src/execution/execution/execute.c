@@ -51,7 +51,7 @@ int execute_tree(t_ast *data,t_ast *tree)
     }
     else if (tree->type == AST_COMMAND)
     {
-        return execute_word(tree, tree);
+        return execute_word(data, tree);
     }
     return 0;
 }
