@@ -3,75 +3,93 @@
 /*                                                        :::      ::::::::   */
 /*   tree_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: eseferi <eseferi@student.42wolfsburg.de    +#+  +:+       +#+        */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/26 08:46:15 by eseferi           #+#    #+#             */
-/*   Updated: 2023/11/26 09:29:42 by eseferi          ###   ########.fr       */
+/*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
+/*   Updated: 2025/03/23 17:02:45 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../include/minishell.h"
 
-t_tree	*init_tree_root(void)
+t_ast	*parse_pipeline_node(t_ast *left, t_token **tokens)
 {
-	t_tree	*tree;
+	t_token		*curr;
+	t_ast		*node;
 
-	tree = malloc(sizeof(t_tree));
-	if (!tree)
+	curr = *tokens;
+	node = create_ast_node(AST_PIPELINE, curr);
+	if (!node)
+	{
+		free_ast(left);
 		return (NULL);
-	tree->type = 0;
-	tree->value = NULL;
-	tree->args_array = NULL;
-	tree->left = NULL;
-	tree->right = NULL;
-	return (tree);
+	}
+	node->left = left;
+	if (curr->next)
+		curr = curr->next;
+	else
+		return (node);
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	node->right = parse_command_line(tokens);
+	if (!node->right)
+	{
+		free_ast(left);
+		return (NULL);
+	}
+	return (node);
 }
 
-int	is_special_type(t_token *address)
+void	skip_tree_whitespaces(t_token **tokens)
 {
-	return (address->type == T_RED_INP
-		|| address->type == T_RED_OUT
-		|| address->type == T_APPEND
-		|| address->type == T_DELIM
-		|| address->type == T_THREE_IN);
+	while (*tokens && (*tokens)->type == TOKEN_WHITESPACE)
+		*tokens = (*tokens)->next;
 }
 
-// void print_tree(t_tree *tree, int depth)
-// {
-// 	if (!tree)
-// 		return;
-// 	for (int i = 0; i < depth; i++)
-// 		printf("\t");
-// 	printf("Node word: :%s:, type: %d\n", tree->value, tree->type);
-// 	if (tree->parenth == 1)
-//     {
-//         for (int i = 0; i < depth; i++)
-//             printf("\t");
-//         printf("Parenth on\n");
-//     }
-// 	if (tree->type == T_WORD || tree->type == T_DELIM) 
-// 	{
-// 		if (tree->args_array)
-// 		{
-// 			printf("Args array: ");
-// 			for (int i = 0; tree->args_array[i] != NULL; i++) {
-// 				printf("arg[%d] = %s ", i, tree->args_array[i]);
-// 			}
-// 			printf("\n");
-// 		}
-// 	}
-// 	if (tree->left)
-// 	{
-// 		for (int i = 0; i <= depth; i++)
-// 			printf("\t");
-// 		printf("Left child of above node:\n");
-// 		print_tree(tree->left, depth + 1);
-// 	}
-// 	if (tree->right)
-// 	{
-// 		for (int i = 0; i <= depth; i++)
-// 			printf("\t");
-// 		printf("Right child of above node:\n");
-// 		print_tree(tree->right, depth + 1);
-// 	}
-// }
+t_ast	*create_ast_node(t_ast_type type, t_token *token)
+{
+	t_ast		*node;
+
+	node = malloc(sizeof(t_ast));
+	if (!node)
+		return (NULL);
+	node->type = type;
+	node->left = NULL;
+	node->right = NULL;
+	node->cmd = NULL;
+	node->operator_type = 0;
+	node->token = token;
+	return (node);
+}
+
+t_ast	*parse_command_line(t_token **tokens)
+{
+	return (parse_logic_sequence(tokens));
+}
+
+void	free_ast(t_ast *node)
+{
+	int			i;
+
+	if (!node)
+		return ;
+	free_ast(node->left);
+	free_ast(node->right);
+	if (node->cmd)
+	{
+		if (node->cmd->args)
+		{
+			i = -1;
+			while (node->cmd->args[++i])
+				free(node->cmd->args[i]);
+			free(node->cmd->args[i]);
+		}
+		if (node->cmd->infile)
+			free(node->cmd->infile);
+		if (node->cmd->outfile)
+			free(node->cmd->outfile);
+		if (node->cmd->heredoc_delim)
+			free(node->cmd->heredoc_delim);
+		free(node->cmd);
+	}
+}

@@ -4,18 +4,18 @@
 #include <stdlib.h>
 #include <string.h>
 // Updated get_input_file() in redirection_utils.c
-int get_input_file(t_data *data, t_tree *tree) {
-    t_tree *curr = tree;
+int get_input_file(t_ast *data, t_ast *tree) {
+    t_ast *curr = tree;
     char *last_red_inp = NULL;
     char *last_heredoc_delim = NULL;
     int heredoc_fd = -1;
     int fd = STDIN_FILENO;
 
     while (curr) {
-        if (curr->type == T_RED_INP) {
-            last_red_inp = curr->value;
-        } else if (curr->type == T_DELIM) {
-            last_heredoc_delim = curr->value;
+        if (curr->type == AST_REDIR_IN) {
+            last_red_inp = curr->token->value;
+        } else if (curr->type == AST_EOF) {
+            last_heredoc_delim = curr->token->value;
             heredoc_fd = create_heredoc_temp_file(last_heredoc_delim, data);
             if (heredoc_fd < 0) return -1;
             fd = heredoc_fd;
@@ -39,15 +39,15 @@ int get_input_file(t_data *data, t_tree *tree) {
     }
     return fd;
 }
-int get_output_file(t_tree *tree) {
-    t_tree *curr = tree->right; // Start with right child
+int get_output_file(t_ast *tree) {
+    t_ast *curr = tree->right; // Start with right child
     char *last_file = NULL;
     int redir_type = -1;
     int fd = STDOUT_FILENO;
 
     while (curr) {
-        if (curr->type == T_RED_OUT || curr->type == T_APPEND) {
-            last_file = curr->value;
+        if (curr->type == AST_REDIR_OUT || curr->type == AST_REDIR_APPEND) {
+            last_file = curr->token->value;
             redir_type = curr->type;
         }
         curr = curr->right; // Traverse right children
@@ -55,9 +55,9 @@ int get_output_file(t_tree *tree) {
 
     if (last_file) {
         int flags = O_WRONLY | O_CREAT;
-        if (redir_type == T_RED_OUT)
+        if (redir_type == AST_REDIR_OUT)
             flags |= O_TRUNC;
-        else if (redir_type == T_APPEND)
+        else if (redir_type == AST_REDIR_APPEND)
             flags |= O_APPEND;
 
         fd = open(last_file, flags, 0644);

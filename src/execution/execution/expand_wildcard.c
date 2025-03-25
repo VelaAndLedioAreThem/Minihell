@@ -1,9 +1,49 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/03/24 19:37:27 by vszpiech         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../../include/minishell.h"
+
 #include <dirent.h>
+
+
+int match_pattern(const char *pattern, const char *text)
+{
+    if (!pattern || !text) return 0;
+    
+    while (*pattern)
+    {
+        if (*pattern == '*')
+        {
+            pattern++;
+            while (*text && !match_pattern(pattern, text))
+                text++;
+        }
+        else if (*pattern == '?' || *pattern == *text)
+        {
+            pattern++;
+            text++;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return *text == '\0';
+}
 
 static int has_wildcard(const char *str) {
     return (ft_strchr(str, '*') != NULL);
 }
+
 static void split_pattern(const char *pattern, char **dir_part, char **file_part)
 {
     char *last_slash = ft_strrchr(pattern, '/');
@@ -20,7 +60,7 @@ static void split_pattern(const char *pattern, char **dir_part, char **file_part
     }
 }
 
-static char *build_full_path(const char *dir, const char *file)
+static char *build_full_path( char *dir, const char *file)
 {
     if (ft_strcmp(dir, ".") == 0)
         return ft_strdup(file);
@@ -44,7 +84,7 @@ static void sort_matches(char **matches, int count) {
     }
 }
 
-static int is_hidden_file(const char *pattern, const char *filename) {
+static int is_hidden_file(char *pattern, const char *filename) {
     return (filename[0] == '.' && (pattern[0] != '.' || ft_strcmp(pattern, ".") == 0));
 }
 
@@ -83,7 +123,7 @@ char **expand_wildcard(char *pattern) {
         if (match_pattern(file_part, entry->d_name))
         {
             char *full_path = build_full_path(dir_part, entry->d_name);
-            matches = ft_realloc(matches, count * sizeof(char *), (count + 1) * sizeof(char *));
+            matches = realloc(matches, (count + 1) * sizeof(char *));
             matches[count++] = full_path;
         }
     }
@@ -91,13 +131,15 @@ char **expand_wildcard(char *pattern) {
 
     if (count == 0) {
         free(matches);
-        return NULL;
+        matches = NULL;
+    } else {
+        sort_matches(matches, count);
+        matches = realloc(matches, (count + 1) * sizeof(char *));
+        matches[count] = NULL;
     }
 
-    sort_matches(matches, count);
-    matches = ft_realloc(matches, count * sizeof(char *), (count + 1) * sizeof(char *));
-    matches[count] = NULL;
-
+    free(dir_part);
+    free(file_part);
     return matches;
 }
 
@@ -108,17 +150,18 @@ char **expand_wildcards_in_args(char **args) {
     for (int i = 0; args[i]; i++) {
         char **matches = expand_wildcard(args[i]);
         if (!matches) {
-            new_args = ft_realloc(new_args, new_count * sizeof(char *), (new_count + 1) * sizeof(char *));
+            new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
             new_args[new_count++] = ft_strdup(args[i]);
         } else {
             for (int j = 0; matches[j]; j++) {
-                new_args = ft_realloc(new_args, new_count * sizeof(char *), (new_count + 1) * sizeof(char *));
+                new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
                 new_args[new_count++] = ft_strdup(matches[j]);
             }
-            free_2darray(matches);
+            for (int j = 0; matches[j]; j++) free(matches[j]);
+            free(matches);
         }
     }
-    new_args = ft_realloc(new_args, new_count * sizeof(char *), (new_count + 1) * sizeof(char *));
+    new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
     new_args[new_count] = NULL;
     return new_args;
 }

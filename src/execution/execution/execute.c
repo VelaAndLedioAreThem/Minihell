@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 
-int execute_group(t_data *data, t_tree *tree)
+int execute_group(t_ast *data, t_ast *tree)
 {
     pid_t pid;
     int status;
@@ -9,7 +9,7 @@ int execute_group(t_data *data, t_tree *tree)
     pid = fork();
     if (pid == 0)
     {
-        int ret = execute(data, tree->left);
+        int ret = execute_tree(data, tree->left);
         exit(ret);
     }
     else if (pid < 0)
@@ -26,36 +26,32 @@ int execute_group(t_data *data, t_tree *tree)
 }
 
 
-int execute_sequence(t_data *data, t_tree *tree)
+int execute_sequence(t_ast *data, t_ast *tree)
 {
-    execute(data, tree->left);
-    return execute(data, tree->right);
+    execute_tree(data, tree->left);
+    return execute_tree(data, tree->right);
 }
 
-int execute(t_data *data, t_tree *tree)
+int execute_tree(t_ast *data,t_ast *tree)
 {
-    if (tree->type == T_AND || tree->type == T_OR)
+    if (tree->type == AST_AND || tree->type == 	AST_OR)
     {
-        if (tree->type == T_AND)
+        if (tree->type == AST_AND)
             return execute_and(data, tree);
         else
             return execute_or(data, tree);
     }
-    else if (tree->type == T_PIPE)
+    else if (tree->type == AST_PIPELINE)
     {
         return execute_pipe(data, tree);
     }
-    else if (tree->type == T_PARENTHESES)
+    else if (tree->type == AST_SUBSHELL)
     {
         return execute_group(data, tree);
     }
-    else if (tree->type == T_SEMICOLON)
+    else if (tree->type == AST_COMMAND)
     {
-        return execute_sequence(data, tree);
-    }
-    else if (tree->type == T_WORD)
-    {
-        return execute_word(data, tree);
+        return execute_word(tree, tree);
     }
     return 0;
 }

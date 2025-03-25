@@ -14,7 +14,7 @@ static void sigint_handler(int sig) {
     ioctl(STDIN_FILENO, TIOCSTI, "\n");
 }
 
-int create_heredoc_temp_file(char *delimiter, t_data *data) {
+int create_heredoc_temp_file(char *delimiter, t_ast *data) {
     int fd;
     char *line;
     char tmpname[] = "/tmp/minishell_heredoc_XXXXXX";

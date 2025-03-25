@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 /* Execute an external command with proper redirections */
-int execute_command(t_data *data, t_tree *tree, int fd_inp, int fd_out)
+int execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 {
     pid_t pid;
     int status;
@@ -35,16 +35,16 @@ int execute_command(t_data *data, t_tree *tree, int fd_inp, int fd_out)
         }
         
         // Execute command
-        char *cmd_path = find_executable_path(data, tree->args_array[0]);
+        char *cmd_path = find_executable_path(data, tree->cmd->args[0]);
         if (!cmd_path) {
             ft_putstr_fd("minishell: ", STDERR_FILENO);
-            ft_putstr_fd(tree->args_array[0], STDERR_FILENO);
+            ft_putstr_fd(tree->cmd->args[0], STDERR_FILENO);
             ft_putendl_fd(": command not found", STDERR_FILENO);
             exit(127);
         }
         
         char **envp = env(&(data->env_list));
-        execve(cmd_path, tree->args_array, envp);
+        execve(cmd_path, tree->cmd->args, envp);
         perror("minishell: execve");
         free_2darray(envp);
         exit(1);
