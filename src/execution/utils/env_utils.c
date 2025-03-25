@@ -126,7 +126,7 @@ t_env *find_envir_variable(t_ast *data, char *var_name, int len)
     current = data->env_list;
     while (current)
     {
-        if (ft_strncmp(current->key, var_name, len) == 0)
+        if (current->key && ft_strncmp(current->key, var_name, len) == 0)
             return (current);
         current = current->next;
     }
@@ -135,32 +135,42 @@ t_env *find_envir_variable(t_ast *data, char *var_name, int len)
 
 char *find_executable_path(t_ast *data, char *cmd)
 {
-    char    *tmp;
-    char    *command;
-    char    **paths;
-    t_env   *path;
-    char    **original_paths;
+    // If cmd contains a slash, it's likely a full or relative path
+    if (ft_strchr(cmd, '/')) {
+        if (access(cmd, X_OK) == 0)
+            return ft_strdup(cmd);
+        return NULL;
+    }
 
-    path = find_envir_variable(data, "PATH", 4);
-    if (!path || !path->value)
-        return (NULL);
-    paths = ft_split(path->value, ':');
-    original_paths = paths;
+    // Check for absolute PATH
+    t_env *path_env = find_envir_variable(data, "PATH", 4);
+    if (!path_env || !path_env->value)
+        return NULL;
+
+    char **paths = ft_split(path_env->value, ':');
+    char **original_paths = paths;
+
     while (*paths)
     {
-        if (access(cmd, X_OK) == 0)
-            return (duplicate_cmd_and_free_paths(cmd, original_paths));
-        tmp = ft_strjoin(*paths, "/");
-        command = ft_strjoin(tmp, cmd);
-        ft_strdel(&tmp);
-        if (access(command, F_OK) == 0)
+        char *full_path = ft_strjoin3(*paths, "/", cmd);
+        if (access(full_path, X_OK) == 0)
         {
-            free_paths(paths, original_paths);
-            return (command);
+            // Free other paths
+            char **temp = original_paths;
+            while (*temp)
+            {
+                if (temp != paths)
+                    free(*temp);
+                temp++;
+            }
+            free(original_paths);
+            return full_path;
         }
-        ft_strdel(&command);
+        free(full_path);
         paths++;
     }
+
+    // Free split paths if no match found
     free_paths(original_paths, original_paths);
-    return (NULL);
+    return NULL;
 }

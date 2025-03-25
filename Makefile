@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+         #
+#    By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/03/24 19:19:51 by ldurmish         ###   ########.fr        #
+#    Updated: 2025/03/25 14:52:56 by vszpiech         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME = minishell
 
 # Compiler Settings
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g -fsanitize=leak,address
+CFLAGS = -Wall -Wextra -Werror -g 
 INCLUDE = -I include/ -I libft/include
 LIBFT_DIR = libft/
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -50,6 +50,7 @@ RED = \033[0m;31m
 GREEN = \033[0m;32m
 
 # Source files for minishell
+
 SRCS = $(SRC)main.c $(TREE)tree.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(TOKENIZE)tokenize_utils.c $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c \
 	   $(TOKENIZE)tokenize_utils_2.c $(ENV)convert_env.c $(ENV)env_parsing.c \
@@ -59,15 +60,13 @@ SRCS = $(SRC)main.c $(TREE)tree.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(OPERATORS)validation_logical_operators.c $(REDIRECTION)redirections_utils.c $(QUOTES)validation_quotes.c \
 	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 	   $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c $(PARENTHESIS)close_paren_utils.c \
-	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c\
+	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c \
 	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c $(SIGNALS)signals.c $(EXEC_UTILS)asterisk_utils.c $(EXEC_UTILS)env_utils.c \
 	   $(EXECUTION)exec_handling.c $(EXECUTION)execute_external.c $(EXECUTION)execute_pipe.c $(EXECUTION)execute_word.c $(EXECUTION)execute.c \
 	   $(EXECUTION)expand_wildcard.c \
 	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c $(BUILTINS)heredoc_utils.c $(BUILTINS)redirection_utils.c \
-	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c $(TREE)parse_commands.c \
-	   $(TREE)parse_redir.c $(TREE)tree.c $(TREE)tree_utils.c \
-	   $(TREE)tree_utils_1.c \
-
+	   $(TREE)parse_commands.c $(EXEC_UTILS)free.c $(EXEC_UTILS)free2.c $(EXEC_UTILS)utils4.c \
+	   $(TREE)parse_redir.c $(TREE)tree_utils.c $(TREE)tree_utils_1.c
 # Object files
 OBJS = $(SRCS:.c=.o)
 

@@ -40,6 +40,11 @@ int execute_word(t_ast *data, t_ast *tree)
     
     // Execute as external command
     pid_t pid = fork();
+    if (pid < 0)
+    {
+        ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
+        data->exit_status = 1;
+    }
     if (pid == 0)
     {
         // Child process
@@ -60,13 +65,13 @@ int execute_word(t_ast *data, t_ast *tree)
         
         // Execute command
         char *cmd_path = find_executable_path(data, tree->cmd->args[0]);
-        if (!cmd_path)
-        {
+        if (!cmd_path) {
             ft_putstr_fd("minishell: ", STDERR_FILENO);
             ft_putstr_fd(tree->cmd->args[0], STDERR_FILENO);
             ft_putendl_fd(": command not found", STDERR_FILENO);
             exit(127);
         }
+        
         
         char **envp = env(&(data->env_list));
         execve(cmd_path, tree->cmd->args, envp);
@@ -77,12 +82,7 @@ int execute_word(t_ast *data, t_ast *tree)
         free(cmd_path);
         free_2darray(envp);
         exit(126);
-    }
-    else if (pid < 0)
-    {
-        ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
-        data->exit_status = 1;
-    }
+    } 
     else
     {
         // Parent process
@@ -97,7 +97,8 @@ int execute_word(t_ast *data, t_ast *tree)
         else
             data->exit_status = 1;
     }
-    
+    tree->cmd->args = original_args;
+    free_2darray(expanded_args);
     // Clean up file descriptors
     if (fd_in != STDIN_FILENO)
         close(fd_in);

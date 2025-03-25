@@ -12,6 +12,9 @@
 
 #include "../include/minishell.h"
 
+pid_t	g_child_pid = 0;
+
+
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
 	t_token			*tokens;
@@ -41,6 +44,11 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 			free_ast(ast);
 			return ;
 		}
+		else if (ast) {
+			ast->env_list = env_list; // Add this line
+		}
+        execute_tree(ast, ast);
+        free_ast(ast);
 	}
 }
 
@@ -48,11 +56,24 @@ int	main(int argc, char **argv, char **envp)
 {
 	char			*input;
 	t_env			*env_list;
+	char *str;
+    char *prompt;
 
 	env_list = init_env_list(envp);
 	while (1)
 	{
-		input = readline("minishell$: ");
+        char cwd[PATH_MAX];
+        if (getcwd(cwd, sizeof(cwd)) != NULL)
+        {
+            str = ft_strjoin("minihell:",cwd);
+            prompt = ft_strjoin(str,"$ ");
+        }
+        else
+            prompt = ft_strdup("minishell$ "); // Fallback
+        
+		input = readline(prompt);
+		free(prompt); // Free the generated prompt
+
 		if (!input)
 		{
 			printf("exit\n");

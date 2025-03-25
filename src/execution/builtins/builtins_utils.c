@@ -1,4 +1,16 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/03/25 13:17:20 by vszpiech         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../../include/minishell.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
@@ -217,10 +229,6 @@ int execute_unset(t_ast *data, t_ast *tree)
         }
     }
     return status;
-}
-void	free_data(t_ast *data)
-{
-(void)data;
 }
 /* execute_exit - Exits shell with status */
 int execute_exit(t_ast *data, t_ast *tree)

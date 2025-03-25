@@ -37,21 +37,21 @@ int execute_tree(t_ast *data,t_ast *tree)
     if (tree->type == AST_AND || tree->type == 	AST_OR)
     {
         if (tree->type == AST_AND)
-            return execute_and(data, data);
+            return execute_and(data, tree);
         else
-            return execute_or(data, data);
+            return execute_or(data, tree);
     }
     else if (tree->type == AST_PIPELINE)
     {
-        return execute_pipe(data, data);
+        return execute_pipe(data, tree);
     }
     else if (tree->type == AST_SUBSHELL)
     {
-        return execute_group(data, data);
+        return execute_group(data, tree);
     }
     else if (tree->type == AST_COMMAND)
     {
-        return execute_word(data, data);
+        return execute_word(tree, tree);
     }
     return 0;
 }

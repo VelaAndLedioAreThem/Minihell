@@ -1,6 +1,5 @@
 #include "minishell.h"
-/* Execute a pipe command */
-int execute_pipe(t_ast *data, t_ast *tree) {
+/* Execute a pipe command */int execute_pipe(t_ast *data, t_ast *tree) {
     int fd[2];
     pid_t left_pid, right_pid;
     int left_status, right_status;
@@ -11,10 +10,14 @@ int execute_pipe(t_ast *data, t_ast *tree) {
     }
 
     // Fork for left command
-    if ((left_pid = fork()) == 0) {
+    left_pid = fork();
+    if (left_pid == 0) {
+        // Child process for left command
         close(fd[0]);
         dup2(fd[1], STDOUT_FILENO);
         close(fd[1]);
+        
+        // Execute left side of pipe
         exit(execute_tree(data, tree->left));
     } else if (left_pid < 0) {
         perror("minishell: fork");
@@ -24,10 +27,14 @@ int execute_pipe(t_ast *data, t_ast *tree) {
     }
 
     // Fork for right command
-    if ((right_pid = fork()) == 0) {
+    right_pid = fork();
+    if (right_pid == 0) {
+        // Child process for right command
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         close(fd[0]);
+        
+        // Execute right side of pipe
         exit(execute_tree(data, tree->right));
     } else if (right_pid < 0) {
         perror("minishell: fork");

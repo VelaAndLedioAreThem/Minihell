@@ -1,8 +1,19 @@
-#include "minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/03/24 19:37:27 by vszpiech         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../../include/minishell.h"
+
 #include <dirent.h>
 
-#include "minishell.h"
-#include <dirent.h>
 
 int match_pattern(const char *pattern, const char *text)
 {

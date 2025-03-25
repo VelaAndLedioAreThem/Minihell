@@ -6,10 +6,10 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/24 19:22:59 by ldurmish         ###   ########.fr       */
-/*   Updated: 2025/03/23 17:15:14 by ldurmish         ###   ########.fr       */
-/*   Updated: 2025/02/13 14:53:43 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:08:49 by vszpiech         ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
@@ -200,6 +200,7 @@ typedef struct s_ast
 
 // Execution function prototypes
 extern pid_t	g_child_pid;
+void	free_data(t_ast *data);
 void	ft_strdel(char **as);
 char	*find_executable_path(t_ast *data, char *cmd);
 char **expand_wildcards_in_args(char **args);
@@ -217,6 +218,8 @@ char *ft_strjoin3(const char *s1, const char *s2, const char *s3);
 void print_env_list(t_env *env_list, int fd_out);
 int execute_export(t_ast *data, t_ast *tree, int fd_out);
 int create_heredoc_temp_file(char *delimiter, t_ast *data);
+extern void	free_2darray(char **array);
+extern char	*ft_strndup(const char *s, size_t n);
 
 // Tokenization functions
 t_token		*create_node(char *str, t_token_type type);
