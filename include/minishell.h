@@ -248,7 +248,7 @@ char		*join_arguments(t_args *arg);
 char		*get_env_value(t_env *env_list, char *name);
 char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
-
+t_env		*deep_copy_env_list(t_env *env_list);
 // Validation
 bool		validation(t_token *tokens);
 bool		validation_parenthesis(t_token *tokenize);

@@ -14,13 +14,13 @@
 
 pid_t	g_child_pid = 0;
 
-
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
 	t_token			*tokens;
 	char			*expandable;
 	t_args			arg;
 	t_ast			*ast;
+	t_env			*env_copy;
 
 	arg.exit_status = 0;
 	if (*input)
@@ -28,7 +28,15 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		add_history(input);
 		arg.argc = argc - 1;
 		arg.argv = argv;
-		expandable = parse_env(input, env_list, &arg);
+		env_copy = deep_copy_env_list(env_list);
+		if (!env_copy)
+			return ;
+		expandable = parse_env(input, env_copy, &arg);
+		if (!expandable)
+		{
+			free_env_list(env_copy);
+			return ;
+		}
 		printf("Tokenizing value\n");
 		tokens = tokenize(expandable);
 		if (!tokens)
@@ -38,15 +46,17 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		}
 		if (!validation(tokens))
 			return ;
+		free(expandable);
+		free_env_list(env_copy);
 		ast = parse_tokens(tokens);
+		free_tokens(tokens);
 		if (!ast)
 		{
 			free_ast(ast);
 			return ;
 		}
-		else if (ast) {
-			ast->env_list = env_list; // Add this line
-		}
+		else if (ast)
+			ast->env_list = env_list;
         execute_tree(ast, ast);
         free_ast(ast);
 	}
@@ -82,4 +92,5 @@ int	main(int argc, char **argv, char **envp)
 		}
 		handle_input(input, env_list, argc, argv);
 	}
+	free_env_list(env_list);
 }
