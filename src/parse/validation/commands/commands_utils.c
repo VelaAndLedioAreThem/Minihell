@@ -29,3 +29,8 @@ bool	is_valid_command_start(char c)
 	return (ft_isalnum(c) || c == '.' || c == '/' || c == '$' || c == '?'
 		|| c == '#' || c == '_' || c == '*');
 }
+
+bool	is_valid_flag_char(char c)
+{
+	return (ft_isalnum(c) || c == '_');
+}

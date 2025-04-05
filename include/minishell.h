@@ -54,6 +54,38 @@ typedef enum e_token_type
 	TOKEN_WHITESPACE
 }	t_token_type;
 
+typedef enum e_ast_type
+{
+	AST_COMMAND,
+	AST_PIPELINE,
+	AST_REDIR_IN,
+	AST_REDIR_OUT,
+	AST_REDIR_APPEND,
+	AST_REDIR_HERDOC,
+	AST_AND,
+	AST_OR,
+	AST_SUBSHELL,
+	AST_EOF
+}	t_ast_type;
+
+// Erorrs Messages
+typedef enum e_errors_code
+{
+	ERR_NONE,
+	ERR_UNBALANCED_PAREN,
+	ERR_SYNTAX,
+	ERR_UNEXPECTED_TOKEN,
+	ERR_MEMORY,
+	ERR_PARSE
+}	t_errors_code;
+
+typedef enum e_flag_state
+{
+	FLAG_NONE,
+	FLAG_SINGLE_DASH,
+	FLAG_DOUBLE_DASH
+}	t_flag_state;
+
 typedef struct s_env
 {
 	char			*key;
@@ -133,30 +165,6 @@ typedef struct s_state
 	int				paren_count;
 }	t_state;
 
-typedef enum e_ast_type
-{
-	AST_COMMAND,
-	AST_PIPELINE,
-	AST_REDIR_IN,
-	AST_REDIR_OUT,
-	AST_REDIR_APPEND,
-	AST_REDIR_HERDOC,
-	AST_AND,
-	AST_OR,
-	AST_SUBSHELL,
-	AST_EOF
-}	t_ast_type;
-
-// Erorrs Messages
-typedef enum e_errors_code
-{
-	ERR_NONE,
-	ERR_UNBALANCED_PAREN,
-	ERR_SYNTAX,
-	ERR_UNEXPECTED_TOKEN,
-	ERR_MEMORY,
-	ERR_PARSE
-}	t_errors_code;
 
 typedef struct s_command
 {
@@ -304,6 +312,9 @@ bool		validate_commands(t_token *tokenize);
 bool		is_valid_command_start(char c);
 bool		is_valid_command_char(char c);
 bool		is_command_or_arg_char(char c);
+bool		is_valid_flag_char(char c);
+bool		process_flag(char *str, int i,
+				t_flag_state *flag_state);
 
 // Wildcards
 bool		ft_is_wildcard(char c);

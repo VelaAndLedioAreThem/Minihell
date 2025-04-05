@@ -37,7 +37,6 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 			free_env_list(env_copy);
 			return ;
 		}
-		printf("Tokenizing value\n");
 		tokens = tokenize(expandable);
 		if (!tokens)
 		{
@@ -62,35 +61,40 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 	}
 }
 
-int	main(int argc, char **argv, char **envp)
+char	*generate_prompt(void)
 {
-	char			*input;
-	t_env			*env_list;
-	char *str;
-    char *prompt;
+	char		cwd[PATH_MAX];
+	char		*str;
+
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+		str = ft_strjoin("minihell:", cwd);
+		return (ft_strjoin(str, "$ "));
+	}
+	return (ft_strdup("minishell$ "));
+}
+
+int main(int argc, char **argv, char **envp)
+{
+	t_env		*env_list;
+	char		*input;
+	char		*prompt;
 
 	env_list = init_env_list(envp);
 	handle_signal();
 	while (1)
 	{
-        char cwd[PATH_MAX];
-        if (getcwd(cwd, sizeof(cwd)) != NULL)
-        {
-            str = ft_strjoin("minihell:",cwd);
-            prompt = ft_strjoin(str,"$ ");
-        }
-        else
-            prompt = ft_strdup("minishell$ "); // Fallback
-        
+		prompt = generate_prompt();
 		input = readline(prompt);
-		free(prompt); // Free the generated prompt
-
+		free(prompt);
 		if (!input)
 		{
 			printf("exit\n");
-			exit(0);
+			exit(1);
 		}
 		handle_input(input, env_list, argc, argv);
+		free(input);
 	}
 	free_env_list(env_list);
+	return (0);
 }

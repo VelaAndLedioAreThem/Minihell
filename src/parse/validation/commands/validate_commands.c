@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate_commands.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 01:08:32 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 03:21:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/05 11:11:46 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,29 @@ bool	ft_is_commands_position(char *input, int i)
 	return (false);
 }
 
+bool	process_flag_rest_state(char *str, int i, t_flag_state *flag_state,
+	bool *in_cmd)
+{
+	if (str[i] == '|' || str[i] == '&' || str[i] == '('
+			|| str[i] == ')' || ft_is_redirection(str[i]))
+		*flag_state = FLAG_NONE;
+	if (*in_cmd && (str[i] == '-' || *flag_state != FLAG_NONE))
+	{
+		if (!process_flag(str, i, flag_state))
+			return (false);
+	}
+	if (*flag_state != FLAG_NONE && ft_isspace(str[i]))
+		*flag_state = FLAG_NONE;
+	return (true);
+}
+
 static bool	check_commands_in_str(char *str, bool *in_cmd, bool *is_cmd_pos,
 	int i)
 {
+	static t_flag_state	flag_state = FLAG_NONE;
+
+	if (!process_flag_rest_state(str, i, &flag_state, in_cmd))
+		return (false);
 	if (!*in_cmd && is_valid_command_char(str[i])
 		&& !ft_isspace(str[i]))
 	{
