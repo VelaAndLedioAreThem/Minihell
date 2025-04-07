@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parenthesis_validation.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 01:18:42 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/07 15:42:09 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ bool	parenthesis_utils(t_token *tokenize)
 	t_paren		commands;
 
 	stack = tokenize;
-	commands = (t_paren){false, false, '\0', false, 0, false, {false, false}};
+	commands = (t_paren){false, false, '\0', false, 0, false, (t_quotes){false, false}};
 	initialize_stack(stack);
 	while (stack && stack->value)
 	{
