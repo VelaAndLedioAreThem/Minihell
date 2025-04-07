@@ -4,13 +4,11 @@
 static void sigint_handler(int sig) {
 	(void)sig;
 	if (g_child_pid == 0) {
-		// Interactive shell: handle Ctrl+C
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 	} else {
-		// Child process is running: forward SIGINT and avoid prompt redisplay
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		kill(g_child_pid, SIGINT);
 	}
@@ -19,14 +17,10 @@ void	handle_signal(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
-
-	// Setup SIGINT handler
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
-
-	// Ignore SIGQUIT in the parent shell
 	sa_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;

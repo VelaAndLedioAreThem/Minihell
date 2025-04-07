@@ -12,7 +12,6 @@
 
 #include "../../include/minishell.h"
 
-// Keep this utility function as is
 void	free_2darray(char **array)
 {
 	int	i;

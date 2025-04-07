@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-pid_t	g_child_pid = 0;
+pid_t g_child_pid = 0;  // Single definition
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {

@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-// Add this to your utils if missing
-
 char *ft_strjoin3(const char *s1, const char *s2, const char *s3)
 {
     char *tmp = ft_strjoin(s1, s2);
@@ -13,25 +11,22 @@ char *ft_strjoin3(const char *s1, const char *s2, const char *s3)
 }
 
 
-// Updated print_env_list
 void print_env_list(t_env *env_list, int fd_out)
 {
     while (env_list)
     {
-        ft_putstr_fd(env_list->key, fd_out);       // Changed var_name->key
+        ft_putstr_fd(env_list->key, fd_out);      
         ft_putstr_fd("=", fd_out);
-        ft_putendl_fd(env_list->value ? env_list->value : "", fd_out); // Changed var_value->value
+        ft_putendl_fd(env_list->value ? env_list->value : "", fd_out);
         env_list = env_list->next;
     }
 }
 
-// Fixed env function
 char **env(t_env **lst)
 {
     t_env *tmp = *lst;
     int count = 0;
     
-    // Count all environment entries
     while (tmp) {
         count++;
         tmp = tmp->next;
@@ -41,14 +36,13 @@ char **env(t_env **lst)
     tmp = *lst;
     int i = 0;
     while (tmp) {
-        envp[i++] = ft_strjoin3(tmp->key, "=", tmp->value); // Updated member names
+        envp[i++] = ft_strjoin3(tmp->key, "=", tmp->value);
         tmp = tmp->next;
     }
     envp[i] = NULL;
     return envp;
 }
 
-// Updated environment variable functions
 void incr_shell_lvl(t_ast *data)
 {
     char *shlvl_str = get_env_value(data->env_list, "SHLVL");
@@ -61,16 +55,14 @@ void incr_shell_lvl(t_ast *data)
     t_env *tmp = data->env_list;
     while (tmp)
     {
-        if (!ft_strcmp(tmp->key, "SHLVL"))  // Changed var_name->key
+        if (!ft_strcmp(tmp->key, "SHLVL"))
         {
             free(tmp->value);
-            tmp->value = ft_itoa(shlvl);    // Changed var_value->value
+            tmp->value = ft_itoa(shlvl);
             return;
         }
         tmp = tmp->next;
     }
-    
-    // Create new SHLVL entry if missing
     t_env *new_env = malloc(sizeof(t_env));
     if (new_env)
     {
@@ -135,14 +127,12 @@ t_env *find_envir_variable(t_ast *data, char *var_name, int len)
 
 char *find_executable_path(t_ast *data, char *cmd)
 {
-    // If cmd contains a slash, it's likely a full or relative path
     if (ft_strchr(cmd, '/')) {
         if (access(cmd, X_OK) == 0)
             return ft_strdup(cmd);
         return NULL;
     }
 
-    // Check for absolute PATH
     t_env *path_env = find_envir_variable(data, "PATH", 4);
     if (!path_env || !path_env->value)
         return NULL;
@@ -155,7 +145,6 @@ char *find_executable_path(t_ast *data, char *cmd)
         char *full_path = ft_strjoin3(*paths, "/", cmd);
         if (access(full_path, X_OK) == 0)
         {
-            // Free other paths
             char **temp = original_paths;
             while (*temp)
             {
@@ -170,7 +159,6 @@ char *find_executable_path(t_ast *data, char *cmd)
         paths++;
     }
 
-    // Free split paths if no match found
     free_paths(original_paths, original_paths);
     return NULL;
 }
