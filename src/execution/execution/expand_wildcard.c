@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/07 16:01:05 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/07 17:58:30 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,11 @@ static char	*build_full_path(char *dir, const char *file)
 static void	sort_matches(char **matches, int count)
 {
 	char	*temp;
-	int		i;
-	int		j;
 
-	i = -1;
-	while (++i < count - 1)
+	int i, j;
+	for (i = 0; i < count - 1; i++)
 	{
-		j = i + 1;
-		while (j < count)
+		for (j = i + 1; j < count; j++)
 		{
 			if (ft_strcmp(matches[i], matches[j]) > 0)
 			{
@@ -88,18 +85,17 @@ static void	sort_matches(char **matches, int count)
 				matches[i] = matches[j];
 				matches[j] = temp;
 			}
-			j++:
 		}
 	}
 }
 
-static int is_hidden_file(char *pattern, const char *filename)
-			{
+static int	is_hidden_file(char *pattern, const char *filename)
+{
 	return (filename[0] == '.' && (pattern[0] != '.' || ft_strcmp(pattern,
 				".") == 0));
 }
 
-char **expand_wildcard(char *pattern)
+char	**expand_wildcard(char *pattern)
 {
 	char			*dir_part;
 	char			*file_part;

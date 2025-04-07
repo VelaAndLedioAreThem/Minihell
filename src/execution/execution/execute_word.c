@@ -9,7 +9,7 @@ int	execute_word(t_ast *data, t_ast *tree)
 	pid_t	pid;
 	char	*cmd_path;
 	char	**envp;
-	int		status;
+	int     status;
 
 	fd_in = get_input_file(data, tree);
 	fd_out = get_output_file(tree);
@@ -81,7 +81,7 @@ int	execute_word(t_ast *data, t_ast *tree)
 	{
 		g_child_pid = pid;
 		waitpid(pid, &status, 0);
-		g_child_pid = 0;
+		g_child_pid = 0; 
 		if (WIFEXITED(status))
 			data->exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))

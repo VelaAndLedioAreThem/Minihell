@@ -10,9 +10,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	int		status;
 	char	*cmd_path;
 	char	**envp;
-	int		i;
 
-	i = -1;
 	pid = fork();
 	if (pid == 0)
 	{
@@ -55,7 +53,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	if (fd_out != STDOUT_FILENO)
 		close(fd_out);
 	waitpid(pid, &status, 0);
-	while (i++ < data->heredoc_count)
+	for (int i = 0; i < data->heredoc_count; i++)
 	{
 		unlink(data->heredoc_files[i]);
 		free(data->heredoc_files[i]);
