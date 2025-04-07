@@ -6,7 +6,7 @@
 #    By: codespace <codespace@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/04/06 15:06:41 by codespace        ###   ########.fr        #
+#    Updated: 2025/04/07 15:03:38 by codespace        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,11 +46,10 @@ TREE = src/tree/
 
 # Color Codes
 RESET = \033[0m
-RED = \033[0m;31m
-GREEN = \033[0m;32m
+RED = \033[31m
+GREEN = \033[32m
 
 # Source files for minishell
-
 SRCS = $(SRC)main.c $(TREE)tree.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(TOKENIZE)tokenize_utils.c $(PARSE_UTILS)utils.c $(PARSE_UTILS)errors_free.c \
 	   $(TOKENIZE)tokenize_utils_2.c $(ENV)convert_env.c $(ENV)env_parsing.c \

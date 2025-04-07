@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:33:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/14 22:11:36 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/07 15:24:26 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,17 @@ int	tokenize_utils(t_token **token, char *input, int *i)
 	return (status);
 }
 
+t_token	*finalize_token(t_token *token)
+{
+	t_token	*eof_token;
+
+	eof_token = create_node("", TOKEN_EOF);
+	if (!eof_token)
+		return (free_tokens(token));
+	append_node(&token, eof_token);
+	return (token);
+}
+
 t_token	*tokenize(char *input)
 {
 	t_token	*token;
@@ -67,5 +78,5 @@ t_token	*tokenize(char *input)
 			return (free_tokens(token));
 		i++;
 	}
-	return (token);
+	return (finalize_token(token));
 }
