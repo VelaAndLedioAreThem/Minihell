@@ -219,6 +219,9 @@ typedef struct s_signal {
 // Execution function prototypes
 extern pid_t g_child_pid;  // Header declaration
 /* helpers.h */
+t_env	*get_env_node(t_env *env_list, const char *name);
+bool	is_valid_identifier(const char *name);
+void	incr_shell_lvl(t_env *data);
 void	print_export_error(char *arg);
 void	print_unset_error(char *name);
 char	*get_export_name(char *arg, char *eq);

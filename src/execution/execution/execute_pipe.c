@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int execute_pipe(t_ast *data, t_ast *tree)
+int	execute_pipe(t_ast *data, t_ast *tree)
 {
 	int fd[2];
 	pid_t left_pid, right_pid;
@@ -39,7 +39,7 @@ int execute_pipe(t_ast *data, t_ast *tree)
 		perror("minishell: fork");
 		close(fd[0]);
 		close(fd[1]);
-		kill(left_pid, SIGTERM); 
+		kill(left_pid, SIGTERM);
 		return (data->exit_status = 1);
 	}
 	close(fd[0]);

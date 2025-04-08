@@ -155,24 +155,6 @@ int	execute_cd(t_ast *data, char *path)
 	return (update_directory(data, path, old_pwd));
 }
 
-static int	handle_export_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static void	update_env_variable(t_env *env, char *name, char *eq)
-{
-	if (eq)
-	{
-		free(env->value);
-		env->value = ft_strdup(eq + 1);
-	}
-	free(name);
-}
-
 int	create_new_env(t_ast *d, char *n, char *eq)
 {
 	t_env	*env;
@@ -187,98 +169,6 @@ int	create_new_env(t_ast *d, char *n, char *eq)
 		env->value = ft_strdup("");
 	env->next = d->env_list;
 	d->env_list = env;
-	return (0);
-}
-
-static int	process_export_arg(t_ast *data, char *arg)
-{
-	char	*eq;
-	char	*name;
-	t_env	*env;
-
-	eq = ft_strchr(arg, '=');
-	if (eq)
-		name = ft_substr(arg, 0, eq - arg);
-	else
-		name = ft_strdup(arg);
-	if (!name || !is_valid_identifier(name))
-		return (free(name), handle_export_error(arg));
-	env = get_env_node(data->env_list, name);
-	if (env)
-		update_env_variable(env, name, eq);
-	else if (create_new_env(data, name, eq))
-		return (1);
-	return (0);
-}
-
-int	execute_export(t_ast *data, t_ast *tree, int fd_out)
-{
-	int		i;
-	int		status;
-
-	(void)fd_out;
-	i = 1;
-	status = 0;
-	while (tree->cmd->args[i])
-	{
-		if (process_export_arg(data, tree->cmd->args[i]))
-			status = 1;
-		i++;
-	}
-	return (status);
-}
-
-static int	handle_unset_error(char *name)
-{
-	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
-	ft_putstr_fd(name, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
-{
-	if (prev)
-		prev->next = curr->next;
-	else
-		data->env_list = curr->next;
-	free(curr->key);
-	free(curr->value);
-	free(curr);
-}
-
-static int	process_unset_arg(t_ast *data, char *name)
-{
-	t_env	*prev;
-	t_env	*curr;
-
-	if (!is_valid_identifier(name))
-		return (handle_unset_error(name));
-	prev = NULL;
-	curr = data->env_list;
-	while (curr)
-	{
-		if (!ft_strcmp(curr->key, name))
-		{
-			remove_env_node(data, prev, curr);
-			break ;
-		}
-		prev = curr;
-		curr = curr->next;
-	}
-	return (0);
-}
-
-int	execute_unset(t_ast *data, t_ast *tree)
-{
-	int	i;
-
-	i = 1;
-	while (tree->cmd->args[i])
-	{
-		process_unset_arg(data, tree->cmd->args[i]);
-		i++;
-	}
 	return (0);
 }
 

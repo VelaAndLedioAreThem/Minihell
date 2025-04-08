@@ -82,6 +82,7 @@ int main(int argc, char **argv, char **envp)
 
 	env_list = init_env_list(envp);
 	handle_signal();
+	incr_shell_lvl(env_list);
 	while (1)
 	{
 		prompt = generate_prompt();
@@ -94,7 +95,6 @@ int main(int argc, char **argv, char **envp)
 		}
 		handle_input(input, env_list, argc, argv);
 		free(input);
-		rl_clear_history();
 	}
 	free_env_list(env_list);
 	return (0);

@@ -1,19 +1,15 @@
 
 #include "../../include/minishell.h"
 
-
-void *ft_realloc(void *ptr, size_t old_size, size_t new_size) {
-    void *new_ptr = malloc(new_size);
-    if (!new_ptr)
-        return NULL;
-
+void *ft_realloc(void *ptr, size_t oldsize, size_t newsize) {
+    char *newptr = malloc(newsize);
+    if (!newptr) return NULL;
+    
     if (ptr) {
-        size_t copy_size = old_size < new_size ? old_size : new_size;
-        memcpy(new_ptr, ptr, copy_size);
+        ft_memcpy(newptr, ptr, oldsize); // Copy from OLD to NEW
         free(ptr);
     }
-
-    return new_ptr;
+    return newptr;
 }
 
 char	*ft_strndup(const char *s, size_t n)
