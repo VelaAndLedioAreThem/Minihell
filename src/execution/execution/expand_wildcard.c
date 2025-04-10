@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/07 17:58:30 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/10 20:56:17 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,14 @@ static char	*build_full_path(char *dir, const char *file)
 static void	sort_matches(char **matches, int count)
 {
 	char	*temp;
+	int		i;
+	int		j;
 
-	int i, j;
-	for (i = 0; i < count - 1; i++)
+	i = 0;
+	while (i < count - 1)
 	{
-		for (j = i + 1; j < count; j++)
+		j = i + 1;
+		while (j < count)
 		{
 			if (ft_strcmp(matches[i], matches[j]) > 0)
 			{
@@ -85,7 +88,9 @@ static void	sort_matches(char **matches, int count)
 				matches[i] = matches[j];
 				matches[j] = temp;
 			}
+			j++;
 		}
+		i++;
 	}
 }
 
@@ -97,23 +102,18 @@ static int	is_hidden_file(char *pattern, const char *filename)
 
 char	**expand_wildcard(char *pattern)
 {
-	char			*dir_part;
-	char			*file_part;
-	DIR				*dir;
-	struct dirent	*entry;
-	char			**result;
-	char			**matches;
-	int				count;
-	char			*full_path;
+	char	*dir_part;
+	char	*file_part;
+	DIR		*dir;
+	char	**matches;
+	int		count;
 
 	split_pattern(pattern, &dir_part, &file_part);
 	if (!has_wildcard(file_part) && !has_wildcard(dir_part))
 	{
 		free(dir_part);
 		free(file_part);
-		result = ft_calloc(2, sizeof(char *));
-		result[0] = ft_strdup(pattern);
-		return (result);
+		return (handle_no_wildcard(pattern));
 	}
 	dir = opendir(dir_part);
 	if (!dir)
@@ -122,60 +122,60 @@ char	**expand_wildcard(char *pattern)
 		free(file_part);
 		return (NULL);
 	}
-	matches = NULL;
-	count = 0;
-	while ((entry = readdir(dir)) != NULL)
-	{
-		if (is_hidden_file(file_part, entry->d_name))
-			continue ;
-		if (match_pattern(file_part, entry->d_name))
-		{
-			full_path = build_full_path(dir_part, entry->d_name);
-			matches = realloc(matches, (count + 1) * sizeof(char *));
-			matches[count++] = full_path;
-		}
-	}
+	matches = process_dir_entries(dir, file_part, dir_part, &count);
 	closedir(dir);
-	if (count == 0)
-	{
-		free(matches);
-		matches = NULL;
-	}
-	else
-	{
-		sort_matches(matches, count);
-		matches = realloc(matches, (count + 1) * sizeof(char *));
-		matches[count] = NULL;
-	}
 	free(dir_part);
 	free(file_part);
-	return (matches);
+	return (finalize_matches(matches, count));
+}
+
+static void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
+{
+	*new_args = realloc(*new_args, (*new_count + 1) * sizeof(char *));
+	(*new_args)[*new_count] = ft_strdup(arg);
+	(*new_count)++;
+}
+
+static void	free_matches_array(char **matches)
+{
+	int	j;
+
+	j = 0;
+	while (matches[j])
+	{
+		free(matches[j]);
+		j++;
+	}
+	free(matches);
 }
 
 char	**expand_wildcards_in_args(char **args)
 {
-	char **new_args = NULL;
-	int new_count = 0;
+	char	**new_args;
+	int		new_count;
+	int		i;
+	int		j;
+	char	**matches;
 
-	for (int i = 0; args[i]; i++)
+	new_args = NULL;
+	new_count = 0;
+	i = 0;
+	while (args[i])
 	{
-		char **matches = expand_wildcard(args[i]);
+		matches = expand_wildcard(args[i]);
 		if (!matches)
-		{
-			new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
-			new_args[new_count++] = ft_strdup(args[i]);
-		}
+			add_arg_to_args(&new_args, &new_count, args[i]);
 		else
 		{
-			for (int j = 0; matches[j]; j++)
+			j = 0;
+			while (matches[j])
 			{
-				new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
-				new_args[new_count++] = ft_strdup(matches[j]);
+				add_arg_to_args(&new_args, &new_count, matches[j]);
+				j++;
 			}
-			for (int j = 0; matches[j]; j++)
-				free(matches[j]);
-			free(matches);
+			free_matches_array(matches);
 		}
+		i++;
 	}
 	new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
 	new_args[new_count] = NULL;

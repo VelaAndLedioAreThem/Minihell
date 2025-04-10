@@ -165,7 +165,6 @@ typedef struct s_state
 	int				paren_count;
 }	t_state;
 
-
 typedef struct s_command
 {
 	char			**args;
@@ -199,61 +198,66 @@ typedef struct s_ast
 	t_commands		*cmd;
 	int				operator_type;
 	t_token			*token;
-	char			**heredoc_files; // Array of temp file paths
-	int				heredoc_count;   // Number of heredoc temp files
-	t_env          *env_list;  // Add this line
-
+	char			**heredoc_files;
+	int				heredoc_count;
+	t_env			*env_list;
 }	t_ast;
 
-typedef int (*t_builtin_func)(t_ast *data, t_ast *tree, int fd_out);
+typedef struct s_signal
+{
+	struct sigaction		sa_new;
+	struct sigaction		sa_old;
+	volatile sig_atomic_t	sigint;
+}	t_signal;
 
-typedef struct s_builtin {
-    const char      *name;
-    t_builtin_func  func;
-} t_builtin;
-typedef struct s_signal {
-	struct sigaction    	sa_new;
-	struct sigaction    	sa_old;
-	volatile sig_atomic_t 	sigint;
-} t_signal;
-// Execution function prototypes
-extern pid_t g_child_pid;  // Header declaration
-/* helpers.h */
-t_env	*get_env_node(t_env *env_list, const char *name);
-bool	is_valid_identifier(const char *name);
-void	incr_shell_lvl(t_env *data);
-void	print_export_error(char *arg);
-void	print_unset_error(char *name);
-char	*get_export_name(char *arg, char *eq);
-void	update_existing_env(t_env *env, char *eq, char *name);
-int		create_new_env(t_ast *d, char *n, char *eq);
-int		handle_cd_home(t_ast *data, char **path, char *old_pwd);
-void	handle_cd_error(char *path, char *old_pwd);
-char	*get_cd_path(t_ast, char *arg, char *oldpwd);
-void	update_pwd_vars(t_ast,char *oldpwd);
-void	free_data(t_ast *data);
-void	ft_strdel(char **as);
-char	*find_executable_path(t_ast *data, char *cmd);
-char **expand_wildcards_in_args(char **args);
-int get_output_file(t_ast *tree);
-int get_input_file(t_ast *data, t_ast *tree);
-char **env(t_env **lst);
-int execute_or(t_ast *data, t_ast *tree);
-int execute_and(t_ast *data, t_ast *tree);
-int execute_pipe(t_ast *data, t_ast *tree);
-int handle_builtin(t_ast *data, t_ast *tree, int fd_out);
-int execute_word(t_ast *data, t_ast *tree);
-char	*ft_strndup(const char *s, size_t n);
-char *ft_strjoin3(const char *s1, const char *s2, const char *s3);
-int execute_export(t_ast *data, t_ast *tree, int fd_out);
-int create_heredoc_temp_file(char *delimiter, t_ast *data);
-int execute_unset(t_ast *data, t_ast *tree);
-void print_env_list(t_env *env_list, int fd_out);
-int execute_cd(t_ast *data, char *path);
-void set_env_var(t_ast *data, char *var_name, const char *var_value);
-int execute_pwd(t_ast *data, int fd_out);
-int execute_echo(char *args[], int fd_out);
-int execute_exit(t_ast *data, t_ast *tree);
+typedef struct s_builtin_func
+{
+	struct t_ast	*data;
+	struct t_ast	*tree;
+	int				fd_out;
+}	t_builtin_func;
+
+typedef struct s_builtin
+{
+	const char		*name;
+	t_builtin_func	func;
+}	t_builtin;
+
+extern pid_t	g_child_pid;
+
+t_env		*get_env_node(t_env *env_list, const char *name);
+bool		is_valid_identifier(const char *name);
+void		incr_shell_lvl(t_env *data);
+void		print_export_error(char *arg);
+void		print_unset_error(char *name);
+char		*get_export_name(char *arg, char *eq);
+void		update_existing_env(t_env *env, char *eq, char *name);
+int			create_new_env(t_ast *d, char *n, char *eq);
+int			handle_cd_home(t_ast *data, char **path, char *old_pwd);
+void		handle_cd_error(char *path, char *old_pwd);
+void		free_data(t_ast *data);
+void		ft_strdel(char **as);
+char		*find_executable_path(t_ast *data, char *cmd);
+char		**expand_wildcards_in_args(char **args);
+int			get_output_file(t_ast *tree);
+int			get_input_file(t_ast *data, t_ast *tree);
+char		**env(t_env **lst);
+int			execute_or(t_ast *data, t_ast *tree);
+int			execute_and(t_ast *data, t_ast *tree);
+int			execute_pipe(t_ast *data, t_ast *tree);
+int			handle_builtin(t_ast *data, t_ast *tree, int fd_out);
+int			execute_word(t_ast *data, t_ast *tree);
+char		*ft_strndup(const char *s, size_t n);
+char		*ft_strjoin3(const char *s1, const char *s2, const char *s3);
+int			execute_export(t_ast *data, t_ast *tree, int fd_out);
+int			create_heredoc_temp_file(char *delimiter, t_ast *data);
+int			execute_unset(t_ast *data, t_ast *tree);
+void		print_env_list(t_env *env_list, int fd_out);
+int			execute_cd(t_ast *data, char *path);
+void		set_env_var(t_ast *data, char *var_name, const char *var_value);
+int			execute_pwd(t_ast *data, int fd_out);
+int			execute_echo(char *args[], int fd_out);
+int			execute_exit(t_ast *data, t_ast *tree);
 
 // Tokenization functions
 t_token		*create_node(char *str, t_token_type type);
@@ -379,11 +383,9 @@ int			ft_strcmp(const char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
 int			ft_isspace(int num);
 
-void	clear_data(t_env **data, char **envp);
-void	handle_signal(void);
-void	free_2darray(char **array);
-int execute_tree(t_ast *data,t_ast *tree);
-
-
+void		clear_data(t_env **data, char **envp);
+void		handle_signal(void);
+void		free_2darray(char **array);
+int			execute_tree(t_ast *data, t_ast *tree);
 
 #endif

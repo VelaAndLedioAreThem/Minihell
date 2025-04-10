@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
+/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 
 static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
@@ -18,6 +30,7 @@ static int	handle_unset_error(char *name)
 	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 	return (1);
 }
+
 static int	process_unset_arg(t_ast *data, char *name)
 {
 	t_env	*prev;

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_external.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/04/10 21:21:19 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include <errno.h>
 #include <stdlib.h>
@@ -10,6 +22,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	int		status;
 	char	*cmd_path;
 	char	**envp;
+	int		i;
 
 	pid = fork();
 	if (pid == 0)
@@ -18,7 +31,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 		signal(SIGQUIT, SIG_DFL);
 		if (fd_inp != STDIN_FILENO)
 		{
-			if (dup2(fd_inp, STDOUT_FILENO) == -1)
+			if (dup2(fd_inp, STDIN_FILENO) == -1)
 			{
 				perror("minishell: dup2 input redirection");
 				exit(1);
@@ -53,7 +66,8 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	if (fd_out != STDOUT_FILENO)
 		close(fd_out);
 	waitpid(pid, &status, 0);
-	for (int i = 0; i < data->heredoc_count; i++)
+	i = -1;
+	while (++i < data->heredoc_count)
 	{
 		unlink(data->heredoc_files[i]);
 		free(data->heredoc_files[i]);

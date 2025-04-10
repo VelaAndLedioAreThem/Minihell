@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
+/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 
 static void	update_env_variable(t_env *env, char *name, char *eq)
@@ -17,6 +29,7 @@ static int	handle_export_error(char *arg)
 	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 	return (1);
 }
+
 static int	process_export_arg(t_ast *data, char *arg)
 {
 	char	*eq;

@@ -1,22 +1,28 @@
 
 #include "../../../include/minishell.h"
 
-static void sigint_handler(int sig) {
+static void	sigint_handler(int sig)
+{
 	(void)sig;
-	if (g_child_pid == 0) {
+	if (g_child_pid == 0)
+	{
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-	} else {
+	}
+	else
+	{
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		kill(g_child_pid, SIGINT);
 	}
 }
+
 void	handle_signal(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
+
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
@@ -26,13 +32,16 @@ void	handle_signal(void)
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
+
 void	handle_sigint(int signo)
 {
+	int	i;
+
 	if (signo == SIGINT)
 	{
 		if (isatty(STDIN_FILENO))
 		{
-			int i = write(1, "\n", 1);
+			i = write(1, "\n", 1);
 			(void) i;
 			if (g_child_pid == 42)
 				g_child_pid = 44;

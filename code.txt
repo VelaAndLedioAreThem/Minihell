@@ -169,7 +169,6 @@ typedef struct s_state
 	int				paren_count;
 }	t_state;
 
-
 typedef struct s_command
 {
 	char			**args;
@@ -203,11 +202,17 @@ typedef struct s_ast
 	t_commands		*cmd;
 	int				operator_type;
 	t_token			*token;
-	char			**heredoc_files; // Array of temp file paths
-	int				heredoc_count;   // Number of heredoc temp files
-	t_env          *env_list;  // Add this line
-
+	char			**heredoc_files;
+	int				heredoc_count;
+	t_env			*env_list;
 }	t_ast;
+
+typedef struct s_signal
+{
+	struct sigaction		sa_new;
+	struct sigaction		sa_old;
+	volatile sig_atomic_t	sigint;
+}	t_signal;
 
 typedef int (*t_builtin_func)(t_ast *data, t_ast *tree, int fd_out);
 
@@ -215,46 +220,42 @@ typedef struct s_builtin {
     const char      *name;
     t_builtin_func  func;
 } t_builtin;
-typedef struct s_signal {
-	struct sigaction    	sa_new;
-	struct sigaction    	sa_old;
-	volatile sig_atomic_t 	sigint;
-} t_signal;
-// Execution function prototypes
-extern pid_t g_child_pid;  // Header declaration
-/* helpers.h */
-void	print_export_error(char *arg);
-void	print_unset_error(char *name);
-char	*get_export_name(char *arg, char *eq);
-void	update_existing_env(t_env *env, char *eq, char *name);
-int		create_new_env(t_ast *d, char *n, char *eq);
-int		handle_cd_home(t_ast *data, char **path, char *old_pwd);
-void	handle_cd_error(char *path, char *old_pwd);
-char	*get_cd_path(t_ast, char *arg, char *oldpwd);
-void	update_pwd_vars(t_ast,char *oldpwd);
-void	free_data(t_ast *data);
-void	ft_strdel(char **as);
-char	*find_executable_path(t_ast *data, char *cmd);
-char **expand_wildcards_in_args(char **args);
-int get_output_file(t_ast *tree);
-int get_input_file(t_ast *data, t_ast *tree);
-char **env(t_env **lst);
-int execute_or(t_ast *data, t_ast *tree);
-int execute_and(t_ast *data, t_ast *tree);
-int execute_pipe(t_ast *data, t_ast *tree);
-int handle_builtin(t_ast *data, t_ast *tree, int fd_out);
-int execute_word(t_ast *data, t_ast *tree);
-char	*ft_strndup(const char *s, size_t n);
-char *ft_strjoin3(const char *s1, const char *s2, const char *s3);
-int execute_export(t_ast *data, t_ast *tree, int fd_out);
-int create_heredoc_temp_file(char *delimiter, t_ast *data);
-int execute_unset(t_ast *data, t_ast *tree);
-void print_env_list(t_env *env_list, int fd_out);
-int execute_cd(t_ast *data, char *path);
-void set_env_var(t_ast *data, char *var_name, const char *var_value);
-int execute_pwd(t_ast *data, int fd_out);
-int execute_echo(char *args[], int fd_out);
-int execute_exit(t_ast *data, t_ast *tree);
+
+extern pid_t	g_child_pid;
+
+t_env		*get_env_node(t_env *env_list, const char *name);
+bool		is_valid_identifier(const char *name);
+void		incr_shell_lvl(t_env *data);
+void		print_export_error(char *arg);
+void		print_unset_error(char *name);
+char		*get_export_name(char *arg, char *eq);
+void		update_existing_env(t_env *env, char *eq, char *name);
+int			create_new_env(t_ast *d, char *n, char *eq);
+int			handle_cd_home(t_ast *data, char **path, char *old_pwd);
+void		handle_cd_error(char *path, char *old_pwd);
+void		free_data(t_ast *data);
+void		ft_strdel(char **as);
+char		*find_executable_path(t_ast *data, char *cmd);
+char		**expand_wildcards_in_args(char **args);
+int			get_output_file(t_ast *tree);
+int			get_input_file(t_ast *data, t_ast *tree);
+char		**env(t_env **lst);
+int			execute_or(t_ast *data, t_ast *tree);
+int			execute_and(t_ast *data, t_ast *tree);
+int			execute_pipe(t_ast *data, t_ast *tree);
+int			handle_builtin(t_ast *data, t_ast *tree, int fd_out);
+int			execute_word(t_ast *data, t_ast *tree);
+char		*ft_strndup(const char *s, size_t n);
+char		*ft_strjoin3(const char *s1, const char *s2, const char *s3);
+int			execute_export(t_ast *data, t_ast *tree, int fd_out);
+int			create_heredoc_temp_file(char *delimiter, t_ast *data);
+int			execute_unset(t_ast *data, t_ast *tree);
+void		print_env_list(t_env *env_list, int fd_out);
+int			execute_cd(t_ast *data, char *path);
+void		set_env_var(t_ast *data, char *var_name, const char *var_value);
+int			execute_pwd(t_ast *data, int fd_out);
+int			execute_echo(char *args[], int fd_out);
+int			execute_exit(t_ast *data, t_ast *tree);
 
 // Tokenization functions
 t_token		*create_node(char *str, t_token_type type);
@@ -380,16 +381,2835 @@ int			ft_strcmp(const char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
 int			ft_isspace(int num);
 
-void	clear_data(t_env **data, char **envp);
-void	handle_signal(void);
-void	free_2darray(char **array);
-int execute_tree(t_ast *data,t_ast *tree);
-
-
+void		clear_data(t_env **data, char **envp);
+void		handle_signal(void);
+void		free_2darray(char **array);
+int			execute_tree(t_ast *data, t_ast *tree);
 
 #endif
 
 ### END OF FILE: ./include/minishell.h ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstadd_back_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstadd_back_bonus.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/16 20:13:28 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:19:45 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Add a new node with the specified content at the end of a list.
+ *
+ * @param lst A pointer to the pointer to the first node of the list.
+ * @param new The new node to add to the end of the list.
+ *
+ * @details Adds the new node 'new' with the specified content to the end
+ * of the list pointed to by 'lst'. Updates 'lst' if it's initially NULL.
+ */
+
+#include "libft.h"
+
+void	ft_lstadd_back(t_list **lst, t_list *new)
+{
+	t_list		*last;
+
+	if (lst == NULL || new == NULL)
+	{
+		return ;
+	}
+	if (*lst == NULL)
+	{
+		*lst = new;
+		return ;
+	}
+	last = ft_lstlast(*lst);
+	last -> next = new;
+}
+/**int main()
+{
+	t_list		*new;
+	int			*value1;
+	int			*value2;
+	int			*value3;
+
+	value1 = (int *)malloc(sizeof(int));
+	if (value1 == NULL)
+		return (1);
+	*value1 = 54;
+	new = ft_lstnew(value1);
+	
+	value2 = (int *)malloc(sizeof(int));
+	if (value2 == NULL)
+		return (1);
+	*value2 = 56;
+	t_list *new_node = ft_lstnew(value2);
+	new -> next = new_node;
+
+	value3 = (int *)malloc(sizeof(int));
+	if (value3 == NULL)
+		return (1);
+	*value3 = 90;
+	t_list *last_node = ft_lstnew(value3);
+	if (last_node == NULL)
+		return (1);
+	
+	ft_lstadd_back(&new, last_node);
+	t_list *current = new;
+	if (new != NULL)
+	{
+		while (current -> next != NULL)
+		{
+			current = current -> next;
+		}
+		printf("The last linked list is %d\n", *(int *)current-> content);
+	}
+	free(new);
+	free(value1);
+	free(value2);
+	free(new_node);
+	free(value3);
+	free(last_node);
+}*/
+### END OF FILE: ./libft/bonus/ft_lstadd_back_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstadd_front_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstadd_front_bonus.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/15 14:43:06 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:19:14 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Add a new node with the specified content at the beginning of a list.
+ *
+ * @param lst A pointer to the pointer to the first node of the list.
+ * @param new The new node to add to the beginning of the list.
+ *
+ * @details Adds the new node 'new' with the specified content to the beginning
+ * of the list pointed to by 'lst'. Updates 'lst' to point to the new first node.
+ */
+
+#include "libft.h"
+
+void	ft_lstadd_front(t_list **lst, t_list *new)
+{
+	if (lst == NULL || new == NULL)
+		return ;
+	new -> next = *lst;
+	*lst = new;
+}
+// int main()
+// {
+// 	t_list		*list;
+// 	int			*value1;
+// 	int			*value2;
+// 	int			*value3;
+// 	value1 = (int *)malloc(sizeof(int));
+// 	if (value1 == NULL)
+// 		return (1);
+// 	*value1 = 45;
+// 	list = ft_lstnew(value1);
+// 	if (list == NULL)
+// 		return (1);
+// 	value2 = (int *)malloc(sizeof(int));
+// 	if (value2 == NULL)
+// 		return (1);
+// 	*value2 = 30;
+// 	t_list	*ptr;
+// 	ptr = ft_lstnew(value2);
+// 	if (ptr == NULL)
+// 		return (1);
+// 	list -> next = ptr;
+// 	value3 = (int *)malloc(sizeof(int));
+// 	if (value3 == NULL)
+// 		return (1);
+// 	*value3 = 20;
+// 	t_list *new_node = ft_lstnew(value3);
+// 	ft_lstadd_front(&list, new_node);
+// 	while (list != NULL)
+// 	{
+// 		printf("%d\n", *(int *)list -> content);
+// 		list = list -> next;
+// 	}
+// 	free(list);
+// 	free(value1);
+// 	free(ptr);
+// 	free(value2);
+// 	free(new_node);
+// 	free(value3);
+// }
+### END OF FILE: ./libft/bonus/ft_lstadd_front_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstclear_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstclear_bonus.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/17 13:07:29 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:23:50 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Delete all nodes of a list and their content using a given function.
+ *
+ * @param lst A pointer to the pointer to the first node of the list.
+ * @param del The function used to delete the content of each node.
+ *
+ * @details Deletes all nodes of the list starting from
+ * 'lst' and frees their content using the function 'del'. 
+ * Updates 'lst' to NULL. Does nothing if 'lst' or 'del' is NULL.
+ */
+
+#include "libft.h"
+
+/*void	del(void *ptr)
+{
+	free(ptr);
+}*/
+
+void	ft_lstclear(t_list **lst, void (*del)(void*))
+{
+	t_list		*temp;
+
+	if (*lst == NULL || del == NULL)
+		return ;
+	while (*lst)
+	{
+		temp = (*lst)->next;
+		ft_lstdelone(*lst, del);
+		*lst = temp;
+	}
+	*lst = NULL;
+}
+
+/**int main()
+{
+    t_list *list;
+    int *value1 = (int *)malloc(sizeof(int));
+    int *value2 = (int *)malloc(sizeof(int));
+    int *value3 = (int *)malloc(sizeof(int));
+
+    if (!value1 || !value2 || !value3)
+        return 1;
+
+    *value1 = 42;
+    *value2 = 58;
+    *value3 = 100;
+
+    list = ft_lstnew(value1);
+    if (list == NULL)
+        return 1;
+
+    t_list *new2 = ft_lstnew(value2);
+    if (new2 == NULL)
+        return 1;
+    list->next = new2;
+    t_list *current = list;
+    while (current != NULL)
+    {
+        printf("Node value: %d\n", *(int *)(current->content));
+        current = current->next;
+    }
+
+    // Clear the list
+    ft_lstclear(&list, del);
+
+    // Ensure the list is cleared
+    if (list == NULL)
+        printf("List has been cleared successfully.\n");
+    else
+        printf("List has not been cleared successfully.\n");
+
+    return 0;
+}*/
+### END OF FILE: ./libft/bonus/ft_lstclear_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstdelone_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstdelone_bonus.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/16 23:45:39 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:24:12 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Delete a node and free its content using a given function.
+ *
+ * @param lst The node to be deleted.
+ * @param del The function used to delete the content of the node.
+ *
+ * @details Deletes the node 'lst' and frees its content
+ * using the function 'del'.
+ * The memory of 'lst' itself is also freed. 
+ * Does nothing if 'lst' or 'del' is NULL.
+ */
+
+#include "libft.h"
+
+/**void	del(void *ptr)
+{
+	free(ptr);
+}*/
+
+void	ft_lstdelone(t_list *lst, void (*del)(void*))
+{
+	if (lst == NULL)
+		return ;
+	if (del != NULL)
+		del(lst -> content);
+	free(lst);
+}
+
+/**int main()
+{
+    t_list            *new;
+    int                *value1;
+    int                *value2;
+    int                *value3;
+
+    value1 = (int *)malloc(sizeof(int));
+    if (value1 == NULL)
+        return (1);
+    *value1 = 45;
+    new = ft_lstnew(value1);
+    if (new == NULL)
+        return (1);
+    value2 = (int *)malloc(sizeof(int));
+    if (value2 == NULL)
+        return (1);
+    *value2 = 56;
+    t_list *new_node = ft_lstnew(value2);
+    new -> next = new_node;
+    value3 = (int *)malloc(sizeof(int));
+    if (value3 == NULL)
+        return (1);
+    *value3 = 20;
+    t_list *last_node = ft_lstnew(value3);
+	if (last_node == NULL)
+		return (1);
+	new -> next -> next = last_node;
+	
+	t_list *current = new;
+	while (current != NULL)
+	{
+		printf("The current nodes are %d\n", *(int *)current -> content);
+		current = current -> next;
+	}
+	current = new;
+	while (current -> next != last_node)
+	{
+		current = current -> next;
+	}
+	current -> next = NULL;
+	ft_lstdelone(last_node, del);
+	printf("After deletion of the last nodes:\n");
+	current = new;
+	while (current != NULL)
+	{
+		printf("The nodes are %d\n", *(int *)current -> content);
+		current = current -> next;
+	}
+	current = new;
+	while (current != NULL)
+	{
+		t_list *temp = current -> next;
+		ft_lstdelone(current, del);
+		current = temp;
+	}
+}*/
+### END OF FILE: ./libft/bonus/ft_lstdelone_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstiter_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstiter_bonus.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/18 12:05:33 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:20:12 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Iterate over each node of a list and apply a function to its content.
+ *
+ * @param lst The beginning of the list.
+ * @param f The function to apply to the content of each node.
+ *
+ * @details Iterates over each node of the list starting from 'lst' and applies
+ * the function 'f' to the content of each node.
+ */
+
+#include "libft.h"
+
+/**void	print_content(void *ptr)
+{
+	int *value = (int *)ptr;
+	(*value)++;
+}*/
+
+void	ft_lstiter(t_list *lst, void (*f)(void *))
+{
+	if (lst == NULL || f == NULL)
+		return ;
+	while (lst != NULL)
+	{
+		f(lst -> content);
+		lst = lst -> next;
+	}
+}
+
+/**int main()
+{
+	t_list		*list;
+	int			*value1 = (int *)malloc(sizeof(int));
+	int			*value2 = (int *)malloc(sizeof(int));
+	
+	if (!value1 || !value2)
+		return (1);
+	*value1 = 56;
+	list = ft_lstnew(value1);
+	*value2 = 78;
+	t_list *new_node = ft_lstnew(value2);
+	list -> next = new_node;
+	ft_lstiter(list, print_content);
+	while (list != NULL)
+	{
+		printf("The nodes are %d\n", *(int *)list -> content);
+		list = list -> next;
+	}
+}*/
+### END OF FILE: ./libft/bonus/ft_lstiter_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstlast_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstlast_bonus.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/16 15:21:00 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:24:34 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Find the last node of a list.
+ *
+ * @param lst The beginning of the list.
+ * @return The last node of the list, or NULL if the list is empty.
+ *
+ * @details Traverses the list starting from
+ * 'lst' and returns a pointer to the last node.
+ * Returns NULL if 'lst' is NULL (empty list).
+ */
+
+#include "libft.h"
+
+t_list	*ft_lstlast(t_list *lst)
+{
+	if (lst == NULL)
+		return (NULL);
+	while (lst -> next != NULL)
+	{
+		lst = lst -> next;
+	}
+	return (lst);
+}
+
+/**int main()
+{
+	t_list      *list;
+	int         *value1;
+	int         *value2;
+
+	value1 = (int *)malloc(sizeof(int));
+	if (value1 == NULL)
+		return (1);
+	list = ft_lstnew(value1);
+	if (list == NULL)
+		return (1);
+	*value1 = 45;
+	value2 = (int *)malloc(sizeof(int));
+	if (value2 == NULL)
+		return (1);
+	*value2 = 54;
+	t_list *new = ft_lstnew(value2);
+	if (new == NULL)
+		return (1);
+	list -> next = new;
+	t_list *last_node = ft_lstlast(list);
+	if (last_node != NULL)
+	{
+		printf("The last node is %d\n", *(int *)last_node -> content);
+	}
+	free (value1);
+	free (list);
+	free (value2);
+	free (new);
+}*/
+### END OF FILE: ./libft/bonus/ft_lstlast_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstmap_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstmap_bonus.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/18 13:02:27 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 11:29:37 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/*
+** ft_lstmap:
+**    Iterates the linked list 'lst' and applies the function 'f' to each
+**    content. Creates a new list resulting from the applications of 'f'.
+**    If the allocation fails, it cleans up the allocated memory.
+**
+**    lst: The original list to iterate.
+**    f:   The function to apply to each content of the list.
+**    del: The function to delete a single element's content.
+**
+** Returns:
+**    A new list resulting from the applications of 'f', or NULL if the
+**    allocation fails or any parameter is NULL.
+*/
+
+#include "libft.h"
+
+// void	*increment(void *ptr)
+// {
+// 	int *value = (int *)ptr;
+// 	(*value)++;
+// 	return (value);
+// }
+
+// void	del_lstmap(void *ptr)
+// {
+// 	free(ptr);
+// }
+
+t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
+{
+	t_list			*new_node;
+	t_list			*new_list;
+	void			*new_content;
+
+	if (lst == NULL || f == NULL || del == NULL)
+		return (NULL);
+	new_list = NULL;
+	while (lst != NULL)
+	{
+		new_content = f(lst -> content);
+		new_node = ft_lstnew(new_content);
+		if (!new_node)
+		{
+			del(new_content);
+			ft_lstclear(&new_list, del);
+			return (NULL);
+		}
+		ft_lstadd_back(&new_list, new_node);
+		lst = lst -> next;
+	}
+	return (new_list);
+}
+// int main()
+// {
+// 	t_list		*list;
+// 	int			*value1 = (int *)malloc(sizeof(int));
+// 	int			*value2 = (int *)malloc(sizeof(int));
+
+// 	if (!value1 || !value2)
+// 		return (1);
+// 	*value1 = 56;
+// 	list = ft_lstnew(value1);
+// 	*value2 = 67;
+// 	t_list *new_node = ft_lstnew(value2);
+// 	list -> next = new_node;
+// 	t_list *current = list;
+// 	printf("The original list:\n");
+// 	while (current != NULL)
+// 	{
+// 		printf("The nodes are %d\n", *(int *)current -> content);
+// 		current = current -> next;
+// 	}
+// 	printf("The new list is:\n");
+// 	t_list	*new_list = ft_lstmap(list, increment, del_lstmap);
+// 	t_list *result = new_list;
+// 	while (result != NULL)
+// 	{
+// 		printf("The new list value are %d\n", *(int *)result -> content);
+// 		result = result -> next;
+// 	}
+// 	ft_lstclear(&new_list, del_lstmap);
+// 	ft_lstclear(&list, del_lstmap);
+// }
+### END OF FILE: ./libft/bonus/ft_lstmap_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstnew_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstnew_bonus.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/15 12:11:23 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:13:14 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Create a new list node.
+ *
+ * @param content The content to be added to the new node.
+ * @return The newly allocated list node, or NULL if allocation fails.
+ *
+ * @details Allocates a new list node with the given content.
+ * If 'content' is NULL,
+ * initializes the 'content' pointer in the new node to NULL.
+ */
+
+#include "libft.h"
+
+t_list	*ft_lstnew(void *content)
+{
+	t_list		*head;
+
+	head = (t_list *)malloc(sizeof(t_list));
+	if (!head)
+		return (NULL);
+	head -> content = content;
+	head -> next = NULL;
+	return (head);
+}
+
+// int main()
+// {
+// 	int value1 = 45;
+// 	int value2 = 52;
+// 	int value3 = 78;
+// 	t_list	*node1 = ft_lstnew(&value1);
+// 	t_list	*node2 = ft_lstnew(&value2);
+// 	t_list	*node3 = ft_lstnew(&value3);
+// 	t_list	*current;
+
+// 	node1 -> next = node2;
+// 	node2 -> next = node3;
+// 	current = node1;
+// 	while (current != NULL)
+// 	{
+// 		printf("The linked list is %d\n", *(int *)current -> content);
+// 		current = current -> next;
+// 	}
+// 	current = node1;
+// 	while (current != NULL)
+// 	{
+// 		t_list *temp = current;
+// 		current = current -> next;
+// 		free(temp);
+// 	}
+// }
+### END OF FILE: ./libft/bonus/ft_lstnew_bonus.c ###
+
+
+### START OF FILE: ./libft/bonus/ft_lstsize_bonus.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_lstsize_bonus.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/16 14:07:15 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:12:55 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Count the number of elements in a list.
+ *
+ * @param lst The beginning of the list.
+ * @return The number of elements in the list.
+ *
+ * @details Counts and returns the number of nodes in
+ * the list starting from 'lst'.
+ */
+
+#include "libft.h"
+
+int	ft_lstsize(t_list *lst)
+{
+	int			count;
+
+	count = 0;
+	while (lst != NULL)
+	{
+		count++;
+		lst = lst -> next;
+	}
+	return (count);
+}
+
+/**int main()
+{
+	t_list      *list;
+	int         *value1;
+	int         *value2;
+	int			count;
+
+	count = 0;
+	value1 = (int *)malloc(sizeof(int));
+	if (value1 == NULL)
+		return (1);
+	*value1 = 20;
+	list = ft_lstnew(value1);
+
+	value2 = (int *)malloc(sizeof(int));
+	if (value2 == NULL)
+		return (1);
+	t_list *new = ft_lstnew(value2);
+	list -> next = new;
+	int length = ft_lstsize(list);
+	printf("The number of nodes is %d\n", length);
+	free(value1);
+	free(list);
+	free(value2);
+	free(new);
+}*/
+### END OF FILE: ./libft/bonus/ft_lstsize_bonus.c ###
+
+
+### START OF FILE: ./libft/include/libft.h ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   libft.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ledio <ledio@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 21:49:14 by ldurmish          #+#    #+#             */
+/*   Updated: 2025/02/14 01:32:30 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef LIBFT_H
+# define LIBFT_H
+# include <string.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+
+typedef struct s_list
+{
+	void			*content;
+	struct s_list	*next;
+}	t_list;
+void							*ft_memset(void *s, int c, size_t n);
+void							ft_bzero(void *s, size_t n);
+void							*ft_memcpy(void *dest,
+									const void *source, size_t num);
+void							*ft_memmove(void *dest,
+									const void *src, size_t n);
+void							*ft_memchr(const void *s, int c, size_t n);
+int								ft_memcmp( const void *str1,
+									const void *str2, size_t num);
+int								ft_isalnum(int c);
+int								ft_isalpha(int c);
+int								ft_isascii(int c);
+int								ft_isdigit(int c);
+int								ft_isprint(int c);
+int								ft_strlen(const char *str);
+size_t							ft_strlcpy(char *dest,
+									const char *src, size_t size);
+size_t							ft_strlcat(char *dest,
+									const char *src, size_t size);
+int								ft_toupper(int c);
+int								ft_tolower(int c);
+char							*ft_strchr(const char *s, int c);
+char							*ft_strrchr(const char *str, int c);
+int								ft_strncmp(const char *str1,
+									const char *str2, size_t n);
+char							*ft_strnstr(const char *str,
+									const char *subs, size_t len);
+int								ft_atoi(const char *str);
+char							*ft_strdup(const char *s);
+void							*ft_calloc(size_t count, size_t size);
+char							*ft_substr(char const *s,
+									unsigned int start, size_t len);
+char							*ft_strjoin(char const *s1, char const *s2);
+char							*ft_strtrim(char const *s1, char const *set);
+char							**ft_split(char const *s, char c);
+char							*ft_itoa(int n);
+char							*ft_strmapi(char const *s,
+									char (*f)(unsigned int, char));
+void							ft_striteri(char *s,
+									void (*f)(unsigned int, char*));
+void							ft_putchar_fd(char c, int fd);
+void							ft_putstr_fd(char *s, int fd);
+void							ft_putendl_fd(char *s, int fd);
+void							ft_putnbr_fd(int n, int fd);
+int								ft_lstsize(t_list *lst);
+t_list							*ft_lstnew(void *content);
+void							ft_lstadd_front(t_list **lst, t_list *new);
+t_list							*ft_lstlast(t_list *lst);
+void							ft_lstadd_back(t_list **lst, t_list *new);
+void							ft_lstdelone(t_list *lst, void (*del)(void*));
+void							ft_lstclear(t_list **lst, void (*del)(void*));
+void							ft_lstiter(t_list *lst, void (*f)(void *));
+t_list							*ft_lstmap(t_list *lst,
+									void *(*f)(void *), void (*del)(void *));
+
+#endif
+
+### END OF FILE: ./libft/include/libft.h ###
+
+
+### START OF FILE: ./libft/src/ft_atoi.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 23:49:38 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 17:39:05 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_atoi - Convert a string to an integer.
+ * @str: The string to be converted.
+ *
+ * Description: This function takes a string 'str' and converts it to an
+ * integer. The function discards any whitespace characters until the first
+ * non-whitespace character is found. Then, it takes an optional plus or minus
+ * sign followed by as many numerical digits as possible, and interprets them
+ * as an integer. If the first non-whitespace character is not a valid integer,
+ * the function returns 0.
+ *
+ * Return: The converted integer, or 0 if no valid conversion could be performed.
+ */
+
+#include "libft.h"
+
+int	ft_atoi(const char *str)
+{
+	int			res;
+	int			sign;
+
+	res = 0;
+	sign = 1;
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+		str++;
+	if (*str == '-' || *str == '+')
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (*str >= '0' && *str <= '9')
+	{
+		res = res * 10 + (*str - '0');
+		str++;
+	}
+	return (res * sign);
+}
+
+/**int main()
+{
+    printf("ft_atoi(\"42\"): %d\n", ft_atoi("42"));           
+    printf("ft_atoi(\"   -42\"): %d\n", ft_atoi("   -42"));  
+    printf("ft_atoi(\"4193 with words\"): %d\n", ft_atoi("4193 with words"));
+    printf("ft_atoi(\"words and 987\"): %d\n", ft_atoi("words and 987"));     
+    printf("ft_atoi(\"-91283472332\"): %d\n", ft_atoi("-91283472332")); 
+    printf("ft_atoi(\"+\"): %d\n", ft_atoi("+")); 
+    printf("ft_atoi(\"\"): %d\n", ft_atoi("")); 
+
+    return 0;
+}*/
+
+### END OF FILE: ./libft/src/ft_atoi.c ###
+
+
+### START OF FILE: ./libft/src/ft_bzero.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_bzero.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 22:13:36 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:34:40 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_bzero - Zero a block of memory.
+ * @s: The memory area to be zeroed.
+ * @n: The number of bytes to be zeroed.
+ *
+ * Description: This function sets the first 'n' bytes of the memory area
+ * pointed to by 's' to zero (bytes containing '\0').
+ *
+ * Return: None.
+ */
+
+#include "libft.h"
+
+void	ft_bzero(void *s, size_t n)
+{
+	unsigned char		*ptr;
+	size_t				i;
+
+	ptr = (unsigned char *)s;
+	i = 0;
+	while (i < n)
+	{
+		ptr[i] = 0;
+		i++;
+	}
+}
+
+/**int main()
+{
+	char s[] = "Hello";
+	size_t n = 2;
+	ft_bzero(s, n);
+	printf("The string is ");
+	for (size_t i = 0; i < sizeof(s); i++) {
+		printf("%c", s[i]);
+	}
+	printf("\n");
+}*/
+### END OF FILE: ./libft/src/ft_bzero.c ###
+
+
+### START OF FILE: ./libft/src/ft_calloc.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_calloc.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/11 00:36:01 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:28:59 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_calloc - Allocate and zero-initialize array.
+ * @count: The number of elements to be allocated.
+ * @size: The size of each element.
+ *
+ * Description: This function allocates memory for an array of 'count'
+ * elements of 'size' bytes each and initializes all its bits to zero.
+ * The memory is dynamically allocated and needs to be freed by the caller.
+ *
+ * Return: A pointer to the allocated memory, or NULL if the allocation fails.
+ */
+
+#include "libft.h"
+
+void	*ft_calloc(size_t count, size_t size)
+{
+	size_t		i;
+	char		*ptr;
+	size_t		total_size;
+
+	total_size = count * size;
+	i = 0;
+	ptr = malloc(total_size);
+	if (count != 0 && total_size / count != size)
+		return (NULL);
+	if (!ptr)
+		return (NULL);
+	while (i < total_size)
+	{
+		ptr[i] = 0;
+		i++;
+	}
+	return (ptr);
+}
+
+/**int main() {
+    int num_elements = 5;
+    int *arr;
+
+    // Allocate memory for an array of integers using ft_calloc
+    arr = (int *)ft_calloc(num_elements, sizeof(int));
+    if (arr == NULL)
+        return 1;
+    // Print the values (should be initialized to 0)
+    printf("Memory allocated by ft_calloc:\n");
+    for (int i = 0; i < num_elements; i++)
+        printf("%d ", arr[i]);
+    printf("\n");
+    free(arr);
+    return 0;
+}
+*/
+### END OF FILE: ./libft/src/ft_calloc.c ###
+
+
+### START OF FILE: ./libft/src/ft_isalnum.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_isalnum.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 15:01:21 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:12:08 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Check if a character is alphanumeric (a-z, A-Z, 0-9).
+ *
+ * @param c The character to check.
+ * @return Non-zero if 'c' is alphanumeric, 0 otherwise.
+ *
+ * @details Determines if the character 'c' is alphanumeric
+ * (a-z, A-Z, 0-9) according to the ASCII table.
+ */
+
+#include "libft.h"
+
+int	ft_isalnum(int c)
+{
+	if ((c >= 'a' && c <= 'z')
+		|| (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))
+		return (1);
+	return (0);
+}
+
+### END OF FILE: ./libft/src/ft_isalnum.c ###
+
+
+### START OF FILE: ./libft/src/ft_isalpha.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_isalpha.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 14:43:31 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:14:04 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_isalpha - Check if a character is alphabetic.
+ * @c: The character to be checked.
+ *
+ * Description: This function checks if the character 'c' is an alphabetic
+ * letter. An alphabetic letter is defined as either an uppercase letter
+ * (A-Z) or a lowercase letter (a-z).
+ *
+ * Return: 1 if the character is alphabetic, 0 otherwise.
+ */
+
+#include "libft.h"
+
+int	ft_isalpha(int c)
+{
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+		return (1);
+	return (0);
+}
+
+### END OF FILE: ./libft/src/ft_isalpha.c ###
+
+
+### START OF FILE: ./libft/src/ft_isascii.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_isascii.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 15:04:53 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:17:00 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Check if a character is a valid ASCII character (0-127).
+ *
+ * @param c The character to check.
+ * @return Non-zero if 'c' is an ASCII character, 0 otherwise.
+ *
+ * @details Determines if the character 'c' is within the ASCII range (0-127).
+ */
+
+#include "libft.h"
+
+int	ft_isascii(int c)
+{
+	if (c >= 0 && c <= 127)
+		return (1);
+	return (0);
+}
+
+### END OF FILE: ./libft/src/ft_isascii.c ###
+
+
+### START OF FILE: ./libft/src/ft_isdigit.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_isdigit.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 14:53:09 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:14:47 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Check if a character is a digit (0-9).
+ *
+ * @param c The character to check.
+ * @return Non-zero if 'c' is a digit, 0 otherwise.
+ *
+ * @details Determines if the character 'c'\
+ * is a digit (0-9) according to the ASCII table.
+ */
+
+#include "libft.h"
+
+int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
+/**int main()
+{
+    char ch = '7';
+    if (ft_isdigit(ch))
+        printf("Character '%c' is a digit: true\n", ch);
+    else
+        printf("Character '%c' is a digit: false\n", ch);
+    
+    return 0;
+}*/
+### END OF FILE: ./libft/src/ft_isdigit.c ###
+
+
+### START OF FILE: ./libft/src/ft_isprint.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_isprint.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 20:43:15 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:17:14 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Check if a character is a printable ASCII character (32-126).
+ *
+ * @param c The character to check.
+ * @return Non-zero if 'c' is a printable ASCII character, 0 otherwise.
+ *
+ * @details Determines if the character 'c' is a printable ASCII character,
+ * which includes characters from space (32) to tilde (126) inclusive.
+ */
+
+#include "libft.h"
+
+int	ft_isprint(int c)
+{
+	if (c >= ' ' && c <= '~')
+		return (1);
+	return (0);
+}
+
+### END OF FILE: ./libft/src/ft_isprint.c ###
+
+
+### START OF FILE: ./libft/src/ft_itoa.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/13 20:48:01 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 21:45:16 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_itoa - Convert an integer to a null-terminated string.
+ * @n: The integer to be converted.
+ *
+ * Description: This function takes an integer 'n' and converts it to a string
+ * representation. Memory for the resulting string is dynamically allocated
+ * and needs to be freed by the caller. If the allocation fails, the function
+ * returns NULL. The function handles both positive and negative integers.
+ *
+ * Return: A pointer to the resulting null-terminated string, or NULL if memory
+ * allocation fails.
+ */
+
+#include "libft.h"
+
+static	int	ft_num_len(int num)
+{
+	int		len;
+
+	len = 0;
+	if (num <= 0)
+		len = 1;
+	while (num)
+	{
+		num /= 10;
+		len++;
+	}
+	return (len);
+}
+
+static	char	*ft_allocate_length(int length)
+{
+	char	*str;
+
+	str = (char *)malloc(sizeof(char) * (length + 1));
+	if (str == NULL)
+		return (NULL);
+	return (str);
+}
+
+char	*ft_itoa(int n)
+{
+	int		length;
+	char	*str;
+	long	num;
+
+	num = n;
+	length = ft_num_len(n);
+	str = ft_allocate_length(length);
+	if (!str)
+		return (NULL);
+	str[length--] = '\0';
+	if (num < 0)
+	{
+		str[0] = '-';
+		num = -num;
+	}
+	if (num == 0)
+		str[0] = '0';
+	while (num)
+	{
+		str[length] = (num % 10) + '0';
+		num /= 10;
+		length--;
+	}
+	return (str);
+}
+
+/**int main()
+{
+	int	num = -2147483648;
+	char *str = ft_itoa(num);
+	printf("The number is %d\n", num);
+	if (str)
+	{
+		printf("The number is %s\n", str);
+		free(str);
+	}
+	return (0);
+}
+**/
+
+### END OF FILE: ./libft/src/ft_itoa.c ###
+
+
+### START OF FILE: ./libft/src/ft_memchr.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 17:27:21 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:03 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_memchr - Locate a byte in memory.
+ * @s: The memory area to be searched.
+ * @c: The byte to be located.
+ * @n: The number of bytes to be searched.
+ *
+ * Description: This function searches the first 'n' bytes of the memory area
+ * pointed to by 's' for the first occurrence of the byte 'c'. The search stops
+ * when the byte is found or 'n' bytes have been searched.
+ *
+ * Return: A pointer to the matching byte or NULL if the byte is not found.
+ */
+
+#include "libft.h"
+
+void	*ft_memchr(const void *s, int c, size_t n)
+{
+	size_t						i;
+
+	i = 0;
+	while (i < n)
+	{
+		if (((unsigned char *)s)[i] == (unsigned char)c)
+			return ((void *)s + i);
+		i++;
+	}
+	return (NULL);
+}
+
+/**int main()
+{
+	const char str[] = "jkashd jas daksjd alksjd aksjd";
+	char c = 'd';
+	
+	char *result = ft_memchr(str, c, 8);
+	char *result1 = memchr(str, c, 8);
+	printf("My ft is %p\n", result);
+	printf("The og is %p\n", result1);
+}*/
+### END OF FILE: ./libft/src/ft_memchr.c ###
+
+
+### START OF FILE: ./libft/src/ft_memcmp.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_memcmp.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 19:53:20 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 21:24:11 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_memcmp - Compare two blocks of memory.
+ * @s1: The first memory block to be compared.
+ * @s2: The second memory block to be compared.
+ * @n: The number of bytes to be compared.
+ *
+ * Description: This function compares the first 'n' bytes of the memory
+ * areas 's1' and 's2'. The comparison is done byte by byte.
+ *
+ * Return: An integer less than, equal to, or greater than zero if the first
+ * 'n' bytes of 's1' is found, respectively, to be less than, to match, or
+ * be greater than the first 'n' bytes of 's2'.
+ */
+
+#include "libft.h"
+
+int	ft_memcmp( const void *str1, const void *str2, size_t num)
+{
+	const unsigned char			*ptr1;
+	const unsigned char			*ptr2;
+	size_t						i;
+
+	i = 0;
+	ptr1 = (unsigned char *)str1;
+	ptr2 = (unsigned char *)str2;
+	if (num == 0)
+		return (0);
+	while (i < num)
+	{
+		if (ptr1[i] != ptr2[i])
+			return (ptr1[i] - ptr2[i]);
+		i++;
+	}
+	return (0);
+}
+
+### END OF FILE: ./libft/src/ft_memcmp.c ###
+
+
+### START OF FILE: ./libft/src/ft_memcpy.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 23:15:36 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:07 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_memcpy - Copy memory area.
+ * @dst: The destination buffer where the content is to be copied.
+ * @src: The source buffer from where the content is to be copied.
+ * @n: The number of bytes to be copied.
+ *
+ * Description: This function copies 'n' bytes from memory area 'src' to
+ * memory area 'dst'. The memory areas must not overlap. Use ft_memmove if
+ * the memory areas do overlap.
+ *
+ * Return: A pointer to the destination buffer 'dst'.
+ */
+
+#include "libft.h"
+
+void	*ft_memcpy(void	*dest, void const *src, size_t n)
+{
+	size_t					i;
+	unsigned char			*dest_ptr;
+	unsigned char			*src_ptr;
+
+	i = 0;
+	dest_ptr = (unsigned char *)dest;
+	src_ptr = (unsigned char *)src;
+	if (dest == src || n == 0)
+		return (dest);
+	if (!dest && !src)
+		return (0);
+	while (i < n)
+	{
+		dest_ptr[i] = src_ptr[i];
+		i++;
+	}
+	return (dest);
+}
+
+### END OF FILE: ./libft/src/ft_memcpy.c ###
+
+
+### START OF FILE: ./libft/src/ft_memmove.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 22:04:08 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:17 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_memmove - Copy memory area with overlapping regions.
+ * @dst: The destination buffer where the content is to be copied.
+ * @src: The source buffer from where the content is to be copied.
+ * @len: The number of bytes to be copied.
+ *
+ * Description: This function copies 'len' bytes from memory area 'src' to
+ * memory area 'dst'. The memory areas may overlap, and the copy is done
+ * in a safe way.
+ *
+ * Return: A pointer to the destination buffer 'dst'.
+ */
+
+#include "libft.h"
+
+void	*ft_memmove(void *dest, const void *src, size_t n)
+{
+	size_t				i;
+	unsigned char		*dest_ptr;
+	unsigned char		*src_ptr;
+
+	i = 0;
+	dest_ptr = (unsigned char *)dest;
+	src_ptr = (unsigned char *)src;
+	if (!dest && !src)
+		return (NULL);
+	if (dest == src)
+		return (dest);
+	if (dest > src)
+	{
+		while (n--)
+			dest_ptr[n] = src_ptr[n];
+	}
+	else
+	{
+		while (i < n)
+		{
+			dest_ptr[i] = src_ptr[i];
+			i++;
+		}
+	}
+	return (dest);
+}
+
+### END OF FILE: ./libft/src/ft_memmove.c ###
+
+
+### START OF FILE: ./libft/src/ft_memset.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_memset.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 21:39:20 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:21 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_memset - Fill a block of memory with a specific value.
+ * @b: The memory area to be filled.
+ * @c: The value to be set.
+ * @len: The number of bytes to be set to the value.
+ *
+ * Description: This function fills the first 'len' bytes of the memory area
+ * pointed to by 'b' with the constant byte 'c'.
+ *
+ * Return: A pointer to the memory area 'b'.
+ */
+
+#include "libft.h"
+
+void	*ft_memset(void *s, int c, size_t n)
+{
+	unsigned char		*ptr;
+	size_t				i;
+
+	i = 0;
+	ptr = (unsigned char *)s;
+	while (i < n)
+	{
+		ptr[i] = (unsigned char)c;
+		i++;
+	}
+	return (s);
+}
+
+### END OF FILE: ./libft/src/ft_memset.c ###
+
+
+### START OF FILE: ./libft/src/ft_putchar_fd.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putchar_fd.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 15:27:44 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:28 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_putchar_fd - Outputs the character 'c' to the given file descriptor.
+ * @c: The character to output.
+ * @fd: The file descriptor on which to write.
+ *
+ * Description: This function writes the character 'c' to the file descriptor
+ * specified by 'fd'. If writing fails, the function does not perform any
+ * error handling; it is the caller's responsibility to handle errors
+ * appropriately.
+ *
+ * Return: This function does not return a value.
+ */
+
+#include "libft.h"
+
+void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
+
+/**int main()
+{
+	ft_putchar_fd('H', 1);
+}**/
+### END OF FILE: ./libft/src/ft_putchar_fd.c ###
+
+
+### START OF FILE: ./libft/src/ft_putendl_fd.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 19:04:01 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 17:15:34 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_putendl_fd - Output a string to a file descriptor, followed by a newline.
+ * @s: The string to be output.
+ * @fd: The file descriptor on which to write.
+ *
+ * Description: This function writes the string 's' to the given file
+ * descriptor 'fd', followed by a newline character. It first checks if
+ * the string is null or if the file descriptor is invalid. If either
+ * condition is true, it returns without doing anything.
+ *
+ * Return: None.
+ */
+
+#include "libft.h"
+
+void	ft_putendl_fd(char *s, int fd)
+{
+	if (!s || fd < 0)
+		return ;
+	write(fd, s, ft_strlen(s));
+	write(fd, "\n", 1);
+}
+
+### END OF FILE: ./libft/src/ft_putendl_fd.c ###
+
+
+### START OF FILE: ./libft/src/ft_putnbr_fd.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putnbr_fd.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 23:20:06 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 22:42:54 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_putnbr_fd - Output an integer to a file descriptor.
+ * @n: The integer to be output.
+ * @fd: The file descriptor on which to write.
+ *
+ * Description: This function writes the integer 'n' to the given file
+ * descriptor 'fd'.
+ *
+ * Return: None.
+ */
+
+#include "libft.h"
+
+void	ft_putnbr_fd(int n, int fd)
+{
+	if (n == -2147483648)
+	{
+		ft_putchar_fd('-', fd);
+		ft_putchar_fd('2', fd);
+		n = 147483648;
+	}
+	if (n < 0)
+	{
+		ft_putchar_fd('-', fd);
+		n = -n;
+	}
+	if (n >= 10)
+	{
+		ft_putnbr_fd(n / 10, fd);
+		ft_putnbr_fd(n % 10, fd);
+	}
+	else
+		ft_putchar_fd(n + '0', fd);
+}
+
+/**int main()
+{
+	ft_putnbr_fd(-24, 1);
+	ft_putchar_fd('\n', 1);
+	ft_putnbr_fd(2147483647, 1);
+	ft_putchar_fd('\n', 1);
+	ft_putnbr_fd(-2147483648 , 1);
+	ft_putchar_fd('\n', 1);
+	ft_putnbr_fd(102389, 1);
+}*/
+### END OF FILE: ./libft/src/ft_putnbr_fd.c ###
+
+
+### START OF FILE: ./libft/src/ft_putstr_fd.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_putstr_fd.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 18:39:42 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:37:55 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_putstr_fd - Output a string to a file descriptor.
+ * @s: The string to be output.
+ * @fd: The file descriptor on which to write.
+ *
+ * Description: This function writes the string 's' to the given file
+ * descriptor 'fd'. It does not add a newline character.
+ *
+ * Return: None.
+ */
+
+#include "libft.h"
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	if (!s || !fd)
+		return ;
+	write(fd, s, ft_strlen(s));
+}
+
+/**int main()
+{
+	ft_putstr_fd("Hello World", 1);
+}*/
+### END OF FILE: ./libft/src/ft_putstr_fd.c ###
+
+
+### START OF FILE: ./libft/src/ft_split.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/13 01:27:53 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 12:41:49 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_split - A function to split a string into an array of strings.
+ * @s: The string to be split.
+ * @c: The delimiter character used to split the string.
+ *
+ * Description: This function takes a string 's' and a delimiter 'c',
+ * and splits 's' into an array of strings, where each element is a
+ * substring of 's' that was delimited by one or more occurrences of 'c'.
+ * Memory for the array is dynamically allocated and needs to be freed
+ * by the caller. If the allocation fails, the function returns NULL.
+ *
+ * Return: A pointer to the array of split strings, or NULL if memory
+ * allocation fails.
+ */
+
+#include "libft.h"
+
+static	int	ft_count_words(const char *s, char c)
+{
+	int		count;
+	int		words;
+
+	count = 0;
+	words = 0;
+	while (*s)
+	{
+		if (*s != '\0' && *s != c)
+		{
+			if (!words)
+			{
+				words = 1;
+				count++;
+			}
+		}
+		else
+		{
+			words = 0;
+		}
+		s++;
+	}
+	return (count);
+}
+
+static	int	ft_word_len(const char *s, char c)
+{
+	int		len;
+
+	len = 0;
+	while (*s && *s != c)
+	{
+		len++;
+		s++;
+	}
+	return (len);
+}
+
+static	char	**ft_allocate_words(int words)
+{
+	char		**array;
+	int			i;
+
+	array = (char **)malloc(sizeof(char *) * (words + 1));
+	if (!array)
+		return (NULL);
+	i = 0;
+	while (i <= words)
+	{
+		array[i] = NULL;
+		i++;
+	}
+	return (array);
+}
+
+static	int	ft_fill_words(char **array, const char *str, char c, int words)
+{
+	int		i;
+	int		len;
+
+	i = 0;
+	while (i < words)
+	{
+		while (*str == c)
+			str++;
+		len = ft_word_len(str, c);
+		array[i] = (char *)malloc(sizeof(char) * (len + 1));
+		if (!array[i])
+		{
+			while (i > 0)
+				free(array[--i]);
+			free(array);
+			return (0);
+		}
+		ft_strlcpy(array[i], str, len + 1);
+		str += len;
+		i++;
+	}
+	return (1);
+}
+
+char	**ft_split(const char *str, char c)
+{
+	int			words;
+	char		**array;
+
+	words = ft_count_words(str, c);
+	array = ft_allocate_words(words);
+	if (!array)
+		return (NULL);
+	if (!(ft_fill_words(array, str, c, words)))
+		return (NULL);
+	array[words] = NULL;
+	return (array);
+}
+
+/**int main()
+{
+    char *str1 = "hello world";
+    char *str2 = "    hello   world   ";
+    char *str3 = "hello";
+    char *str4 = "";
+    char *str5 = "    ";
+    char *str6 = "abc:def:ghi";
+    char *str7 = "abc::def:ghi";
+    char *str8 = "::abc::def::ghi::";
+
+    printf("Testing ft_split:\n");
+
+    // Test 1: Basic split
+    char **split1 = ft_split(str1, ' ');
+    if (split1)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split1[i]; i++)
+        {
+            printf("%s\n", split1[i]);
+        }
+        free(split1);
+    }
+
+    // Test 2: Split with multiple delimiters
+    char **split2 = ft_split(str2, ' ');
+    if (split2)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split2[i]; i++)
+        {
+            printf("%s\n", split2[i]);
+        }
+        free(split2);
+    }
+
+    // Test 3: Split with no delimiter
+    char **split3 = ft_split(str3, ' ');
+    if (split3)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split3[i]; i++)
+        {
+            printf("%s\n", split3[i]);
+        }
+        free(split3);
+    }
+
+    // Test 4: Empty string
+    char **split4 = ft_split(str4, ' ');
+    if (split4)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split4[i]; i++)
+        {
+            printf("%s\n", split4[i]);
+        }
+        free(split4);
+    }
+
+    // Test 5: String with only delimiters
+    char **split5 = ft_split(str5, ' ');
+    if (split5)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split5[i]; i++)
+        {
+            printf("%s\n", split5[i]);
+        }
+        free(split5);
+    }
+
+    // Test 6: Split with different delimiter
+    char **split6 = ft_split(str6, ':');
+    if (split6)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split6[i]; i++)
+        {
+            printf("%s\n", split6[i]);
+        }
+        free(split6);
+    }
+
+    // Test 7: Split with consecutive delimiters
+    char **split7 = ft_split(str7, ':');
+    if (split7)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split7[i]; i++)
+        {
+            printf("%s\n", split7[i]);
+        }
+        free(split7);
+    }
+
+    // Test 8: Split with leading and trailing delimiters
+    char **split8 = ft_split(str8, ':');
+    if (split8)
+    {
+        printf("Split result:\n");
+        for (int i = 0; split8[i]; i++)
+        {
+            printf("%s\n", split8[i]);
+        }
+        free(split8);
+    }
+
+    return 0;
+}*/
+### END OF FILE: ./libft/src/ft_split.c ###
+
+
+### START OF FILE: ./libft/src/ft_strchr.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 22:13:35 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:10:23 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strchr - Locate the first occurrence of a character in a string.
+ * @s: The string to be searched.
+ * @c: The character to be located.
+ *
+ * Description: This function searches for the first occurrence of the
+ * character 'c' in the string 's'. The terminating null byte is considered
+ * part of the string, so if 'c' is '\0', the function locates the
+ * terminating '\0'.
+ *
+ * Return: A pointer to the first occurrence of the character 'c' in the
+ * string 's', or NULL if the character is not found.
+ */
+
+#include "libft.h"
+
+char	*ft_strchr(const char *s, int c)
+{
+	int			i;
+
+	i = 0;
+	while (s[i] != '\0' && s[i] != (char)c)
+		i++;
+	if (s[i] == (char)c)
+		return ((char *)&s[i]);
+	return (0);
+}
+
+/**int main()
+{
+    char *str = "Hello, world!";
+    char *ptr = ft_strchr(str, 'w');
+    if (ptr)
+        printf("Character 'w' found at position: %ld\n", ptr - str);
+    else
+        printf("Character 'w' not found\n");
+    return 0;
+}*/
+### END OF FILE: ./libft/src/ft_strchr.c ###
+
+
+### START OF FILE: ./libft/src/ft_strdup.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/11 00:10:24 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:38:08 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strdup - Duplicate a string.
+ * @s1: The string to be duplicated.
+ *
+ * Description: This function takes a string 's1' and allocates memory
+ * to create a copy of it. The copy is created and a pointer to it is
+ * returned. The memory for the new string is dynamically allocated
+ * and should be freed by the caller. If the allocation fails, the
+ * function returns NULL.
+ *
+ * Return: A pointer to the duplicated string, or NULL if memory
+ * allocation fails.
+ */
+
+#include "libft.h"
+
+char	*ft_strdup(const char *s)
+{
+	int			len;
+	char		*result;
+
+	len = ft_strlen(s);
+	result = ((char *)malloc(sizeof(char) * (len + 1)));
+	if (result == NULL)
+		return (NULL);
+	len = 0;
+	while (s[len] != '\0')
+	{
+		result[len] = s[len];
+		len++;
+	}
+	result[len] = '\0';
+	return (result);
+}
+
+### END OF FILE: ./libft/src/ft_strdup.c ###
+
+
+### START OF FILE: ./libft/src/ft_striteri.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_striteri.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 13:08:52 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:38:13 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief This function applies function "f" on each character of
+ * the string passed as argument, passing its index as first argument.
+ * Each character is passed by address to "f" to be modified if necessary.
+ * 
+ * @param s The string on which to iterate.
+ * @param f The function to apply to each character.
+ */
+
+#include "libft.h"
+
+/**void	to_upper(unsigned int i, char *str)
+{
+	if (*str >= 'a' && *str <= 'z')
+	{
+		*str -= 32;
+	}
+	printf("%d : %c\n", i, *str);
+}**/
+
+void	ft_striteri(char *s, void (*f)(unsigned int, char *))
+{
+	unsigned int		i;
+
+	if (!s || !f)
+		return ;
+	i = 0;
+	while (s[i] != '\0')
+	{
+		f(i, &s[i]);
+		i++;
+	}
+}
+
+/**int main()
+{
+	char s[] = "hello, world";
+	printf("The first string is %s\n", s);
+	ft_striteri(s, to_upper);
+	return (0);	
+}**/
+### END OF FILE: ./libft/src/ft_striteri.c ###
+
+
+### START OF FILE: ./libft/src/ft_strjoin.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/11 21:21:11 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:19:55 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Concatenate two strings into a new allocated string.
+ *
+ * @param s1 The first string.
+ * @param s2 The second string.
+ * @return The newly allocated string resulting from the
+ * concatenation of 's1' and 's2',
+ * or NULL if memory allocation fails.
+ *
+ * @details Allocates a new string that is the concatenation of
+ * 's1' and 's2'. 
+ * The memory for the new string is dynamically allocated.
+ * Returns NULL if memory allocation fails.
+ */
+
+#include "libft.h"
+
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	size_t			index;
+	size_t			total_length;
+	char			*result;
+
+	if (!s1 || !s2)
+		return (NULL);
+	total_length = ft_strlen(s1) + ft_strlen(s2) + 1;
+	result = (char *)malloc(sizeof(char) * total_length);
+	if (!result)
+		return (NULL);
+	index = 0;
+	while (*s1)
+		result[index++] = *s1++;
+	while (*s2)
+		result[index++] = *s2++;
+	result[index] = '\0';
+	return (result);
+}
+
+### END OF FILE: ./libft/src/ft_strjoin.c ###
+
+
+### START OF FILE: ./libft/src/ft_strlcat.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strlcat.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 20:49:42 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:38:22 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strlcat - Concatenate strings with size limit.
+ * @dst: The destination buffer where the string is to be concatenated.
+ * @src: The source string to be appended.
+ * @dstsize: The size of the destination buffer.
+ *
+ * Description: This function appends the null-terminated string 'src' to
+ * the end of 'dst'. It will append at most 'dstsize - strlen(dst) - 1' bytes,
+ * null-terminating the result. If 'dstsize' is 0 or less than the length of
+ * 'dst', it only returns the length of 'src' plus 'dstsize'.
+ *
+ * Return: The total length of the string it tried to create, which is the
+ * initial length of 'dst' plus the length of 'src'.
+ */
+
+#include "libft.h"
+
+size_t	ft_strlcat(char *dest, const char *src, size_t size)
+{
+	size_t		i;
+	size_t		len_dest;
+	size_t		len_src;
+
+	i = 0;
+	len_dest = ft_strlen(dest);
+	len_src = ft_strlen(src);
+	if (size == 0 || len_dest >= size)
+		return (size + len_src);
+	while (i < (size - len_dest - 1) && src[i] != '\0')
+	{
+		dest[len_dest + i] = src[i];
+		i++;
+	}
+	dest[len_dest + i] = '\0';
+	return (len_dest + len_src);
+}
+
+// int main()
+// {
+// 	const char src[] = "Workbitch, asda";
+// 	char dest[20] = "U better";
+// 	size_t result = ft_strlcat(dest, src, 14);
+// 	printf("The source is %s\n", src);
+// 	printf("The dest is %s\n", dest);
+// 	printf("The length is %zu\n", result);
+// }
+### END OF FILE: ./libft/src/ft_strlcat.c ###
+
+
+### START OF FILE: ./libft/src/ft_strlcpy.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 20:09:16 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 21:35:22 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strlcpy - Copy a string to a buffer with size limit.
+ * @dst: The destination buffer where the string is to be copied.
+ * @src: The source string to be copied.
+ * @dstsize: The size of the destination buffer.
+ *
+ * Description: This function copies up to 'dstsize - 1' characters from
+ * the null-terminated string 'src' to 'dst', null-terminating the result.
+ * If 'dstsize' is 0, the function does nothing.
+ *
+ * Return: The total length of the string it tried to create, which is
+ * the length of 'src'.
+ */
+
+#include "libft.h"
+
+size_t	ft_strlcpy(char *dest, const char *src, size_t size)
+{
+	size_t	i;
+	size_t	src_len;
+
+	src_len = ft_strlen(src);
+	i = 0;
+	if (!dest || !src)
+		return (0);
+	if (size == 0)
+		return (ft_strlen(src));
+	while (src[i] != '\0' && i < size - 1)
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	if (size != 0)
+		dest[i] = '\0';
+	return (src_len);
+}
+
+### END OF FILE: ./libft/src/ft_strlcpy.c ###
+
+
+### START OF FILE: ./libft/src/ft_strlen.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/08 20:54:12 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:09:49 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strlen - Calculate the length of a string.
+ * @str: The string to calculate the length of.
+ *
+ * Description: This function takes a string 'str' and returns its
+ * length, not including the terminating null byte ('\0'). The function
+ * iterates through the string until it encounters the null byte.
+ *
+ * Return: The length of the string.
+ */
+
+#include "libft.h"
+
+int	ft_strlen(const char *str)
+{
+	int		len;
+
+	len = 0;
+	while (str[len] != '\0')
+		len++;
+	return (len);
+}
+
+/**int main()
+{
+    char *str = "Hello, world!";
+    size_t len = ft_strlen(str);
+    printf("Length of '%s' is %zu\n", str, len);
+    return 0;
+}*/
+### END OF FILE: ./libft/src/ft_strlen.c ###
+
+
+### START OF FILE: ./libft/src/ft_strmapi.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strmapi.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 11:28:49 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/21 14:09:53 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strmapi - Apply a function to each character of a string.
+ * @s: The input string.
+ * @f: The function to apply to each character.
+ *
+ * Description: Applies the function 'f' to each character of the string 's',
+ * passing the character's index as the first argument to 'f', and creates a new
+ * string with the results. The new string is dynamically allocated and must be
+ * freed by the caller.
+ *
+ * Return: A pointer to the new string, or NULL if memory allocation fails.
+ */
+
+#include "libft.h"
+
+/**char	ft_transform(unsigned int i, char c)
+{
+	if (i % 2 == 0)
+		return (ft_toupper(c));
+	else
+		return (ft_tolower(c));
+	return (c);
+}**/
+
+char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
+{
+	size_t				i;
+	size_t				length;
+	char				*str;
+
+	if (!s || !f)
+		return (NULL);
+	length = ft_strlen(s);
+	str = (char *)malloc(sizeof(char) * (length + 1));
+	if (!str)
+		return (NULL);
+	i = 0;
+	while (i < length)
+	{
+		str[i] = f(i, s[i]);
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
+}
+
+/**int main()
+{
+	char original[] = "Hello, WORld";
+	char *transformed = ft_strmapi(original, ft_transform);
+	if (transformed)
+	{
+		printf("The original string is %s\n", original);
+		printf("The transformed string is %s\n", transformed);
+		free(transformed);
+	}
+}
+**/
+
+### END OF FILE: ./libft/src/ft_strmapi.c ###
+
+
+### START OF FILE: ./libft/src/ft_strncmp.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 16:45:01 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 21:09:32 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strncmp - Compare two strings up to a specified number of characters.
+ * @s1: The first string to be compared.
+ * @s2: The second string to be compared.
+ * @n: The maximum number of characters to compare.
+ *
+ * Description: This function compares up to 'n' characters of the strings
+ * 's1' and 's2'. The comparison is done lexicographically. It stops comparing
+ * either after 'n' characters have been compared, or a null character is
+ * encountered.
+ *
+ * Return: An integer less than, equal to, or greater than zero if 's1' is
+ * found, respectively, to be less than, to match, or be greater than 's2'.
+ */
+
+#include "libft.h"
+
+int	ft_strncmp(const char *str1, const char *str2, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	if (n == 0)
+		return (0);
+	while (str1[i] != '\0' && str2[i] != '\0'
+		&& str1[i] == str2[i] && i < n - 1)
+		i++;
+	return ((unsigned char)str1[i] - (unsigned char)str2[i]);
+}
+
+### END OF FILE: ./libft/src/ft_strncmp.c ###
+
+
+### START OF FILE: ./libft/src/ft_strnstr.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strnstr.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 22:27:39 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:38:44 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strnstr - Locate a substring in a string with length limit.
+ * @haystack: The string to be searched.
+ * @needle: The substring to be located.
+ * @len: The maximum number of characters to search.
+ *
+ * Description: This function locates the first occurrence of the null-terminated
+ * string 'needle' in the string 'haystack', where not more than 'len' characters
+ * are searched. Characters after a '\0' are not searched.
+ *
+ * Return: A pointer to the first character of the first occurrence of 'needle',
+ * or NULL if 'needle' is not found.
+ */
+
+#include "libft.h"
+
+char	*ft_strnstr(const char *str, const char *subs, size_t len)
+{
+	size_t				i;
+	size_t				j;
+
+	i = 0;
+	if (*subs == '\0')
+		return ((char *)str);
+	while (i < len && str[i] != '\0')
+	{
+		j = 0;
+		while (str[i + j] == subs[j] && i + j < len)
+		{
+			if (subs[j + 1] == '\0')
+				return ((char *)&str[i]);
+			j++;
+		}
+		i++;
+	}
+	return (NULL);
+}
+
+### END OF FILE: ./libft/src/ft_strnstr.c ###
+
+
+### START OF FILE: ./libft/src/ft_strrchr.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strrchr.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/10 15:21:34 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:38:49 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_strrchr - Locate the last occurrence of a character in a string.
+ * @s: The string to be searched.
+ * @c: The character to be located.
+ *
+ * Description: This function searches for the last occurrence of the
+ * character 'c' in the string 's'. The terminating null byte is considered
+ * part of the string, so if 'c' is '\0', the function locates the
+ * terminating '\0'.
+ *
+ * Return: A pointer to the last occurrence of the character 'c' in the
+ * string 's', or NULL if the character is not found.
+ */
+
+#include "libft.h"
+
+char	*ft_strrchr(const char *str, int c)
+{
+	int			i;
+	char		*ptr;
+
+	i = ft_strlen(str);
+	while (i >= 0)
+	{
+		if (str[i] == (char)c)
+		{
+			ptr = (char *)&str[i];
+			return (ptr);
+		}
+		i--;
+	}
+	return (NULL);
+}
+
+### END OF FILE: ./libft/src/ft_strrchr.c ###
+
+
+### START OF FILE: ./libft/src/ft_strtrim.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_strtrim.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/11 23:04:53 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:20:20 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Trim leading and trailing whitespaces from a string.
+ *
+ * @param s The string to be trimmed.
+ * @param set The set of characters to trim.
+ * @return The trimmed string, or NULL if memory allocation fails.
+ *
+ * @details Allocates and returns a copy of the string 's' with the leading and
+ * trailing characters from the 'set' removed.
+ * The 'set' characters are considered to be whitespaces.
+ * Returns NULL if memory allocation fails.
+ */
+
+#include "libft.h"
+
+char	*ft_strtrim(char const *s1, char const *set)
+{
+	size_t			start;
+	size_t			end;
+	size_t			length;
+	char			*trim;
+
+	start = 0;
+	end = ft_strlen(s1);
+	if (!s1 || !set)
+		return (NULL);
+	while (s1[start] != '\0' && ft_strchr(set, s1[start]))
+		start++;
+	while (end > start && ft_strchr(set, s1[end - 1]))
+		end--;
+	length = end - start;
+	trim = malloc(sizeof(char) * length + 1);
+	if (!trim)
+		return (NULL);
+	ft_strlcpy(trim, &s1[start], length + 1);
+	return (trim);
+}
+
+### END OF FILE: ./libft/src/ft_strtrim.c ###
+
+
+### START OF FILE: ./libft/src/ft_substr.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_substr.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/11 16:28:46 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/19 13:23:23 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * @brief Extract a substring from a string.
+ *
+ * @param s The string from which to extract the substring.
+ * @param start The starting index of the substring in 's'.
+ * @param len The maximum length of the substring.
+ * @return The substring extracted from 's', or NULL
+ * If memory allocation fails or 'start' is out of range.
+ *
+ * @details Allocates and returns a substring from the string 's' 
+ * beginning at index 'start' for up to 'len' characters.
+ * The substring is terminated with '\0'. 
+ * If 'start' is beyond the end of 's', the function returns NULL. 
+ * Returns NULL if memory allocation fails.
+ */
+
+#include "libft.h"
+
+char	*ft_substr(const char *s, unsigned int start, size_t len)
+{
+	char			*substring;
+	size_t			str_len;
+	size_t			sub_length;
+
+	if (!s)
+		return (NULL);
+	str_len = ft_strlen(s);
+	if (start >= str_len)
+		return (ft_strdup(""));
+	if (len < str_len - start)
+		sub_length = len;
+	else
+		sub_length = str_len - start;
+	substring = (char *)malloc(sizeof(char) * (sub_length + 1));
+	if (!substring)
+		return (NULL);
+	ft_strlcpy(substring, s + start, sub_length + 1);
+	return (substring);
+}
+/**int main()
+{
+    char *s = "Hello, world!";
+    char *substr;
+
+    substr = ft_substr(s, 7, 5);
+    printf("Substring 1: \"%s\"\n", substr); // Expected: "world"
+    free(substr);
+
+    substr = ft_substr(s, 0, 20);
+    printf("Substring 2: \"%s\"\n", substr); // Expected: "Hello, world!"
+    free(substr);
+
+    substr = ft_substr(s, 15, 5);
+    printf("Substring 3: \"%s\"\n", substr); // Expected: ""
+    free(substr);
+
+    substr = ft_substr(NULL, 0, 5);
+    printf("Substring 4: \"%s\"\n", substr); // Expected: NULL
+    free(substr);
+
+    return 0;
+}*/
+
+### END OF FILE: ./libft/src/ft_substr.c ###
+
+
+### START OF FILE: ./libft/src/ft_tolower.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_tolower.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 22:10:30 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:39:05 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_tolower - Convert an uppercase letter to a lowercase letter.
+ * @c: The character to be converted.
+ *
+ * Description: This function converts an uppercase letter to the
+ * corresponding lowercase letter. If the character is not an uppercase
+ * letter, it is returned unchanged.
+ *
+ * Return: The lowercase equivalent of the character if it is an uppercase
+ * letter, otherwise the character itself.
+ */
+
+#include "libft.h"
+
+int	ft_tolower(int c)
+{
+	if (c >= 'A' && c <= 'Z')
+		c += 32;
+	return (c);
+}
+
+### END OF FILE: ./libft/src/ft_tolower.c ###
+
+
+### START OF FILE: ./libft/src/ft_toupper.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_toupper.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish <ldurmish@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/09 21:52:52 by ldurmish          #+#    #+#             */
+/*   Updated: 2024/06/18 20:39:09 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/**
+ * ft_toupper - Convert a lowercase letter to an uppercase letter.
+ * @c: The character to be converted.
+ *
+ * Description: This function converts a lowercase letter to the
+ * corresponding uppercase letter. If the character is not a lowercase
+ * letter, it is returned unchanged.
+ *
+ * Return: The uppercase equivalent of the character if it is a lowercase
+ * letter, otherwise the character itself.
+ */
+
+#include "libft.h"
+
+int	ft_toupper(int c)
+{
+	if (c >= 'a' && c <= 'z')
+		c -= 32;
+	return (c);
+}
+
+### END OF FILE: ./libft/src/ft_toupper.c ###
 
 
 ### START OF FILE: ./src/execution/builtins/builtins.c ###
@@ -514,7 +3334,7 @@ static const t_builtin	g_builtins[] = {
 {"pwd", builtin_pwd},
 {"echo", builtin_echo},
 {"exit", builtin_exit},
-	{NULL, NULL}
+{NULL, NULL}
 };
 
 int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
@@ -695,24 +3515,6 @@ int	execute_cd(t_ast *data, char *path)
 	return (update_directory(data, path, old_pwd));
 }
 
-static int	handle_export_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static void	update_env_variable(t_env *env, char *name, char *eq)
-{
-	if (eq)
-	{
-		free(env->value);
-		env->value = ft_strdup(eq + 1);
-	}
-	free(name);
-}
-
 int	create_new_env(t_ast *d, char *n, char *eq)
 {
 	t_env	*env;
@@ -727,98 +3529,6 @@ int	create_new_env(t_ast *d, char *n, char *eq)
 		env->value = ft_strdup("");
 	env->next = d->env_list;
 	d->env_list = env;
-	return (0);
-}
-
-static int	process_export_arg(t_ast *data, char *arg)
-{
-	char	*eq;
-	char	*name;
-	t_env	*env;
-
-	eq = ft_strchr(arg, '=');
-	if (eq)
-		name = ft_substr(arg, 0, eq - arg);
-	else
-		name = ft_strdup(arg);
-	if (!name || !is_valid_identifier(name))
-		return (free(name), handle_export_error(arg));
-	env = get_env_node(data->env_list, name);
-	if (env)
-		update_env_variable(env, name, eq);
-	else if (create_new_env(data, name, eq))
-		return (1);
-	return (0);
-}
-
-int	execute_export(t_ast *data, t_ast *tree, int fd_out)
-{
-	int		i;
-	int		status;
-
-	(void)fd_out;
-	i = 1;
-	status = 0;
-	while (tree->cmd->args[i])
-	{
-		if (process_export_arg(data, tree->cmd->args[i]))
-			status = 1;
-		i++;
-	}
-	return (status);
-}
-
-static int	handle_unset_error(char *name)
-{
-	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
-	ft_putstr_fd(name, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
-{
-	if (prev)
-		prev->next = curr->next;
-	else
-		data->env_list = curr->next;
-	free(curr->key);
-	free(curr->value);
-	free(curr);
-}
-
-static int	process_unset_arg(t_ast *data, char *name)
-{
-	t_env	*prev;
-	t_env	*curr;
-
-	if (!is_valid_identifier(name))
-		return (handle_unset_error(name));
-	prev = NULL;
-	curr = data->env_list;
-	while (curr)
-	{
-		if (!ft_strcmp(curr->key, name))
-		{
-			remove_env_node(data, prev, curr);
-			break ;
-		}
-		prev = curr;
-		curr = curr->next;
-	}
-	return (0);
-}
-
-int	execute_unset(t_ast *data, t_ast *tree)
-{
-	int	i;
-
-	i = 1;
-	while (tree->cmd->args[i])
-	{
-		process_unset_arg(data, tree->cmd->args[i]);
-		i++;
-	}
 	return (0);
 }
 
@@ -840,7 +3550,12 @@ int	execute_exit(t_ast *data, t_ast *tree)
 ### START OF FILE: ./src/execution/builtins/heredoc_utils.c ###
 
 #include "minishell.h"
-
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/ioctl.h>
 
 static	void	handle_sigint(int sig, siginfo_t *info, void *context)
 {
@@ -920,7 +3635,7 @@ int	create_heredoc_temp_file(char *delimiter, t_ast *data)
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/08 12:47:30 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/07 15:39:20 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -960,7 +3675,7 @@ static void	handle_redir_in(t_ast *node, char **last_red_inp)
 
 static int	hh(t_ast *node, t_ast *data, char **delim, int *fd)
 {
-	if (node->type == AST_REDIR_HERDOC) 
+	if (node->type == AST_EOF)
 	{
 		*delim = node->token->value;
 		*fd = create_heredoc_temp_file(*delim, data);
@@ -998,7 +3713,6 @@ int	get_input_file(t_ast *data, t_ast *tree)
 		fd = open_regular_input(last_red_inp);
 	return (fd);
 }
-
 
 static void	find_last_output_redirection(t_ast *curr, char **file, int *type)
 {
@@ -1051,64 +3765,389 @@ int	get_output_file(t_ast *tree)
 ### END OF FILE: ./src/execution/builtins/redirection_utils.c ###
 
 
+### START OF FILE: ./src/execution/env/env_export.c ###
+
+#include "../../../include/minishell.h"
+
+static void	update_env_variable(t_env *env, char *name, char *eq)
+{
+	if (eq)
+	{
+		free(env->value);
+		env->value = ft_strdup(eq + 1);
+	}
+	free(name);
+}
+
+static int	handle_export_error(char *arg)
+{
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+	return (1);
+}
+static int	process_export_arg(t_ast *data, char *arg)
+{
+	char	*eq;
+	char	*name;
+	t_env	*env;
+
+	eq = ft_strchr(arg, '=');
+	if (eq)
+		name = ft_substr(arg, 0, eq - arg);
+	else
+		name = ft_strdup(arg);
+	if (!name || !is_valid_identifier(name))
+		return (free(name), handle_export_error(arg));
+	env = get_env_node(data->env_list, name);
+	if (env)
+		update_env_variable(env, name, eq);
+	else if (create_new_env(data, name, eq))
+		return (1);
+	return (0);
+}
+
+int	execute_export(t_ast *data, t_ast *tree, int fd_out)
+{
+	int		i;
+	int		status;
+
+	(void)fd_out;
+	i = 1;
+	status = 0;
+	while (tree->cmd->args[i])
+	{
+		if (process_export_arg(data, tree->cmd->args[i]))
+			status = 1;
+		i++;
+	}
+	return (status);
+}
+
+### END OF FILE: ./src/execution/env/env_export.c ###
+
+
+### START OF FILE: ./src/execution/env/env_unset.c ###
+
+#include "../../../include/minishell.h"
+
+static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
+{
+	if (prev)
+		prev->next = curr->next;
+	else
+		data->env_list = curr->next;
+	free(curr->key);
+	free(curr->value);
+	free(curr);
+}
+
+static int	handle_unset_error(char *name)
+{
+	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+	return (1);
+}
+static int	process_unset_arg(t_ast *data, char *name)
+{
+	t_env	*prev;
+	t_env	*curr;
+
+	if (!is_valid_identifier(name))
+		return (handle_unset_error(name));
+	prev = NULL;
+	curr = data->env_list;
+	while (curr)
+	{
+		if (!ft_strcmp(curr->key, name))
+		{
+			remove_env_node(data, prev, curr);
+			break ;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
+	return (0);
+}
+
+int	execute_unset(t_ast *data, t_ast *tree)
+{
+	int	i;
+
+	i = 1;
+	while (tree->cmd->args[i])
+	{
+		process_unset_arg(data, tree->cmd->args[i]);
+		i++;
+	}
+	return (0);
+}
+
+### END OF FILE: ./src/execution/env/env_unset.c ###
+
+
+### START OF FILE: ./src/execution/env/env_utils.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/17 12:34:56 by user              #+#    #+#             */
+/*   Updated: 2025/04/08 14:58:16 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../include/minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
+
+char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
+{
+	char	*tmp;
+	char	*res;
+
+	tmp = ft_strjoin(s1, s2);
+	res = ft_strjoin(tmp, s3);
+	free(tmp);
+	return (res);
+}
+
+void	print_env_list(t_env *env_list, int fd_out)
+{
+	while (env_list)
+	{
+		ft_putstr_fd(env_list->key, fd_out);
+		ft_putstr_fd("=", fd_out);
+		if (env_list->value)
+			ft_putendl_fd(env_list->value, fd_out);
+		else
+			ft_putendl_fd("", fd_out);
+		env_list = env_list->next;
+	}
+}
+
+static int	count_env_nodes(t_env *lst)
+{
+	int	count;
+
+	count = 0;
+	while (lst)
+	{
+		count++;
+		lst = lst->next;
+	}
+	return (count);
+}
+
+char	**env(t_env **lst)
+{
+	t_env	*tmp;
+	char	**envp;
+	int		i;
+	int		count;
+
+	count = count_env_nodes(*lst);
+	envp = malloc((count + 1) * sizeof(char *));
+	if (!envp)
+		return (NULL);
+	tmp = *lst;
+	i = 0;
+	while (tmp)
+	{
+		envp[i++] = ft_strjoin3(tmp->key, "=", tmp->value);
+		tmp = tmp->next;
+	}
+	envp[i] = NULL;
+	return (envp);
+}
+
+static void	create_new_shlvl(t_env *data, int shlvl)
+{
+	t_env	*new_env;
+
+	new_env = malloc(sizeof(t_env));
+	if (!new_env)
+		return ;
+	new_env->key = ft_strdup("SHLVL");
+	new_env->value = ft_itoa(shlvl);
+	new_env->next = data;
+	data = new_env;
+}
+
+void	incr_shell_lvl(t_env *data)
+{
+	char	*shlvl_str;
+	int		shlvl;
+	t_env	*tmp;
+
+	shlvl_str = get_env_value(data, "SHLVL");
+	shlvl = 0;
+	if (shlvl_str)
+		shlvl = ft_atoi(shlvl_str);
+	shlvl++;
+	tmp = data;
+	while (tmp)
+	{
+		if (!ft_strcmp(tmp->key, "SHLVL"))
+		{
+			free(tmp->value);
+			tmp->value = ft_itoa(shlvl);
+			return ;
+		}
+		tmp = tmp->next;
+	}
+	create_new_shlvl(data, shlvl);
+}
+
+void	set_env_var(t_ast *data, char *var_name, const char *var_value)
+{
+	t_env	*env;
+	t_env	*new_env;
+
+	env = data->env_list;
+	while (env)
+	{
+		if (!ft_strcmp(env->key, var_name))
+		{
+			free(env->value);
+			env->value = ft_strdup(var_value);
+			return ;
+		}
+		env = env->next;
+	}
+	new_env = malloc(sizeof(t_env));
+	if (!new_env)
+		return ;
+	new_env->key = ft_strdup(var_name);
+	new_env->value = ft_strdup(var_value);
+	new_env->next = data->env_list;
+	data->env_list = new_env;
+}
+
+t_env	*find_envir_variable(t_ast *data, char *var_name, int len)
+{
+	t_env	*current;
+
+	current = data->env_list;
+	while (current)
+	{
+		if (current->key && ft_strncmp(current->key, var_name, len) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
+{
+	t_env	*path_env;
+
+	if (ft_strchr(cmd, '/'))
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		return (NULL);
+	}
+	path_env = find_envir_variable(data, "PATH", 4);
+	if (!path_env || !path_env->value)
+		return (NULL);
+	*paths_ptr = ft_split(path_env->value, ':');
+	if (!*paths_ptr)
+		return (NULL);
+	return (NULL);
+}
+
+char	*find_executable_path(t_ast *data, char *cmd)
+{
+	char	**paths;
+	char	*full_path;
+	char	*result;
+	int		i;
+
+	result = checker(data, cmd, &paths);
+	if (result || !paths)
+		return (result);
+	i = -1;
+	while (paths[++i])
+	{
+		full_path = ft_strjoin3(paths[i], "/", cmd);
+		if (!full_path)
+			continue ;
+		if (access(full_path, X_OK) == 0)
+		{
+			free_2darray(paths);
+			return (full_path);
+		}
+		free(full_path);
+	}
+	free_2darray(paths);
+	return (NULL);
+}
+
+### END OF FILE: ./src/execution/env/env_utils.c ###
+
+
 ### START OF FILE: ./src/execution/execution/execute.c ###
 
 #include "minishell.h"
 
-
-int execute_group(t_ast *data, t_ast *tree)
+int	execute_group(t_ast *data, t_ast *tree)
 {
-    pid_t pid;
-    int status;
+	pid_t	pid;
+	int		status;
+	int		ret;
 
-    pid = fork();
-    if (pid == 0)
-    {
-        int ret = execute_tree(data, tree->left);
-        exit(ret);
-    }
-    else if (pid < 0)
-    {
-        ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
-        return (data->exit_status = 1);
-    }
-    waitpid(pid, &status, 0);
-    if (WIFEXITED(status))
-        data->exit_status = WEXITSTATUS(status);
-    else
-        data->exit_status = 1;
-    return data->exit_status;
+	pid = fork();
+	if (pid == 0)
+	{
+		ret = execute_tree(data, tree->left);
+		exit(ret);
+	}
+	else if (pid < 0)
+	{
+		ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
+		return (data->exit_status = 1);
+	}
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		data->exit_status = WEXITSTATUS(status);
+	else
+		data->exit_status = 1;
+	return (data->exit_status);
 }
 
-
-int execute_sequence(t_ast *data, t_ast *tree)
+int	execute_sequence(t_ast *data, t_ast *tree)
 {
-    execute_tree(data, tree->left);
-    return execute_tree(data, tree->right);
+	execute_tree(data, tree->left);
+	return (execute_tree(data, tree->right));
 }
 
-int execute_tree(t_ast *data,t_ast *tree)
+int	execute_tree(t_ast *data, t_ast *tree)
 {
-    if (tree->type == AST_AND || tree->type == 	AST_OR)
-    {
-        if (tree->type == AST_AND)
-            return execute_and(data, tree);
-        else
-            return execute_or(data, tree);
-    }
-    else if (tree->type == AST_PIPELINE)
-    {
-        return execute_pipe(data, tree);
-    }
-    else if (tree->type == AST_SUBSHELL)
-    {
-        return execute_group(data, tree);
-    }
-    else if (tree->type == AST_COMMAND)
-    {
-        return execute_word(data, tree);
-    }
-    return 0;
+	if (tree->type == AST_AND || tree->type == AST_OR)
+	{
+		if (tree->type == AST_AND)
+			return (execute_and(data, tree));
+		else
+			return (execute_or(data, tree));
+	}
+	else if (tree->type == AST_PIPELINE)
+	{
+		return (execute_pipe(data, tree));
+	}
+	else if (tree->type == AST_SUBSHELL)
+	{
+		return (execute_group(data, tree));
+	}
+	else if (tree->type == AST_COMMAND)
+	{
+		return (execute_word(data, tree));
+	}
+	return (0);
 }
 
 ### END OF FILE: ./src/execution/execution/execute.c ###
@@ -1128,6 +4167,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	int		status;
 	char	*cmd_path;
 	char	**envp;
+	int		i;
 
 	pid = fork();
 	if (pid == 0)
@@ -1136,7 +4176,7 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 		signal(SIGQUIT, SIG_DFL);
 		if (fd_inp != STDIN_FILENO)
 		{
-			if (dup2(fd_inp, STDOUT_FILENO) == -1)
+			if (dup2(fd_inp, STDIN_FILENO) == -1)
 			{
 				perror("minishell: dup2 input redirection");
 				exit(1);
@@ -1171,7 +4211,8 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	if (fd_out != STDOUT_FILENO)
 		close(fd_out);
 	waitpid(pid, &status, 0);
-	for (int i = 0; i < data->heredoc_count; i++)
+	i = -1;
+	while (++i < data->heredoc_count)
 	{
 		unlink(data->heredoc_files[i]);
 		free(data->heredoc_files[i]);
@@ -1191,11 +4232,13 @@ int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 
 #include "minishell.h"
 
-int execute_pipe(t_ast *data, t_ast *tree)
+int	execute_pipe(t_ast *data, t_ast *tree)
 {
-	int fd[2];
-	pid_t left_pid, right_pid;
-	int left_status, right_status;
+	int		fd[2];
+	pid_t	left_pid;
+	pid_t	right_pid;
+	int		left_status;
+	int		right_status;
 
 	if (pipe(fd) == -1)
 	{
@@ -1230,7 +4273,7 @@ int execute_pipe(t_ast *data, t_ast *tree)
 		perror("minishell: fork");
 		close(fd[0]);
 		close(fd[1]);
-		kill(left_pid, SIGTERM); 
+		kill(left_pid, SIGTERM);
 		return (data->exit_status = 1);
 	}
 	close(fd[0]);
@@ -1243,6 +4286,7 @@ int execute_pipe(t_ast *data, t_ast *tree)
 		data->exit_status = 1;
 	return (data->exit_status);
 }
+
 ### END OF FILE: ./src/execution/execution/execute_pipe.c ###
 
 
@@ -1259,7 +4303,7 @@ int	execute_word(t_ast *data, t_ast *tree)
 	pid_t	pid;
 	char	*cmd_path;
 	char	**envp;
-	int     status;
+	int		status;
 
 	fd_in = get_input_file(data, tree);
 	fd_out = get_output_file(tree);
@@ -1320,6 +4364,12 @@ int	execute_word(t_ast *data, t_ast *tree)
 			exit(127);
 		}
 		envp = env(&(data->env_list));
+		if (!envp)
+		{
+			free(cmd_path);
+			ft_putstr_fd("minishell: envp is NULL\n", STDERR_FILENO);
+			exit(1);
+		}
 		execve(cmd_path, tree->cmd->args, envp);
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putendl_fd(strerror(errno), STDERR_FILENO);
@@ -1331,7 +4381,7 @@ int	execute_word(t_ast *data, t_ast *tree)
 	{
 		g_child_pid = pid;
 		waitpid(pid, &status, 0);
-		g_child_pid = 0; 
+		g_child_pid = 0;
 		if (WIFEXITED(status))
 			data->exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
@@ -1400,7 +4450,7 @@ int	execute_or(t_ast *data, t_ast *tree)
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/07 17:58:30 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/10 20:30:21 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1467,11 +4517,14 @@ static char	*build_full_path(char *dir, const char *file)
 static void	sort_matches(char **matches, int count)
 {
 	char	*temp;
+	int		i;
+	int		j;
 
-	int i, j;
-	for (i = 0; i < count - 1; i++)
+	i = -1;
+	while (++i < count - 1)
 	{
-		for (j = i + 1; j < count; j++)
+		j = i;
+		while (++j < count)
 		{
 			if (ft_strcmp(matches[i], matches[j]) > 0)
 			{
@@ -1548,12 +4601,16 @@ char	**expand_wildcard(char *pattern)
 
 char	**expand_wildcards_in_args(char **args)
 {
-	char **new_args = NULL;
-	int new_count = 0;
+	char	**new_args;
+	int		new_count;
+	int		j;
+	char	**matches;
+	int		i;
 
-	for (int i = 0; args[i]; i++)
+	i = -1;
+	while (args[++i])
 	{
-		char **matches = expand_wildcard(args[i]);
+		matches = expand_wildcard(args[i]);
 		if (!matches)
 		{
 			new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
@@ -1561,12 +4618,14 @@ char	**expand_wildcards_in_args(char **args)
 		}
 		else
 		{
-			for (int j = 0; matches[j]; j++)
+			j = -1;
+			while (matches[++j])
 			{
 				new_args = realloc(new_args, (new_count + 1) * sizeof(char *));
 				new_args[new_count++] = ft_strdup(matches[j]);
 			}
-			for (int j = 0; matches[j]; j++)
+			j = -1;
+			while (matches[++j])
 				free(matches[j]);
 			free(matches);
 		}
@@ -1575,6 +4634,7 @@ char	**expand_wildcards_in_args(char **args)
 	new_args[new_count] = NULL;
 	return (new_args);
 }
+
 ### END OF FILE: ./src/execution/execution/expand_wildcard.c ###
 
 
@@ -1583,22 +4643,28 @@ char	**expand_wildcards_in_args(char **args)
 
 #include "../../../include/minishell.h"
 
-static void sigint_handler(int sig) {
+static void	sigint_handler(int sig)
+{
 	(void)sig;
-	if (g_child_pid == 0) {
+	if (g_child_pid == 0)
+	{
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-	} else {
+	}
+	else
+	{
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		kill(g_child_pid, SIGINT);
 	}
 }
+
 void	handle_signal(void)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
+
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
@@ -1608,13 +4674,16 @@ void	handle_signal(void)
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
+
 void	handle_sigint(int signo)
 {
+	int	i;
+
 	if (signo == SIGINT)
 	{
 		if (isatty(STDIN_FILENO))
 		{
-			int i = write(1, "\n", 1);
+			i = write(1, "\n", 1);
 			(void) i;
 			if (g_child_pid == 42)
 				g_child_pid = 44;
@@ -1676,197 +4745,6 @@ int	handle_d(t_ast *data, char *line)
 ### END OF FILE: ./src/execution/signals/signals.c ###
 
 
-### START OF FILE: ./src/execution/utils/asterisk_utils.c ###
-
-#include "minishell.h"
-
-
-int is_only_asterisks(char *str)
-{
-    int i = 0;
-    if (!str)
-        return 0;
-    while (str[i])
-    {
-        if (str[i] != '*')
-            return 0;
-        i++;
-    }
-    return 1;
-}
-
-### END OF FILE: ./src/execution/utils/asterisk_utils.c ###
-
-
-### START OF FILE: ./src/execution/utils/env_utils.c ###
-
-#include "../../include/minishell.h"
-#include <stdlib.h>
-#include <unistd.h>
-
-char *ft_strjoin3(const char *s1, const char *s2, const char *s3)
-{
-    char *tmp = ft_strjoin(s1, s2);
-    char *res = ft_strjoin(tmp, s3);
-    free(tmp);
-    return res;
-}
-
-
-void print_env_list(t_env *env_list, int fd_out)
-{
-    while (env_list)
-    {
-        ft_putstr_fd(env_list->key, fd_out);      
-        ft_putstr_fd("=", fd_out);
-        ft_putendl_fd(env_list->value ? env_list->value : "", fd_out);
-        env_list = env_list->next;
-    }
-}
-
-char **env(t_env **lst)
-{
-    t_env *tmp = *lst;
-    int count = 0;
-    
-    while (tmp) {
-        count++;
-        tmp = tmp->next;
-    }
-
-    char **envp = malloc((count + 1) * sizeof(char *));
-    tmp = *lst;
-    int i = 0;
-    while (tmp) {
-        envp[i++] = ft_strjoin3(tmp->key, "=", tmp->value);
-        tmp = tmp->next;
-    }
-    envp[i] = NULL;
-    return envp;
-}
-
-void incr_shell_lvl(t_ast *data)
-{
-    char *shlvl_str = get_env_value(data->env_list, "SHLVL");
-    int shlvl = 0;
-    
-    if (shlvl_str)
-        shlvl = ft_atoi(shlvl_str);
-    shlvl++;
-
-    t_env *tmp = data->env_list;
-    while (tmp)
-    {
-        if (!ft_strcmp(tmp->key, "SHLVL"))
-        {
-            free(tmp->value);
-            tmp->value = ft_itoa(shlvl);
-            return;
-        }
-        tmp = tmp->next;
-    }
-    t_env *new_env = malloc(sizeof(t_env));
-    if (new_env)
-    {
-        new_env->key = ft_strdup("SHLVL");
-        new_env->value = ft_itoa(shlvl);
-        new_env->next = data->env_list;
-        data->env_list = new_env;
-    }
-}
-void set_env_var(t_ast *data, char *var_name, const char *var_value)
-{
-    t_env *env = data->env_list;
-    while (env)
-    {
-        if (!ft_strcmp(env->key, var_name))
-        {
-            free(env->value);
-            env->value = ft_strdup(var_value);
-            return;
-        }
-        env = env->next;
-    }
-    t_env *new_env = malloc(sizeof(t_env));
-    if (!new_env)
-        return;
-    new_env->key = ft_strdup(var_name);
-    new_env->value = ft_strdup(var_value);
-    new_env->next = data->env_list;
-    data->env_list = new_env;
-}
-
-void	free_paths(char **paths, char **original_paths)
-{
-	paths = original_paths;
-	while (*paths)
-	{
-		ft_strdel(paths);
-		paths++;
-	}
-	free(original_paths);
-}
-char *duplicate_cmd_and_free_paths(char *cmd, char **paths)
-{
-    char *result = ft_strdup(cmd);
-    free_paths(paths, paths);
-    return result;
-}
-
-t_env *find_envir_variable(t_ast *data, char *var_name, int len)
-{
-    t_env *current;
-
-    current = data->env_list;
-    while (current)
-    {
-        if (current->key && ft_strncmp(current->key, var_name, len) == 0)
-            return (current);
-        current = current->next;
-    }
-    return (NULL);
-}
-
-char *find_executable_path(t_ast *data, char *cmd)
-{
-    if (ft_strchr(cmd, '/')) {
-        if (access(cmd, X_OK) == 0)
-            return ft_strdup(cmd);
-        return NULL;
-    }
-
-    t_env *path_env = find_envir_variable(data, "PATH", 4);
-    if (!path_env || !path_env->value)
-        return NULL;
-
-    char **paths = ft_split(path_env->value, ':');
-    char **original_paths = paths;
-
-    while (*paths)
-    {
-        char *full_path = ft_strjoin3(*paths, "/", cmd);
-        if (access(full_path, X_OK) == 0)
-        {
-            char **temp = original_paths;
-            while (*temp)
-            {
-                if (temp != paths)
-                    free(*temp);
-                temp++;
-            }
-            free(original_paths);
-            return full_path;
-        }
-        free(full_path);
-        paths++;
-    }
-
-    free_paths(original_paths, original_paths);
-    return NULL;
-}
-### END OF FILE: ./src/execution/utils/env_utils.c ###
-
-
 ### START OF FILE: ./src/execution/utils/free.c ###
 
 /* ************************************************************************** */
@@ -1874,10 +4752,10 @@ char *find_executable_path(t_ast *data, char *cmd)
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:54:56 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/03/25 12:54:56 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/04/08 14:45:33 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1916,6 +4794,7 @@ void	free_heredoc_files(t_ast *data)
 	data->heredoc_files = NULL;
 	data->heredoc_count = 0;
 }
+
 void	free_data(t_ast *data)
 {
 	if (!data)
@@ -1937,8 +4816,6 @@ void	free_temp_data(t_ast *data)
 	free(data);
 }
 
-
-
 void	ft_strdel(char **as)
 {
 	if (as && *as)
@@ -1947,6 +4824,7 @@ void	ft_strdel(char **as)
 		*as = NULL;
 	}
 }
+
 ### END OF FILE: ./src/execution/utils/free.c ###
 
 
@@ -1986,19 +4864,19 @@ void	free_2darray(char **array)
 
 #include "../../include/minishell.h"
 
+void	*ft_realloc(void *ptr, size_t oldsize, size_t newsize)
+{
+	char	*newptr;
 
-void *ft_realloc(void *ptr, size_t old_size, size_t new_size) {
-    void *new_ptr = malloc(new_size);
-    if (!new_ptr)
-        return NULL;
-
-    if (ptr) {
-        size_t copy_size = old_size < new_size ? old_size : new_size;
-        memcpy(new_ptr, ptr, copy_size);
-        free(ptr);
-    }
-
-    return new_ptr;
+	newptr = malloc(newsize);
+	if (!newptr)
+		return (NULL);
+	if (ptr)
+	{
+		ft_memcpy(newptr, ptr, oldsize);
+		free(ptr);
+	}
+	return (newptr);
 }
 
 char	*ft_strndup(const char *s, size_t n)
@@ -2042,7 +4920,7 @@ char	*ft_strndup(const char *s, size_t n)
 
 #include "../include/minishell.h"
 
-pid_t g_child_pid = 0;  // Single definition
+pid_t	g_child_pid = 0;
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
@@ -2086,8 +4964,8 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		}
 		else if (ast)
 			ast->env_list = env_list;
-        execute_tree(ast, ast);
-        free_ast(ast);
+		execute_tree(ast, ast);
+		free_ast(ast);
 	}
 }
 
@@ -2104,7 +4982,7 @@ char	*generate_prompt(void)
 	return (ft_strdup("minishell$ "));
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env		*env_list;
 	char		*input;
@@ -2112,6 +4990,7 @@ int main(int argc, char **argv, char **envp)
 
 	env_list = init_env_list(envp);
 	handle_signal();
+	incr_shell_lvl(env_list);
 	while (1)
 	{
 		prompt = generate_prompt();
@@ -2772,7 +5651,7 @@ int	handle_single_operator(t_token **token, char c)
 		return (0);
 	if (!current)
 		return (-1);
-	//printf("Token: %s\n", current->value);
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -2830,7 +5709,7 @@ int	return_parenthesis(t_token **token, char c)
 		current = create_node(")", TOKEN_PAREN_CLOSE);
 	if (!current)
 		return (-1);
-	//printf("Token: %s\n", current->value);
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -2898,7 +5777,7 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	}
 	else if (quote_type == '\'')
 		current->single_quotes = 1;
-	//printf("Token: %s\n", current->value);
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -2921,7 +5800,7 @@ int	handle_word(t_token **token, char *input, int *i)
 	if (!current)
 		return (-1);
 	current->expandable = 1;
-	//printf("Token: %s\n", current->value);
+	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	(*i)--;
 	return (1);
@@ -2943,7 +5822,7 @@ int	handle_whitespace(t_token **token, char *input, int *i)
 	free(whitespace);
 	if (!curr)
 		return (-1);
-	//printf("TOKEN: Whitespace\n");
+	printf("TOKEN: Whitespace\n");
 	append_node(token, curr);
 	return (1);
 }

@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-pid_t g_child_pid = 0;  // Single definition
+pid_t	g_child_pid = 0;
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 {
@@ -56,8 +56,8 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		}
 		else if (ast)
 			ast->env_list = env_list;
-        execute_tree(ast, ast);
-        free_ast(ast);
+		execute_tree(ast, ast);
+		free_ast(ast);
 	}
 }
 
@@ -74,7 +74,7 @@ char	*generate_prompt(void)
 	return (ft_strdup("minishell$ "));
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
 	t_env		*env_list;
 	char		*input;

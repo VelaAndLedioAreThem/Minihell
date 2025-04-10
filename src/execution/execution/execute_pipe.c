@@ -1,10 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_pipe.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/04/10 21:21:32 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	execute_pipe(t_ast *data, t_ast *tree)
 {
-	int fd[2];
-	pid_t left_pid, right_pid;
-	int left_status, right_status;
+	int		fd[2];
+	pid_t	left_pid;
+	pid_t	right_pid;
+	int		left_status;
+	int		right_status;
 
 	if (pipe(fd) == -1)
 	{
