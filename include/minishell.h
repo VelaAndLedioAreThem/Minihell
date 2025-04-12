@@ -3,13 +3,11 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 01:04:11 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/25 16:31:20 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
+/*   Updated: 2025/04/12 23:34:21 by ldurmish         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
-
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
@@ -36,7 +34,7 @@
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
 
-// Parsing struct 
+// Parsing struct
 typedef enum e_token_type
 {
 	TOKEN_WORD,
@@ -304,6 +302,7 @@ int			handle_single_operator(t_token **token, char c);
 int			handle_word(t_token **token, char *input, int *i);
 int			handle_quotes(t_token **token, char *input, int *i);
 int			handle_whitespace(t_token **token, char *input, int *i);
+
 // Environmental variables
 t_env		*init_env_list(char **envp);
 char		*gen_env_value(t_env *env_list, char *key);
@@ -312,6 +311,7 @@ char		*get_env_value(t_env *env_list, char *name);
 char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
+
 // Validation
 bool		validation(t_token *tokens);
 bool		validation_parenthesis(t_token *tokenize);
@@ -416,10 +416,13 @@ t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 int			ft_strcmp(const char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
 int			ft_isspace(int num);
-
 void		clear_data(t_env **data, char **envp);
 void		handle_signal(void);
 void		free_2darray(char **array);
 int			execute_tree(t_ast *data, t_ast *tree);
+
+// Main functions
+char		*generate_prompt(void);
+void		handle_input(char *input, t_env *env_list, int argc, char **argv);
 
 #endif

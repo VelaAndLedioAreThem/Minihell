@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 18:11:32 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/12 20:57:25 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,6 @@ t_env	*deep_copy_env_list(t_env *env_list)
 	t_env	*new_node;
 	t_env	*original;
 
-	if (!env_list)
-		return (NULL);
 	new_head = NULL;
 	new_curr = NULL;
 	original = env_list;

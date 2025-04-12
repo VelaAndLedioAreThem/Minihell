@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:23:14 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/15 18:52:41 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/12 21:24:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,46 +59,5 @@ bool	return_pipes_mssg(bool *expecting_cmd)
 		report_error(ERR_SYNTAX, "missing command after pipes");
 		return (false);
 	}
-	return (true);
-}
-
-bool	check_redirection_before_pipe(t_token *curr, t_token *head)
-{
-	t_token		*check;
-	t_token		*last_redir;
-	bool		has_filename;
-
-	check = head;
-	while (check != curr)
-	{
-		if ((check->type == TOKEN_APPEND || check->type == TOKEN_REDIRECT_OUT)
-			&& check->next == curr)
-			return (true);
-		check = check->next;
-	}
-	check = head;
-	last_redir = NULL;
-	has_filename = false;
-	while (check != curr)
-	{
-		if (check->type == TOKEN_APPEND || check->type == TOKEN_REDIRECT_IN
-			|| check->type == TOKEN_REDIRECT_OUT
-			|| check->type == TOKEN_HEREDOC)
-		{
-			if (check->next == curr)
-			{
-				last_redir = NULL;
-			}
-			last_redir = check;
-			has_filename = false;
-		}
-		else if (last_redir && check->type == TOKEN_WORD
-			&& !is_only_whitespaces(check->value))
-			has_filename = true;
-		check = check->next;
-	}
-	if (last_redir && !has_filename)
-		return (report_error(ERR_SYNTAX, "missing filename before pipes"),
-			false);
 	return (true);
 }

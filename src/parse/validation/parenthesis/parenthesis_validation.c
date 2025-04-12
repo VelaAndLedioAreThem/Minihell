@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/07 15:42:09 by codespace        ###   ########.fr       */
+/*   Updated: 2025/04/13 00:50:14 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,12 @@ bool	parenthesis_utils(t_token *tokenize)
 	t_paren		commands;
 
 	stack = tokenize;
-	commands = (t_paren){false, false, '\0', false, 0, false, (t_quotes){false, false}};
+	commands = (t_paren)
+	{false, false, '\0', false, 0, false, (t_quotes){false, false}};
 	initialize_stack(stack);
 	while (stack && stack->value)
 	{
 		input = stack->value;
-		if (stack->single_quotes == 1)
-			return (true);
-		else if (stack->double_quotes == 1)
-			return (true);
 		if (!parenthesis(stack, input, &commands))
 			return (false);
 		stack = stack->next;
