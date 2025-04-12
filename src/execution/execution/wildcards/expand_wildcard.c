@@ -6,11 +6,11 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:30:47 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/12 13:40:23 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "../../../../include/minishell.h"
 #include <dirent.h>
 
 char	**expand_wildcard(char *pattern)
@@ -42,14 +42,14 @@ char	**expand_wildcard(char *pattern)
 	return (finalize_matches(matches, count));
 }
 
-static void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
+void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
 {
 	*new_args = realloc(*new_args, (*new_count + 1) * sizeof(char *));
 	(*new_args)[*new_count] = ft_strdup(arg);
 	(*new_count)++;
 }
 
-static void	free_matches_array(char **matches)
+void	free_matches_array(char **matches)
 {
 	int	j;
 
@@ -73,7 +73,7 @@ char	**expand_wildcards_in_args(char **args)
 	return (finalize_args_array(new_args, new_count));
 }
 
-static int	is_hidden_file(char *pattern, const char *filename)
+int	is_hidden_file(char *pattern, const char *filename)
 {
 	return (filename[0] == '.' && (pattern[0] != '.' || ft_strcmp(pattern,
 				".") == 0));

@@ -16,7 +16,7 @@
 #include <string.h>
 #include <unistd.h>
 
-static void	print_error(char *filename, char *error_msg)
+void	print_error(char *filename, char *error_msg)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(filename, STDERR_FILENO);
@@ -24,7 +24,7 @@ static void	print_error(char *filename, char *error_msg)
 	ft_putendl_fd(error_msg, STDERR_FILENO);
 }
 
-static int	open_regular_input(char *last_red_inp)
+int	open_regular_input(char *last_red_inp)
 {
 	int	fd;
 
@@ -38,13 +38,13 @@ static int	open_regular_input(char *last_red_inp)
 }
 /* ==================== INPUT FILE HANDLING ==================== */
 
-static void	handle_redir_in(t_ast *node, char **last_red_inp)
+void	handle_redir_in(t_ast *node, char **last_red_inp)
 {
 	if (node->type == AST_REDIR_IN)
 		*last_red_inp = node->token->value;
 }
 
-static int	hh(t_ast *node, t_ast *data, char **delim, int *fd)
+int	hh(t_ast *node, t_ast *data, char **delim, int *fd)
 {
 	if (node->type == AST_EOF)
 	{

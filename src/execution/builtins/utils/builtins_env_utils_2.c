@@ -26,7 +26,7 @@ t_env	*get_env_node(t_env *env_list, const char *name)
 	return (NULL);
 }
 
-static void	update_env_var(t_ast *data, const char *key, const char *value)
+void	update_env_var(t_ast *data, const char *key, const char *value)
 {
 	t_env	*env;
 	t_env	*new_env;

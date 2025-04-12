@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 12:34:56 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 21:18:33 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/12 15:09:35 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ char	**env(t_env **lst)
 	return (envp);
 }
 
-static void	create_new_shlvl(t_env *data, int shlvl)
+void	create_new_shlvl(t_env *data, int shlvl)
 {
 	t_env	*new_env;
 

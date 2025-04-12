@@ -53,28 +53,6 @@ int	execute_echo(char *args[], int fd_out)
 	return (0);
 }
 
-int	execute_cd(t_ast *data, char *path)
-{
-	char	*old_pwd;
-	t_env	*home;
-
-	old_pwd = getcwd(NULL, 0);
-	if (!old_pwd)
-		return (handle_pwd_errors(NULL, 1));
-	if (!path)
-	{
-		home = get_env_node(data->env_list, "HOME");
-		if (!home || !home->value)
-		{
-			ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
-			free(old_pwd);
-			return (1);
-		}
-		path = home->value;
-	}
-	return (update_directory(data, path, old_pwd));
-}
-
 int	execute_exit(t_ast *data, t_ast *tree)
 {
 	int	status;

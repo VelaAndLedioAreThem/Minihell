@@ -27,16 +27,16 @@ static int	builtin_exit(t_ast *data, t_ast *tree, int fd_out)
 	return (1);
 }
 
-static const t_builtin	g_builtins[] = {
-{"export", builtin_export},
-{"unset", builtin_unset},
-{"env", builtin_env},
-{"cd", builtin_cd},
-{"pwd", builtin_pwd},
-{"echo", builtin_echo},
-{"exit", builtin_exit},
-{NULL, NULL}
-};
+static const t_builtin  g_builtins[] = {
+	{"export", builtin_export},
+	{"unset", builtin_unset},
+	{"env", builtin_env},
+	{"cd", builtin_cd},
+	{"pwd", builtin_pwd},
+	{"echo", builtin_echo},
+	{"exit", builtin_exit},
+	{NULL, NULL}
+	};
 
 int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 {

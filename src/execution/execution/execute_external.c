@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:45:03 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/12 13:27:09 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,3 @@ int	parent_process_handler(t_ast *data, pid_t pid, int fd_inp, int fd_out)
 	return (1);
 }
 
-int	execute_command(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
-{
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == 0)
-		child_process_handler(data, tree, fd_inp, fd_out);
-	else
-		return (parent_process_handler(data, pid, fd_inp, fd_out));
-	return (1);
-}

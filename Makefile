@@ -61,12 +61,22 @@ SRCS = $(SRC)main.c $(TREE)tree.c $(TOKENIZE)tokenize.c $(NODES)nodes.c \
 	   $(WILDCARD)wildcards_utils.c $(PARENTHESIS)parenthesis_utils_1.c $(PARENTHESIS)parenthesis_utils_2.c \
 	   $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c $(PARENTHESIS)close_paren_utils.c \
 	   $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c $(PIPES)validation_pipes.c \
-	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c $(SIGNALS)signals.c $(EXEC_ENV)env_utils.c  $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c\
-	   $(EXECUTION)exec_handling.c $(EXECUTION)execute_external.c $(EXECUTION)execute_pipe.c $(EXECUTION)execute_word.c $(EXECUTION)execute.c \
-	   $(EXECUTION)expand_wildcard.c $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c \
-	   $(BUILTINS)heredoc_utils.c $(BUILTINS)redirection_utils.c \
-	   $(TREE)parse_commands.c $(EXEC_UTILS)free.c $(EXEC_UTILS)free2.c $(EXEC_UTILS)utils4.c \
+	   $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c \
+	   $(SIGNALS)signals.c $(SIGNALS)signals_utils.c \
+	   $(EXECUTION)exec_handling.c \
+	   $(EXECUTION)execute_external.c $(EXECUTION)execute_external_utils.c \
+	   $(EXECUTION)execute_pipe.c $(EXECUTION)execute_pipe_utils.c \
+	   $(EXECUTION)exec_word/execute_word.c $(EXECUTION)exec_word/execute_word_utils.c $(EXECUTION)exec_word/execute_word_utils2.c \
+	   $(EXECUTION)execute.c\
+	   $(EXECUTION)wildcards/expand_wildcard.c $(EXECUTION)wildcards/expand_wildcard_utils.c $(EXECUTION)wildcards/expand_wildcard_utils2.c \
+	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c \
+	   $(BUILTINS)utils/builtins_env_utils.c $(BUILTINS)utils/builtins_env_utils_2.c\
+	   $(BUILTINS)utils/builtins_path_utils.c $(BUILTINS)utils/builtins_path_utils_2.c\
+	   $(EXEC)redirections/redirection_utils.c $(EXEC)redirections/redirection_utils_2.c $(EXEC)redirections/heredoc.c \
+	   $(TREE)parse_commands.c $(EXEC_UTILS)free.c $(EXEC_UTILS)utils4.c \
 	   $(TREE)parse_redir.c $(TREE)tree_utils.c $(TREE)tree_utils_1.c\
+	   $(EXEC_ENV)env_utils.c $(EXEC_ENV)env_utils_2.c \
+	   $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c \
 
 # Object files
 OBJS = $(SRCS:.c=.o)

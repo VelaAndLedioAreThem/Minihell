@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
 {
 	if (!tree->cmd->args[1])
 		print_env_list(data->env_list, fd_out);
@@ -21,7 +21,7 @@ static int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
 	return (1);
 }
 
-static int	builtin_unset(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_unset(t_ast *data, t_ast *tree, int fd_out)
 {
 	(void)fd_out;
 	if (execute_unset(data, tree))
@@ -29,7 +29,7 @@ static int	builtin_unset(t_ast *data, t_ast *tree, int fd_out)
 	return (1);
 }
 
-static int	builtin_env(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_env(t_ast *data, t_ast *tree, int fd_out)
 {
 	(void)tree;
 	print_env_list(data->env_list, fd_out);

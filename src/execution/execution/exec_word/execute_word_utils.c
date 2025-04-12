@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:41:58 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/12 13:14:40 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	close_fds(int fd_in, int fd_out)
 		close(fd_out);
 }
 
-static void	cleanup_resources(int fd_in, int fd_out, char **expanded_args)
+void	cleanup_resources(int fd_in, int fd_out, char **expanded_args)
 {
 	free_2darray(expanded_args);
 	close_fds(fd_in, fd_out);

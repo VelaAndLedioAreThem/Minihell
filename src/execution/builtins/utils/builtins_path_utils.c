@@ -25,7 +25,7 @@ int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 	return (0);
 }
 
-static int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
 {
 	char	*path;
 	char	*oldpwd;
@@ -51,7 +51,7 @@ static int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
 	return (1);
 }
 
-static int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)
 {
 	(void)tree;
 	if (execute_pwd(data, fd_out))

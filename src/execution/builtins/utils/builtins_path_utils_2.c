@@ -12,14 +12,14 @@
 
 #include "minishell.h"
 
-static int	handle_pwd_errors(char *old_pwd, int error_code)
+int	handle_pwd_errors(char *old_pwd, int error_code)
 {
 	free(old_pwd);
 	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
 	return (error_code);
 }
 
-static int	update_directory(t_ast *data, char *path, char *old_pwd)
+int	update_directory(t_ast *data, char *path, char *old_pwd)
 {
 	char	*new_pwd;
 

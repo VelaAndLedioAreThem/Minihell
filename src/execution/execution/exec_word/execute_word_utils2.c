@@ -6,17 +6,11 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:35:35 by marvin           ###   ########.fr       */
+/*   Updated: 2025/04/12 15:12:43 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// Setup child process signals
-void	setup_child_signals(void)
-{
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
-}
 
 // Find command path and handle errors
 char	*get_command_path(t_ast *data, char *cmd)
