@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 16:57:15 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:22:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,13 @@ bool	check_closed_paren(char *input, int i, t_token *token)
 bool	process_close_paren(char *input, int i, t_token *token,
 	t_paren *command)
 {
-	if (is_empty(token))
-	{
-		report_error(ERR_UNEXPECTED_TOKEN, ")");
-		return (free_stack(token), false);
-	}
 	if (!command->has_content)
 	{
-		report_error(ERR_SYNTAX, "empty parenthesis");
-		return (free_stack(token), false);
+		if (peek(token) != '(')
+		{
+			report_error(ERR_SYNTAX, "empty parenthesis");
+			return (free_stack(token), false);
+		}
 	}
 	if (input[i + 1])
 	{

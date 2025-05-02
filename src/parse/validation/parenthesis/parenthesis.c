@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 14:15:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/02 22:45:08 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,6 @@ static int	process_open_paren(t_token *token, char *input, int i,
 	end_pos = check_matching_paren(input, i, token, start_pos);
 	if (end_pos == -1)
 		return (report_error(ERR_SYNTAX, "unclosed parenthesis"), false);
-	if (end_pos == i + 1)
-		return (report_error(ERR_SYNTAX, "empty parenthesis"), false);
 	if (!validate_paren_content(input, start_pos, end_pos, token))
 		return (false);
 	push(token, '(');

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/12 23:34:21 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/02 17:22:06 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -391,6 +391,7 @@ void		push(t_token *stack, char data);
 void		initialize_stack(t_token *stack);
 char		pop(t_token *stack);
 bool		is_empty(t_token *stack);
+char		peek(t_token *stack);
 
 // Errors and Free functions
 void		free_env_list(t_env *env_list);

@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/13 00:50:14 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/02 23:02:47 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,28 @@ bool	check_count_paren(t_token *tokenize)
 
 bool	validation_parenthesis(t_token *tokenize)
 {
+	t_token		*current;
+	t_token		*prev;
+
+	current = tokenize;
+	prev = NULL;
+	while (current != NULL)
+	{
+		if (current->type == TOKEN_PAREN_OPEN)
+		{
+            t_token *prev_non_ws = prev;
+            if (prev_non_ws != NULL) {
+                if (prev_non_ws->type == TOKEN_WORD) {
+                    report_error(ERR_SYNTAX, "missing operator before '('");
+                    return (false);
+                }
+            }
+        }
+        if (current->type != TOKEN_WHITESPACE) {
+            prev = current;
+        }
+        current = current->next;
+    }
 	if (!tokenize)
 		return (true);
 	if (!check_count_paren(tokenize))
