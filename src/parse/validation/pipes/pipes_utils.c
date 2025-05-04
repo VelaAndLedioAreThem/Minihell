@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:23:14 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/12 21:24:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:15:09 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,15 @@ bool	is_only_whitespaces(char *str)
 		i++;
 	}
 	return (true);
+}
+
+bool	is_noclobber_operator(t_token *redir, t_token *pipe)
+{
+	if (redir && pipe && redir->type == TOKEN_REDIRECT_OUT
+		&& ft_strcmp(redir->value, ">") == 0 && pipe->type == TOKEN_PIPE
+		&& ft_strcmp(pipe->value, "|") == 0 && redir->next == pipe)
+		return (true);
+	return (false);
 }
 
 bool	return_pipes_mssg(bool *expecting_cmd)

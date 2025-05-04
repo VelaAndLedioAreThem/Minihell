@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/02 17:22:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:24:32 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,55 +209,58 @@ typedef struct s_signal
 }	t_signal;
 
 /* Replace this in your minishell.h file */
-typedef int (*t_builtin_func)(t_ast *, t_ast *, int);
+typedef int		(*t_builtin_func)(t_ast *, t_ast *, int);
 
 typedef struct s_builtin
 {
-    const char      *name;
-    t_builtin_func  func;
-}   t_builtin;
-
+	const char		*name;
+	t_builtin_func	func;
+}	t_builtin;
 
 extern pid_t	g_child_pid;
-int	builtin_env(t_ast *data, t_ast *tree, int fd_out);
-int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out);
-int	builtin_unset(t_ast *data, t_ast *tree, int fd_out);
-int	builtin_export(t_ast *data, t_ast *tree, int fd_out);
-void	create_new_shlvl(t_env *data, int shlvl);
-void	setup_child_signals(void);
-int	builtin_cd(t_ast *data, t_ast *tree, int fd_out);
-void	update_env_var(t_ast *data, const char *key, const char *value);
-int	execute_home(t_ast *data, char *path, char *oldpwd);
-void	handle_redir_in(t_ast *node, char **last_red_inp);
-void	print_error(char *filename, char *error_msg);
-int	hh(t_ast *node, t_ast *data, char **delim, int *fd);
-int	open_regular_input(char *last_red_inp);
-void		child_process_handler(t_ast *data, t_ast *tree, int fd_inp, int fd_out);
+int			builtin_env(t_ast *data, t_ast *tree, int fd_out);
+int			builtin_pwd(t_ast *data, t_ast *tree, int fd_out);
+int			builtin_unset(t_ast *data, t_ast *tree, int fd_out);
+int			builtin_export(t_ast *data, t_ast *tree, int fd_out);
+void		create_new_shlvl(t_env *data, int shlvl);
+void		setup_child_signals(void);
+int			builtin_cd(t_ast *data, t_ast *tree, int fd_out);
+void		update_env_var(t_ast *data, const char *key, const char *value);
+int			execute_home(t_ast *data, char *path, char *oldpwd);
+void		handle_redir_in(t_ast *node, char **last_red_inp);
+void		print_error(char *filename, char *error_msg);
+int			hh(t_ast *node, t_ast *data, char **delim, int *fd);
+int			open_regular_input(char *last_red_inp);
+void		child_process_handler(t_ast *data,
+				t_ast *tree, int fd_inp, int fd_out);
 void		close_pipe(int fd[2]);
 int			setup_pipe(int fd[2]);
-void	execute_command(t_ast *data, t_ast *tree, int fd_in, int fd_out);
-void	setup_child_redirections(int fd_in, int fd_out);
-int	parent_process(pid_t pid, t_ast *data);
-int	setup_input_fd(t_ast *data, t_ast *tree);
-int	setup_output_fd(t_ast *data, t_ast *tree);
-void	close_fds(int fd_in, int fd_out);
-int	is_hidden_file(char *pattern, const char *filename);
-void	split_pattern(const char *pattern, char **dir_part, char **file_part);
-int	has_wildcard(const char *str);
-void	free_matches_array(char **matches);
-char	**finalize_args_array(char **args, int count);
-void	add_arg_to_args(char ***new_args, int *new_count, char *arg);
-void	process_all_arguments(char **args, char ***new_args, int *new_count);
-void	cleanup_resources(int fd_in, int fd_out, char **expanded_args);
+void		execute_command(t_ast *data, t_ast *tree, int fd_in, int fd_out);
+void		setup_child_redirections(int fd_in, int fd_out);
+int			parent_process(pid_t pid, t_ast *data);
+int			setup_input_fd(t_ast *data, t_ast *tree);
+int			setup_output_fd(t_ast *data, t_ast *tree);
+void		close_fds(int fd_in, int fd_out);
+int			is_hidden_file(char *pattern, const char *filename);
+void		split_pattern(const char *pattern,
+				char **dir_part, char **file_part);
+int			has_wildcard(const char *str);
+void		free_matches_array(char **matches);
+char		**finalize_args_array(char **args, int count);
+void		add_arg_to_args(char ***new_args, int *new_count, char *arg);
+void		process_all_arguments(char **args,
+				char ***new_args, int *new_count);
+void		cleanup_resources(int fd_in, int fd_out, char **expanded_args);
 t_env		*get_env_node(t_env *env_list, const char *name);
-char    **finalize_matches(char **matches, int count);
-char    **process_dir_entries(DIR *dir, char *file_part, char *dir_part, int *count);
-char	**expand_wildcard(char *pattern);
-char    **handle_no_wildcard(char *pattern);
-char	*ft_strcpy(char *dest, const char *src);
-char	*ft_strcat(char *dest, const char *src);
-int	handle_pwd_errors(char *old_pwd, int error_code);
-int	update_directory(t_ast *data, char *path, char *old_pwd);
+char		**finalize_matches(char **matches, int count);
+char		**process_dir_entries(DIR *dir, char *file_part,
+				char *dir_part, int *count);
+char		**expand_wildcard(char *pattern);
+char		**handle_no_wildcard(char *pattern);
+char		*ft_strcpy(char *dest, const char *src);
+char		*ft_strcat(char *dest, const char *src);
+int			handle_pwd_errors(char *old_pwd, int error_code);
+int			update_directory(t_ast *data, char *path, char *old_pwd);
 bool		is_valid_identifier(const char *name);
 void		incr_shell_lvl(t_env *data);
 void		print_export_error(char *arg);
@@ -381,6 +384,8 @@ bool		has_whitespace_between(t_token *prev, t_token *curr);
 bool		is_only_whitespaces(char *str);
 bool		return_pipes_mssg(bool *expecting_cmd);
 bool		check_redirection_before_pipe(t_token *curr, t_token *head);
+bool		is_noclobber_operator(t_token *redir, t_token *pipe);
+bool		check_is_noclobber_operator(t_token *prev, t_token *curr);
 
 // Redirect
 bool		validate_redirection(t_token *tokenize);

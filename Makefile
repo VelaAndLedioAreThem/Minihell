@@ -6,7 +6,7 @@
 #    By: codespace <codespace@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/04/13 00:11:52 by ldurmish         ###   ########.fr        #
+#    Updated: 2025/05/04 20:48:14 by ldurmish         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME = minishell
 
 # Compiler Settings
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g 
+CFLAGS = -Wall -Wextra -Werror -O3 -g
 INCLUDE = -I include/ -I libft/include
 LIBFT_DIR = libft/
 LIBFT = $(LIBFT_DIR)/libft.a

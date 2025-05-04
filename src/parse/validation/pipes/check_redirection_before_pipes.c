@@ -6,11 +6,33 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:08:34 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/12 21:22:53 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/04 20:44:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+
+bool	check_is_noclobber_operator(t_token *prev, t_token *curr)
+{
+	t_token		*next;
+
+	if (prev && is_noclobber_operator(prev, curr))
+	{
+		next = curr->next;
+		while (next && next->type == TOKEN_WHITESPACE)
+			next = next->next;
+		while (next && next->type == TOKEN_WORD
+			&& is_only_whitespaces(next->value))
+			next = next->next;
+		if (!next || next->type != TOKEN_WORD
+			|| is_only_whitespaces(next->value))
+		{
+			report_error(ERR_SYNTAX, "missing_filename after '>|'");
+			return (false);
+		}
+	}
+	return (true);
+}
 
 static bool	is_direct_redir_to_pipe(t_token *curr, t_token *head)
 {
@@ -19,8 +41,7 @@ static bool	is_direct_redir_to_pipe(t_token *curr, t_token *head)
 	check = head;
 	while (check != curr)
 	{
-		if ((check->type == TOKEN_APPEND || check->type == TOKEN_REDIRECT_OUT)
-			&& check->next == curr)
+		if (check->type == TOKEN_REDIRECT_OUT && check->next == curr)
 			return (true);
 		check = check->next;
 	}
@@ -59,8 +80,8 @@ static bool	missing_filename(t_token *curr, t_token *head)
 bool	check_redirection_before_pipe(t_token *curr, t_token *head)
 {
 	if (is_direct_redir_to_pipe(curr, head))
-		return (true);
-	if (missing_filename(curr, head))
+		return (false);
+	if (!missing_filename(curr, head))
 	{
 		report_error(ERR_SYNTAX, "missing filename before pipes");
 		return (false);

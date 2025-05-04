@@ -6,11 +6,12 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/02 23:02:47 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/04 17:55:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+#include <stdbool.h>
 
 void	process_quotes(char c, t_quotes *quote)
 {
@@ -64,6 +65,8 @@ bool	check_count_paren(t_token *tokenize)
 {
 	int		paren_count;
 
+	if (!tokenize)
+		return (true);
 	paren_count = count_parenthesis(tokenize);
 	if (paren_count != 0)
 	{
@@ -82,6 +85,7 @@ bool	validation_parenthesis(t_token *tokenize)
 {
 	t_token		*current;
 	t_token		*prev;
+	t_token		*prev_non_ws;
 
 	current = tokenize;
 	prev = NULL;
@@ -89,21 +93,18 @@ bool	validation_parenthesis(t_token *tokenize)
 	{
 		if (current->type == TOKEN_PAREN_OPEN)
 		{
-            t_token *prev_non_ws = prev;
-            if (prev_non_ws != NULL) {
-                if (prev_non_ws->type == TOKEN_WORD) {
-                    report_error(ERR_SYNTAX, "missing operator before '('");
-                    return (false);
-                }
-            }
-        }
-        if (current->type != TOKEN_WHITESPACE) {
-            prev = current;
-        }
-        current = current->next;
-    }
-	if (!tokenize)
-		return (true);
+			prev_non_ws = prev;
+			if (prev_non_ws != NULL)
+			{
+				if (prev_non_ws->type == TOKEN_WORD)
+					return (report_error(ERR_SYNTAX,
+							"missing operator before '('"), false);
+			}
+		}
+		if (current->type != TOKEN_WHITESPACE)
+			prev = current;
+		current = current->next;
+	}
 	if (!check_count_paren(tokenize))
 		return (false);
 	return (true);

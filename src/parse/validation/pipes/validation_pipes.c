@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:22:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 15:31:46 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/05/04 19:25:27 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,6 @@ bool	check_operator_before_pipe(t_token *prev, t_token *curr)
 
 	if (!is_operator_token(prev))
 		return (true);
-	if (prev->type == TOKEN_REDIRECT_OUT && ft_strcmp(prev->value, ">") == 0
-		&& !has_whitespace_between(prev, curr))
-		return (true);
-	if (prev->type == TOKEN_APPEND && ft_strcmp(prev->value, ">>") == 0
-		&& !has_whitespace_between(prev, curr))
-		return (true);
 	check = prev->next;
 	has_word = false;
 	while (check && check != curr)
@@ -65,6 +59,8 @@ bool	validate_pipe_position(t_token *prev, t_token *curr, t_token *head)
 {
 	t_token		*next;
 
+	if (!check_is_noclobber_operator(prev, curr))
+		return (false);
 	if (!check_redirection_before_pipe(curr, head))
 		return (false);
 	if (curr->next == NULL)
