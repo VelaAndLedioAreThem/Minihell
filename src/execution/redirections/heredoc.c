@@ -18,67 +18,35 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 
-static	void	handle_sigint(int sig, siginfo_t *info, void *context)
-{
-	(void)sig;
-	(void)info;
-	(void)context;
-	ioctl(STDIN_FILENO, TIOCSTI, "\n");
-}
 
-static void	configure_signals(t_signal *sig)
+/* push `path` into data->heredoc_files (O(1) amortised) */
+int	add_heredoc_file(t_ast *data, char *path)
 {
-	sig->sa_new.sa_sigaction = handle_sigint;
-	sigemptyset(&sig->sa_new.sa_mask);
-	sig->sa_new.sa_flags = SA_SIGINFO;
-	sigaction(SIGINT, &sig->sa_new, &sig->sa_old);
-}
+	char	**new;
+	int		i;
 
-static int	process_input_loop(int fd, char *delimiter, t_signal *sig)
-{
-	char	*line;
-	int		result;
-
-	result = 0;
-	while (!sig->sigint)
+	if (data->heredoc_count + 1 > data->heredoc_cap)
 	{
-		line = readline("> ");
-		if (!line)
-		{
-			ft_putstr_fd("minishell: warning: here-doc delimited by EOF\n", 2);
-			break ;
-		}
-		if (ft_strcmp(line, delimiter) == 0)
-		{
-			free(line);
-			break ;
-		}
-		dprintf(fd, "%s\n", line);
-		free(line);
+		data->heredoc_cap = (data->heredoc_cap == 0) ? 4 : data->heredoc_cap * 2;
+		new = (char **)malloc(sizeof(char *) * data->heredoc_cap);
+		if (!new)
+			return (1);
+		i = -1;
+		while (++i < data->heredoc_count)
+			new[i] = data->heredoc_files[i];
+		free(data->heredoc_files);
+		data->heredoc_files = new;
 	}
-	if (sig->sigint)
-		result = -1;
-	return (result);
+	data->heredoc_files[data->heredoc_count++] = path;
+	return (0);
 }
 
-int	create_heredoc_temp_file(char *delimiter, t_ast *data)
+void	free_heredoc_list(t_ast *data)
 {
-	t_signal	sig;
-	char		*tmpname;
-	int			fd;
+	int i;
 
-	tmpname = "/tmp/minishell_heredoc_XXXXXX";
-	fd = mkstemp(tmpname);
-	if (fd < 0)
-		return (-1);
-	configure_signals(&sig);
-	data->heredoc_files = realloc(data->heredoc_files,
-			sizeof(char *) * (data->heredoc_count + 1));
-	data->heredoc_files[data->heredoc_count] = ft_strdup(tmpname);
-	data->heredoc_count++;
-	if (process_input_loop(fd, delimiter, &sig) == -1)
-		return (-1);
-	sigaction(SIGINT, &sig.sa_old, NULL);
-	close(fd);
-	return (open(tmpname, O_RDONLY));
+	i = -1;
+	while (++i < data->heredoc_count)
+		free(data->heredoc_files[i]);
+	free(data->heredoc_files);
 }

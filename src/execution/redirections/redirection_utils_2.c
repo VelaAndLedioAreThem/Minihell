@@ -16,33 +16,12 @@
 #include <string.h>
 #include <unistd.h>
 
-int	get_input_file(t_ast *data, t_ast *tree)
+void	print_error(char *filename, char *error_msg)
 {
-	t_ast	*curr;
-	char	*last_red_inp;
-	char	*lhd;
-	int		fd;
-
-	curr = tree;
-	last_red_inp = NULL;
-	lhd = NULL;
-	fd = STDIN_FILENO;
-	while (curr)
-	{
-		handle_redir_in(curr, &last_red_inp);
-		if (curr->type == AST_EOF && hh(curr, data, &lhd, &fd) == -1)
-			return (-1);
-		if (curr->left)
-		{
-			fd = get_input_file(data, curr->left);
-			if (fd == -1)
-				return (-1);
-		}
-		curr = curr->right;
-	}
-	if (!lhd && last_red_inp)
-		fd = open_regular_input(last_red_inp);
-	return (fd);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(filename, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putendl_fd(error_msg, STDERR_FILENO);
 }
 
 static void	find_last_output_redirection(t_ast *curr, char **file, int *type)
@@ -51,7 +30,7 @@ static void	find_last_output_redirection(t_ast *curr, char **file, int *type)
 	{
 		if (curr->type == AST_REDIR_OUT || curr->type == AST_REDIR_APPEND)
 		{
-			*file = curr->token->value;
+			*file = curr->cmd->args[0];
 			*type = curr->type;
 		}
 		curr = curr->right;

@@ -56,7 +56,6 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	}
 	else if (quote_type == '\'')
 		current->single_quotes = 1;
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -79,7 +78,6 @@ int	handle_word(t_token **token, char *input, int *i)
 	if (!current)
 		return (-1);
 	current->expandable = 1;
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	(*i)--;
 	return (1);
@@ -101,7 +99,6 @@ int	handle_whitespace(t_token **token, char *input, int *i)
 	free(whitespace);
 	if (!curr)
 		return (-1);
-	printf("TOKEN: Whitespace\n");
 	append_node(token, curr);
 	return (1);
 }

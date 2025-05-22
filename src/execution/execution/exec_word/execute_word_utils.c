@@ -12,33 +12,6 @@
 
 #include "minishell.h"
 
-// Set up input file descriptor
-int	setup_input_fd(t_ast *data, t_ast *tree)
-{
-	int	fd_in;
-
-	fd_in = get_input_file(data, tree);
-	if (fd_in < 0)
-	{
-		data->exit_status = 1;
-		return (-1);
-	}
-	return (fd_in);
-}
-
-// Set up output file descriptor
-int	setup_output_fd(t_ast *data, t_ast *tree)
-{
-	int	fd_out;
-
-	fd_out = get_output_file(tree);
-	if (fd_out < 0)
-	{
-		data->exit_status = 1;
-		return (-1);
-	}
-	return (fd_out);
-}
 
 // Close file descriptors if they're not standard
 void	close_fds(int fd_in, int fd_out)

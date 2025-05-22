@@ -99,7 +99,7 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths;
+	char	**paths = NULL;
 	char	*full_path;
 	char	*result;
 	int		i;

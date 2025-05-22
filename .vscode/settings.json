@@ -2,7 +2,8 @@
   "files.associations": {
     "minishell.h": "c",
     "libft.h": "c",
-    "types.h": "c"
+    "types.h": "c",
+    "ioctl.h": "c"
   },
   "[c]": {
     "editor.defaultFormatter": "keyhr.42-c-format"

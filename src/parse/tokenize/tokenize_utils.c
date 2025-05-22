@@ -35,7 +35,6 @@ int	handle_single_operator(t_token **token, char c)
 		return (0);
 	if (!current)
 		return (-1);
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -93,7 +92,6 @@ int	return_parenthesis(t_token **token, char c)
 		current = create_node(")", TOKEN_PAREN_CLOSE);
 	if (!current)
 		return (-1);
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
