@@ -60,16 +60,22 @@ int	execute_tree(t_ast *data, t_ast *tree)
 	{
 		return (execute_group(data, tree));
 	}
-	else if (tree->type == AST_REDIR_IN || tree->type == AST_REDIR_OUT
-		|| tree->type == AST_REDIR_APPEND)
-		return ((tree->type == AST_REDIR_IN)
-			? setup_input_fd(data, tree) : setup_output_fd(data, tree));
-	else if (tree->type == AST_REDIR_HERDOC)
+	else if (tree->type == AST_REDIR_IN || tree->type == AST_REDIR_OUT 
+			|| tree->type == AST_REDIR_APPEND || tree->type == AST_REDIR_HERDOC)
 	{
-		if (create_heredoc_temp_file(data, tree))
-			return (data->exit_status);
-		tree->type = AST_REDIR_IN;
-		return (setup_input_fd(data, tree));
+		if (tree->type == AST_REDIR_IN)
+			return (setup_input_fd(data, tree));
+		else if (tree->type == AST_REDIR_OUT)
+			return (setup_output_fd(data, tree));
+		else if (tree->type == AST_REDIR_APPEND)
+			return (setup_output_fd(data, tree));
+		else if (tree->type == AST_REDIR_HERDOC)
+		{
+			if (create_heredoc_temp_file(data, tree))
+				return (data->exit_status);
+			tree->type = AST_REDIR_IN;            
+			return (setup_input_fd(data, tree));
+		}
 	}
 	else if (tree->type == AST_AND || tree->type == AST_OR)
 	{

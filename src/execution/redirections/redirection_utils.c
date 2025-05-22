@@ -7,14 +7,20 @@
 #include <unistd.h>
 #include <readline/readline.h>
 
-/* utility: return filename string or NULL */
+/* Return the filename that follows a redirection, or NULL */
 static char	*redir_path(t_ast *n)
 {
-	if (n && n->cmd && n->cmd->args[0])
-		return (n->cmd->args[0]);
-	if (n && n->cmd && n->cmd->args && n->cmd->args[0])
+	if (!n)
+		return (NULL);
+	if (n->cmd && n->cmd->args && n->cmd->args[0])      /* fallback */
 		return (n->cmd->args[0]);
 	return (NULL);
+}
+
+void	print_first_arg(t_ast *node)
+{
+	if (node && node->cmd && node->cmd->args && node->cmd->args[0])
+		ft_putendl_fd(node->cmd->args[0], STDOUT_FILENO);
 }
 
 /* < file */
@@ -23,7 +29,8 @@ int	setup_input_fd(t_ast *data, t_ast *node)
 	int	save;
 	int	fd;
 	char	*path;
-
+	print_first_arg(node);
+	print_first_arg(data);
 	path = redir_path(node->right);
 	if (!path)
 		return (data->exit_status = 1);

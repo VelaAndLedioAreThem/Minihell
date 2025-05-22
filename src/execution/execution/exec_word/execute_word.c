@@ -32,17 +32,21 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 }
 
 // Function to set up file descriptors and validate them
-static int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
+/* ─── src/execute_word.c ──────────────────────────────────────────────── */
+/* Replace your current setup_fds() with this minimal version.           */
+/* It just keeps defaults; all redirection is handled by execute_tree(). */
+
+static int  setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
 {
-	*fd_in = setup_input_fd(data, tree);
-	*fd_out = setup_output_fd(data, tree);
-	if (*fd_in < 0 || *fd_out < 0)
-	{
-		close_fds(*fd_in, *fd_out);
-		return (0);
-	}
+	(void)data;
+	(void)tree;
+	*fd_in  = STDIN_FILENO;
+	*fd_out = STDOUT_FILENO;
 	return (1);
 }
+
+/* and DELETE the debug prints in setup_input_fd() */
+
 
 // Main function that orchestrates the execution
 int	execute_word(t_ast *data, t_ast *tree)
