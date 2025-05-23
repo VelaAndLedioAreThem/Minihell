@@ -93,3 +93,14 @@ char	*ft_strcat(char *dest, const char *src)
 	dest[i] = '\0';
 	return (dest);
 }
+
+t_ast  *new_ast_node(t_ast_type type)
+{
+	t_ast *n;
+
+	n = ft_calloc(1, sizeof(t_ast));   /* zeroes every byte */
+	if (!n)
+		return (NULL);
+	n->type = type;
+	return (n);
+}

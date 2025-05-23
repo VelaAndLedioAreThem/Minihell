@@ -12,15 +12,9 @@ static char	*redir_path(t_ast *n)
 {
 	if (!n)
 		return (NULL);
-	if (n->cmd && n->cmd->args && n->cmd->args[0])      /* fallback */
+	if (n->cmd && n->cmd->args && n->cmd->args[0])      
 		return (n->cmd->args[0]);
 	return (NULL);
-}
-
-void	print_first_arg(t_ast *node)
-{
-	if (node && node->cmd && node->cmd->args && node->cmd->args[0])
-		ft_putendl_fd(node->cmd->args[0], STDOUT_FILENO);
 }
 
 /* < file */
@@ -29,8 +23,7 @@ int	setup_input_fd(t_ast *data, t_ast *node)
 	int	save;
 	int	fd;
 	char	*path;
-	print_first_arg(node);
-	print_first_arg(data);
+
 	path = redir_path(node->right);
 	if (!path)
 		return (data->exit_status = 1);
@@ -86,23 +79,21 @@ int	create_heredoc_temp_file(t_ast *data, t_ast *node)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || !ft_strcmp(line, redir_path(node->right)))
+		if (!line || !ft_strcmp(line, node->right->cmd->args[0]))
 			break ;
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
 	free(line);
 	close(fd);
-	/* Replace path so the node becomes "< tmpfile" */
-	if (node->right->token && node->right->token->value)
-		free(node->right->token->value);
-	else if (node->right->cmd && node->right->cmd->args)
-		free(node->right->cmd->args[0]);
-	node->right->token = NULL;                     /* normalise to token-less */
-	node->right->cmd = NULL;
-	node->right->token = ft_calloc(1, sizeof(t_token));
-	if (!node->right->token || !(node->right->token->value = ft_strdup(tmp))
+	
+	if (node->right->cmd && node->right->cmd->args)
+	{
+	free(node->right->cmd->args[0]);
+	node->right->cmd->args[0] = ft_strdup(tmp);
+	if (!node->right->cmd->args[0]
 		|| add_heredoc_file(data, ft_strdup(tmp)))
 		return (data->exit_status = 1);
+	}
 	return (0);
 }

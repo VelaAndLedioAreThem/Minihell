@@ -198,7 +198,6 @@ typedef struct s_ast
 	t_token			*token;
 	char			**heredoc_files;
 	int				heredoc_count;
-	int				heredoc_cap;      
 	t_env			*env_list;
 }	t_ast;
 
@@ -224,6 +223,8 @@ void free_heredoc_list(t_ast *data);
 int  setup_input_fd(t_ast *data, t_ast *node);
 int  setup_output_fd(t_ast *data, t_ast *node);
 int  create_heredoc_temp_file(t_ast *data, t_ast *node);
+void	reset_heredoc_list(t_ast *data);
+void	free_heredoc_list(t_ast *data);
 
 
 int			builtin_env(t_ast *data, t_ast *tree, int fd_out);

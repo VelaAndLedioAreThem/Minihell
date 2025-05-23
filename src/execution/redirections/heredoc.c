@@ -22,31 +22,60 @@
 /* push `path` into data->heredoc_files (O(1) amortised) */
 int	add_heredoc_file(t_ast *data, char *path)
 {
-	char	**new;
 	int		i;
+	char	**new_files;
 
-	if (data->heredoc_count + 1 > data->heredoc_cap)
+	if (data->heredoc_files == NULL)
 	{
-		data->heredoc_cap = (data->heredoc_cap == 0) ? 4 : data->heredoc_cap * 2;
-		new = (char **)malloc(sizeof(char *) * data->heredoc_cap);
-		if (!new)
+		data->heredoc_files = malloc(sizeof(char *) * 2);
+		if (!data->heredoc_files)
 			return (1);
-		i = -1;
-		while (++i < data->heredoc_count)
-			new[i] = data->heredoc_files[i];
-		free(data->heredoc_files);
-		data->heredoc_files = new;
+		data->heredoc_files[0] = path;
+		data->heredoc_files[1] = NULL;
 	}
-	data->heredoc_files[data->heredoc_count++] = path;
+	else
+	{
+		i = 0;
+		while (data->heredoc_files[i])
+			i++;
+		new_files = realloc(data->heredoc_files, sizeof(char *) * (i + 2));
+		if (!new_files)
+			return (1);
+		new_files[i] = path;
+		new_files[i + 1] = NULL;
+		data->heredoc_files = new_files;
+	}
+	data->heredoc_count++;
 	return (0);
 }
 
+
+
+/* Frees everything (classic cleanup) */
 void	free_heredoc_list(t_ast *data)
 {
-	int i;
+	int	i;
 
-	i = -1;
-	while (++i < data->heredoc_count)
-		free(data->heredoc_files[i]);
-	free(data->heredoc_files);
+	for (i = 0; i < data->heredoc_count; i++)
+	{
+		free(data->heredoc_files[i]);   /* free the string */
+		data->heredoc_files[i] = NULL;  /* optional: poison entry */
+	}
+	free(data->heredoc_files);         /* free the array of char* */
+	data->heredoc_files = NULL;
+	data->heredoc_count = 0;
+}
+
+/* Optional: keep the array but blank it for re-use */
+void	reset_heredoc_list(t_ast *data)
+{
+	int	i;
+
+	for (i = 0; i < data->heredoc_count; i++)
+	{
+		free(data->heredoc_files[i]);   /* release string */
+		data->heredoc_files[i] = NULL;  /* mark slot empty */
+	}
+	/* keep the array body so add_heredoc_file can just overwrite */
+	data->heredoc_count = 0;
 }

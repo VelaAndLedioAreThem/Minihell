@@ -26,7 +26,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		prompt = generate_prompt();
-		input = readline(prompt);
+ 		input = readline(prompt);
 		free(prompt);
 		if (!input)
 		{
