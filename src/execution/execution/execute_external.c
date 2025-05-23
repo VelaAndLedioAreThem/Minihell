@@ -50,4 +50,3 @@ int	parent_process_handler(t_ast *data, pid_t pid, int fd_inp, int fd_out)
 		return (WEXITSTATUS(status));
 	return (1);
 }
-

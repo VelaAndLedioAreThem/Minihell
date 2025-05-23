@@ -12,7 +12,6 @@
 
 #include "minishell.h"
 
-// Fork new process for external command
 int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 {
 	pid_t	pid;
@@ -31,24 +30,15 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	return (0);
 }
 
-// Function to set up file descriptors and validate them
-/* ─── src/execute_word.c ──────────────────────────────────────────────── */
-/* Replace your current setup_fds() with this minimal version.           */
-/* It just keeps defaults; all redirection is handled by execute_tree(). */
-
-static int  setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
+static int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
 {
 	(void)data;
 	(void)tree;
-	*fd_in  = STDIN_FILENO;
+	*fd_in = STDIN_FILENO;
 	*fd_out = STDOUT_FILENO;
 	return (1);
 }
 
-/* and DELETE the debug prints in setup_input_fd() */
-
-
-// Main function that orchestrates the execution
 int	execute_word(t_ast *data, t_ast *tree)
 {
 	int		fd_in;

@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-
-// Close file descriptors if they're not standard
 void	close_fds(int fd_in, int fd_out)
 {
 	if (fd_in != STDIN_FILENO)
@@ -28,7 +26,6 @@ void	cleanup_resources(int fd_in, int fd_out, char **expanded_args)
 	close_fds(fd_in, fd_out);
 }
 
-// Setup child process redirections
 void	setup_child_redirections(int fd_in, int fd_out)
 {
 	if (fd_in != STDIN_FILENO)

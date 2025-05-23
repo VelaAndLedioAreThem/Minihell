@@ -18,9 +18,8 @@
 #include <signal.h>
 #include <sys/ioctl.h>
 
-
 /* push `path` into data->heredoc_files (O(1) amortised) */
-int	add_heredoc_file(t_ast *data, char *path)
+int	add_heredoc(t_ast *data, char *path)
 {
 	int		i;
 	char	**new_files;
@@ -49,33 +48,17 @@ int	add_heredoc_file(t_ast *data, char *path)
 	return (0);
 }
 
-
-
-/* Frees everything (classic cleanup) */
 void	free_heredoc_list(t_ast *data)
 {
 	int	i;
 
-	for (i = 0; i < data->heredoc_count; i++)
-	{
-		free(data->heredoc_files[i]);   /* free the string */
-		data->heredoc_files[i] = NULL;  /* optional: poison entry */
-	}
-	free(data->heredoc_files);         /* free the array of char* */
+	i = -1;
 	data->heredoc_files = NULL;
 	data->heredoc_count = 0;
-}
-
-/* Optional: keep the array but blank it for re-use */
-void	reset_heredoc_list(t_ast *data)
-{
-	int	i;
-
-	for (i = 0; i < data->heredoc_count; i++)
+	while (++i < data->heredoc_count)
 	{
-		free(data->heredoc_files[i]);   /* release string */
-		data->heredoc_files[i] = NULL;  /* mark slot empty */
+		free(data->heredoc_files[i]);
+		data->heredoc_files[i] = NULL;
 	}
-	/* keep the array body so add_heredoc_file can just overwrite */
-	data->heredoc_count = 0;
+	free(data->heredoc_files);
 }

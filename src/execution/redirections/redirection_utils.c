@@ -1,5 +1,13 @@
 /* ************************************************************************** */
-/*   redirections.c                                                           */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/23 13:54:17 by vela              #+#    #+#             */
+/*   Updated: 2025/05/23 13:54:17 by vela             ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -12,16 +20,15 @@ static char	*redir_path(t_ast *n)
 {
 	if (!n)
 		return (NULL);
-	if (n->cmd && n->cmd->args && n->cmd->args[0])      
+	if (n->cmd && n->cmd->args && n->cmd->args[0])
 		return (n->cmd->args[0]);
 	return (NULL);
 }
 
-/* < file */
 int	setup_input_fd(t_ast *data, t_ast *node)
 {
-	int	save;
-	int	fd;
+	int		save;
+	int		fd;
 	char	*path;
 
 	path = redir_path(node->right);
@@ -40,19 +47,21 @@ int	setup_input_fd(t_ast *data, t_ast *node)
 	return (data->exit_status);
 }
 
-/* > file  |  >> file */
 int	setup_output_fd(t_ast *data, t_ast *node)
 {
-	int	save;
-	int	fd;
-	int	flags;
+	int		save;
+	int		fd;
+	int		flags;
 	char	*path;
 
 	path = redir_path(node->right);
 	if (!path)
 		return (data->exit_status = 1);
-	flags = O_WRONLY | O_CREAT | (node->type == AST_REDIR_APPEND ? O_APPEND
-			: O_TRUNC);
+	flags = O_WRONLY | O_CREAT;
+	if (node->type == AST_REDIR_APPEND)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
 	fd = open(path, flags, 0644);
 	if (fd < 0)
 		return (perror(path), data->exit_status = 1);
@@ -66,10 +75,9 @@ int	setup_output_fd(t_ast *data, t_ast *node)
 	return (data->exit_status);
 }
 
-/* << DELIM  → tmp file  +  token swap */
 int	create_heredoc_temp_file(t_ast *data, t_ast *node)
 {
-	char	tmp[] = "/tmp/minishell_heredocXXXXXX";
+	char	tmp[sizeof("/tmp/minishell_heredocXXXXXX")];
 	char	*line;
 	int		fd;
 
@@ -86,14 +94,12 @@ int	create_heredoc_temp_file(t_ast *data, t_ast *node)
 	}
 	free(line);
 	close(fd);
-	
 	if (node->right->cmd && node->right->cmd->args)
 	{
-	free(node->right->cmd->args[0]);
-	node->right->cmd->args[0] = ft_strdup(tmp);
-	if (!node->right->cmd->args[0]
-		|| add_heredoc_file(data, ft_strdup(tmp)))
-		return (data->exit_status = 1);
+		free(node->right->cmd->args[0]);
+		node->right->cmd->args[0] = ft_strdup(tmp);
+		if (!node->right->cmd->args[0] || add_heredoc(data, ft_strdup(tmp)))
+			return (data->exit_status = 1);
 	}
 	return (0);
 }
