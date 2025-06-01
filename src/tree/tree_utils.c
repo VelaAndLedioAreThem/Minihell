@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 17:02:45 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/02 00:38:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	free_ast(t_ast *node)
 			i = -1;
 			while (node->cmd->args[++i])
 				free(node->cmd->args[i]);
-			free(node->cmd->args[i]);
+			free(node->cmd->args);
 		}
 		if (node->cmd->infile)
 			free(node->cmd->infile);
@@ -92,4 +92,5 @@ void	free_ast(t_ast *node)
 			free(node->cmd->heredoc_delim);
 		free(node->cmd);
 	}
+	free(node);
 }
