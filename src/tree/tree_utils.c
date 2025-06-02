@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/02 13:30:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/02 13:33:37 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/06/02 00:38:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -93,6 +93,5 @@ void	free_ast(t_ast *node)
 			free(node->cmd->heredoc_delim);
 		free(node->cmd);
 	}
-	free (node);
 	free(node);
 }
