@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 22:15:23 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/02 00:39:33 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_ast	*create_right_node(t_token **token)
 	if (!right_node)
 		return (NULL);
 	right_node->cmd = create_command_struct();
-	if (!right_node)
+	if (!right_node->cmd)
 	{
 		free(right_node);
 		return (NULL);
@@ -67,6 +67,7 @@ t_ast	*create_right_node(t_token **token)
 	right_node->cmd->args = malloc(sizeof(char *) * 2);
 	if (!right_node->cmd->args)
 	{
+		free(right_node->cmd);
 		free(right_node);
 		return (NULL);
 	}

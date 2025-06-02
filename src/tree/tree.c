@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:32:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 20:06:32 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/02 00:40:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,12 +74,12 @@ t_ast	*init_logic_node(t_ast *left, t_token **tokens)
 	if (curr->next)
 		curr = curr->next;
 	else
-		return (NULL);
+		return (free_ast(node), NULL);
 	skip_tree_whitespaces(&curr);
 	*tokens = curr;
 	node->right = parse_pipeline(tokens);
 	if (!node->right)
-		return (free_ast(left), NULL);
+		return (free_ast(node), NULL);
 	return (node);
 }
 
