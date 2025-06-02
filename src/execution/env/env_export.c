@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_export.c                                       :+:      :+:    :+:   */
+/*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/02 13:11:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,23 +32,23 @@ static int	handle_export_error(char *arg)
 
 static int	process_export_arg(t_ast *data, char *arg)
 {
-  char	*eq;
-  char	*name;
-  t_env	*env;
+	char	*eq;
+	char	*name;
+	t_env	*env;
 
-  eq = ft_strchr(arg, '=');
-  if (eq)
-	name = ft_substr(arg, 0, eq - arg);
-  else
-	name = ft_strdup(arg);
-  if (!name || !is_valid_identifier(name))
-	return (free(name), handle_export_error(arg));
-  env = get_env_node(data->env_list, name);
-  if (env)
-	update_env_variable(env, name, eq);
-  else if (create_new_env(data, name, eq))
-	return (1);
-  return (0);
+	eq = ft_strchr(arg, '=');
+	if (eq)
+		name = ft_substr(arg, 0, eq - arg);
+	else
+		name = ft_strdup(arg);
+	if (!name || !is_valid_identifier(name))
+		return (free(name), handle_export_error(arg));
+	env = get_env_node(data->env_list, name);
+	if (env)
+		update_env_variable(env, name, eq);
+	else if (create_new_env(data, name, eq))
+		return (1);
+	return (0);
 }
 
 int	execute_export(t_ast *data, t_ast *tree, int fd_out)

@@ -6,11 +6,11 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/02 13:33:14 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/04/10 21:21:04 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "minishell.h"
 
 int	execute_group(t_ast *data, t_ast *tree)
 {
@@ -42,7 +42,6 @@ int	execute_sequence(t_ast *data, t_ast *tree)
 	execute_tree(data, tree->left);
 	return (execute_tree(data, tree->right));
 }
-
 int redirect_handler(t_ast *data, t_ast *tree)
 {
 	if (tree->type == AST_REDIR_IN)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_env_utils_2.c                             :+:      :+:    :+:   */
+/*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/02 13:15:19 by ldurmish         ###   ########.fr       */
+/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,17 +49,17 @@ void	update_env_var(t_ast *data, const char *key, const char *value)
 
 int	create_new_env(t_ast *d, char *n, char *eq)
 {
-  t_env	*env;
+	t_env	*env;
 
-  env = malloc(sizeof(t_env));
-  if (!env)
-	return (free(n), 1);
-  env->key = n;
-  if (eq)
-	env->value = ft_strdup(eq + 1);
-  else
-	env->value = ft_strdup("");
-  env->next = d->env_list;
-  d->env_list = env;
-  return (0);
+	env = malloc(sizeof(t_env));
+	if (!env)
+		return (free(n), 1);
+	env->key = n;
+	if (eq)
+		env->value = ft_strdup(eq + 1);
+	else
+		env->value = ft_strdup("");
+	env->next = d->env_list;
+	d->env_list = env;
+	return (0);
 }
