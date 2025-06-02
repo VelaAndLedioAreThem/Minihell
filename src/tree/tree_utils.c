@@ -6,11 +6,8 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/06/02 01:07:43 by ldurmish         ###   ########.fr       */
-=======
+/*   Updated: 2025/06/02 13:30:00 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/06/02 00:38:57 by ldurmish         ###   ########.fr       */
->>>>>>> 962469b0a5eb54f5ee5feddd576b2a74f56fd7b8
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +93,6 @@ void	free_ast(t_ast *node)
 			free(node->cmd->heredoc_delim);
 		free(node->cmd);
 	}
-<<<<<<< HEAD
 	free (node);
-=======
 	free(node);
->>>>>>> 962469b0a5eb54f5ee5feddd576b2a74f56fd7b8
 }

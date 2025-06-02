@@ -6,11 +6,8 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/06/02 12:56:42 by ldurmish         ###   ########.fr       */
-=======
+/*   Updated: 2025/06/02 13:29:15 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/06/02 00:32:06 by ldurmish         ###   ########.fr       */
->>>>>>> 962469b0a5eb54f5ee5feddd576b2a74f56fd7b8
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +42,6 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 {
   t_ast *ast;
 
-<<<<<<< HEAD
 	ast = parse_tokens(tokens);
 	printf("%s\n", ast->cmd->args[0]);
 	printf("%s\n", ast->cmd->args[1]);
@@ -55,26 +51,12 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 		free(expandable);
 		return ;
 	}
-	ast->heredoc_files = NULL;
-	ast->heredoc_count = 0;
-	ast->env_list = env_list;
-	execute_tree(ast, ast);
-	free_heredoc_list(ast);
-	free_ast(ast);
-=======
-  ast = parse_tokens(tokens);
-  free_tokens(tokens);
-  if (!ast) {
-    free(expandable);
-    return;
-  }
   ast->heredoc_files = NULL;
   ast->heredoc_count = 0;
   ast->env_list = env_list;
   execute_tree(ast, ast);
   free_heredoc_list(ast);
   free_ast(ast);
->>>>>>> 962469b0a5eb54f5ee5feddd576b2a74f56fd7b8
 }
 
 void handle_input(char *input, t_env *env_list, int argc, char **argv) {
