@@ -6,7 +6,7 @@
 #    By: codespace <codespace@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/05/04 20:48:14 by ldurmish         ###   ########.fr        #
+#    Updated: 2025/06/02 11:22:45 by ldurmish         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,6 +73,7 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(EXEC_UTILS)free.c $(EXEC_UTILS)utils4.c $(TREE)parse_redir.c \
 	   $(TREE)tree_utils.c $(TREE)tree_utils_1.c $(EXEC_ENV)env_utils.c \
 	   $(EXEC_ENV)env_utils_2.c $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c \
+	   $(TREE)parse_wildcards.c\
 
 # Object files
 OBJS = $(SRCS:.c=.o)

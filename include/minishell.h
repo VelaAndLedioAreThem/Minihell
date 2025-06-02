@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/22 16:54:42 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/02 10:16:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,6 +185,17 @@ typedef struct s_args
 	int				double_quotes;
 	int				last_quotes;
 }	t_args;
+
+typedef struct s_expand_wild
+{
+	int				i;
+	int				j;
+	int				k;
+	char			**expanded;
+	char			**final_args;
+	char			**temp_args;
+	t_token			*curr;
+}	t_expand_wild;
 
 // Main struct
 typedef struct s_ast

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 17:22:02 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/02 01:12:49 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ t_ast	*parse_command_words(t_token **tokens)
 	*tokens = curr;
 	start = curr;
 	word_count = 0;
-	while (curr && curr->type == TOKEN_WORD)
+	while (curr && (curr->type == TOKEN_WORD || curr->type == TOKEN_WILDCARD))
 	{
 		word_count++;
 		curr = curr->next;

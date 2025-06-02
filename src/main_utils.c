@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/23 13:06:37 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/02 12:56:42 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,20 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 {
 	t_ast			*ast;
 
-	free(expandable);
 	ast = parse_tokens(tokens);
+	printf("%s\n", ast->cmd->args[0]);
+	printf("%s\n", ast->cmd->args[1]);
 	free_tokens(tokens);
 	if (!ast)
 	{
-		free_ast(ast);
+		free(expandable);
 		return ;
 	}
-	ast->heredoc_files = NULL; 
+	ast->heredoc_files = NULL;
 	ast->heredoc_count = 0;
 	ast->env_list = env_list;
 	execute_tree(ast, ast);
-	free_heredoc_list(ast);   
+	free_heredoc_list(ast);
 	free_ast(ast);
 }
 
