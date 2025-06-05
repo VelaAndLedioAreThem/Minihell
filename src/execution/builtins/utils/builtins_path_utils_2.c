@@ -18,7 +18,40 @@ int	handle_pwd_errors(char *old_pwd, int error_code)
 	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
 	return (error_code);
 }
+t_env	*get_env_node(t_env *env_list, const char *name)
+{
+	t_env	*current;
 
+	current = env_list;
+	while (current)
+	{
+		if (strcmp(current->key, name) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+void	update_env_var(t_ast *data, const char *key, const char *value)
+{
+	t_env	*env;
+	t_env	*new_env;
+
+	env = get_env_node(data->env_list, key);
+	if (env)
+	{
+		free(env->value);
+		env->value = ft_strdup(value);
+	}
+	else
+	{
+		new_env = malloc(sizeof(t_env));
+		new_env->key = ft_strdup(key);
+		new_env->value = ft_strdup(value);
+		new_env->next = data->env_list;
+		data->env_list = new_env;
+	}
+}
 int	update_directory(t_ast *data, char *path, char *old_pwd)
 {
 	char	*new_pwd;

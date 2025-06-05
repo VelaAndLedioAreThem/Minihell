@@ -229,6 +229,9 @@ typedef struct s_builtin
 }	t_builtin;
 
 extern pid_t	g_child_pid;
+t_env	*new_node(const char *key, const char *val);
+int		update_env_value(t_env *lst, const char *key, const char *val);
+int		add_env_node(t_env **lst, t_env *new_node);
 int  add_heredoc(t_ast *data, char *path);
 void free_heredoc_list(t_ast *data);
 int  setup_input_fd(t_ast *data, t_ast *node);
@@ -236,8 +239,10 @@ int  setup_output_fd(t_ast *data, t_ast *node);
 int  create_heredoc_temp_file(t_ast *data, t_ast *node);
 void	reset_heredoc_list(t_ast *data);
 void	free_heredoc_list(t_ast *data);
-
-
+int		split_key_value(const char *arg, char **key, char **val);
+t_env	*find_env_node(t_env *lst, const char *key);
+int set_or_append_env(t_env **env_list, const char *key, const char *value);
+int		is_valid_identifier(const char *s);
 int			builtin_env(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_pwd(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_unset(t_ast *data, t_ast *tree, int fd_out);
@@ -276,7 +281,6 @@ char		*ft_strcpy(char *dest, const char *src);
 char		*ft_strcat(char *dest, const char *src);
 int			handle_pwd_errors(char *old_pwd, int error_code);
 int			update_directory(t_ast *data, char *path, char *old_pwd);
-bool		is_valid_identifier(const char *name);
 void		incr_shell_lvl(t_env *data);
 void		print_export_error(char *arg);
 void		print_unset_error(char *name);
@@ -306,8 +310,7 @@ void		set_env_var(t_ast *data, char *var_name, const char *var_value);
 int			execute_pwd(t_ast *data, int fd_out);
 int			execute_echo(char *args[], int fd_out);
 int			execute_exit(t_ast *data, t_ast *tree);
-
-// Tokenization functions
+t_env   *create_env_node(char *input);
 t_token		*create_node(char *str, t_token_type type);
 t_token		*tokenize(char *input);
 void		append_node(t_token **token, t_token *current_token);

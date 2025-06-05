@@ -1,65 +1,74 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: you <you@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/05 12:05:00 by you               #+#    #+#             */
+/*   Updated: 2025/06/05 12:05:00 by you              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "libft.h" /* your usual libft */
 
-t_env	*get_env_node(t_env *env_list, const char *name)
+/* --- basic linked-list helpers ------------------------------------------ */
+
+t_env	*find_env_node(t_env *lst, const char *key)
 {
-	t_env	*current;
-
-	current = env_list;
-	while (current)
+	while (lst)
 	{
-		if (strcmp(current->key, name) == 0)
-			return (current);
-		current = current->next;
+		if (!ft_strcmp(lst->key, key))
+			return (lst);
+		lst = lst->next;
 	}
 	return (NULL);
 }
 
-void	update_env_var(t_ast *data, const char *key, const char *value)
+t_env	*new_node(const char *key, const char *val)
 {
-	t_env	*env;
-	t_env	*new_env;
+	t_env	*node;
 
-	env = get_env_node(data->env_list, key);
-	if (env)
+	node = (t_env *)malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
+	node->key = ft_strdup(key);
+	node->value = val ? ft_strdup(val) : NULL;
+	if (!node->key || (val && !node->value))
 	{
-		free(env->value);
-		env->value = ft_strdup(value);
+		free(node->key);
+		free(node->value);
+		return (free(node), NULL);
 	}
-	else
-	{
-		new_env = malloc(sizeof(t_env));
-		new_env->key = ft_strdup(key);
-		new_env->value = ft_strdup(value);
-		new_env->next = data->env_list;
-		data->env_list = new_env;
-	}
+	node->next = NULL;
+	return (node);
 }
 
-int	create_new_env(t_ast *d, char *n, char *eq)
-{
-	t_env	*env;
 
-	env = malloc(sizeof(t_env));
-	if (!env)
-		return (free(n), 1);
-	env->key = n;
-	if (eq)
-		env->value = ft_strdup(eq + 1);
-	else
-		env->value = ft_strdup("");
-	env->next = d->env_list;
-	d->env_list = env;
+int	add_env_node(t_env **lst, t_env *new_node)
+{
+	t_env	*cur;
+
+	if (!new_node)
+		return (1);
+	if (!*lst)
+		return (*lst = new_node, 0);
+	cur = *lst;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = new_node;
 	return (0);
+}
+
+int	update_env_value(t_env *lst, const char *key, const char *val)
+{
+	t_env	*node;
+
+	node = find_env_node(lst, key);
+	if (!node)
+		return (1);
+	free(node->value);
+	node->value = val ? ft_strdup(val) : NULL;
+	return (node->value || !val ? 0 : 1);
 }

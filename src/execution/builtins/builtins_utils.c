@@ -16,18 +16,6 @@
 #include <errno.h>
 #include <string.h>
 
-bool	is_valid_identifier(const char *name)
-{
-	if (!name || !*name || ft_isdigit(*name))
-		return (false);
-	while (*name)
-	{
-		if (!ft_isalnum(*name) && *name != '_')
-			return (false);
-		name++;
-	}
-	return (true);
-}
 
 int	execute_echo(char *args[], int fd_out)
 {

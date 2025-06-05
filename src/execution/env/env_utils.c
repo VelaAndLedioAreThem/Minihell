@@ -25,20 +25,6 @@ char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 	return (res);
 }
 
-void	print_env_list(t_env *env_list, int fd_out)
-{
-	while (env_list)
-	{
-		ft_putstr_fd(env_list->key, fd_out);
-		ft_putstr_fd("=", fd_out);
-		if (env_list->value)
-			ft_putendl_fd(env_list->value, fd_out);
-		else
-			ft_putendl_fd("", fd_out);
-		env_list = env_list->next;
-	}
-}
-
 static int	count_env_nodes(t_env *lst)
 {
 	int	count;

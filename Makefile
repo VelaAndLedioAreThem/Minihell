@@ -15,7 +15,7 @@ NAME = minishell
 
 # Compiler Settings
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -O3 -g
+CFLAGS = -Wall -Wextra -Werror -O3
 INCLUDE = -I include/ -I libft/include
 LIBFT_DIR = libft/
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -72,7 +72,7 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(EXEC)redirections/redirection_utils_2.c $(EXEC)redirections/heredoc.c $(TREE)parse_commands.c \
 	   $(EXEC_UTILS)free.c $(EXEC_UTILS)utils4.c $(TREE)parse_redir.c \
 	   $(TREE)tree_utils.c $(TREE)tree_utils_1.c $(EXEC_ENV)env_utils.c \
-	   $(EXEC_ENV)env_utils_2.c $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c \
+	   $(EXEC_ENV)env_utils_2.c $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c $(EXEC_ENV)export_utils.c \
 	   $(TREE)parse_wildcards.c\
 
 # Object files
