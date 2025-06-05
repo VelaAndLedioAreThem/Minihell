@@ -1,69 +1,107 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/05 00:00:00 by user              #+#    #+#             */
+/*   Updated: 2025/06/05 00:00:00 by user             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "minishell.h"
 
-static void	update_env_variable(t_env *env, char *name, char *eq)
+/*
+** --------------------------------------------------------------------------
+**  export_print
+**  -------------------------------------------------------------------------
+**  Print every entry in the env list in KEY=VALUE form.
+*/
+static void	export_print(t_env *env, int fd_out)
 {
-	if (eq)
+	while (env)
 	{
-		free(env->value);
-		env->value = ft_strdup(eq + 1);
+		ft_putstr_fd(env->key, fd_out);
+		ft_putstr_fd("=", fd_out);
+		env->value ? ft_putendl_fd(env->value, fd_out) : ft_putchar_fd('\n', fd_out);
+		env = env->next;
 	}
-	free(name);
 }
 
-static int	handle_export_error(char *arg)
+/*
+** --------------------------------------------------------------------------
+**  export_valid
+**  -------------------------------------------------------------------------
+**  Check the identifier for validity (first char alpha/_ , rest alnum/_).
+*/
+static int	export_valid(char *name)
 {
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+	int	idx;
+
+	idx = 0;
+	if (!name || ft_isdigit(name[0]) || name[0] == '=')
+		return (0);
+	while (name[idx])
+	{
+		if (!ft_isalnum(name[idx]) && name[idx] != '_')
+			return (0);
+		idx++;
+	}
 	return (1);
 }
 
-static int	process_export_arg(t_ast *data, char *arg)
+/*
+** --------------------------------------------------------------------------
+**  export_set
+**  -------------------------------------------------------------------------
+**  Update an existing variable if found; otherwise create a new one.
+*/
+static int	export_set(t_ast *data, char *name, char *eq)
 {
-	char	*eq;
-	char	*name;
-	t_env	*env;
+	t_env	*node;
 
-	eq = ft_strchr(arg, '=');
-	if (eq)
-		name = ft_substr(arg, 0, eq - arg);
-	else
-		name = ft_strdup(arg);
-	if (!name || !is_valid_identifier(name))
-		return (free(name), handle_export_error(arg));
-	env = get_env_node(data->env_list, name);
-	if (env)
-		update_env_variable(env, name, eq);
-	else if (create_new_env(data, name, eq))
-		return (1);
+	node = get_env_node(data->env_list, name);
+	if (node && eq)
+	{
+		free(node->value);
+		node->value = ft_strdup(eq + 1);
+	}
+	else if (!node)
+	{
+		if (create_new_env(data, name, eq))
+			return (1);
+	}
 	return (0);
 }
 
-int	execute_export(t_ast *data, t_ast *tree, int fd_out)
+/*
+** --------------------------------------------------------------------------
+**  builtin_export
+**  -------------------------------------------------------------------------
+**  Main entry point used by handle_builtin().
+*/
+int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
 {
-	int		i;
+	int		idx;
 	int		status;
+	char	*eq;
+	char	*name;
 
-	(void)fd_out;
-	i = 1;
+	if (!tree->cmd->args[1])
+		return (export_print(data->env_list, fd_out), 1);
+	idx = 1;
 	status = 0;
-	while (tree->cmd->args[i])
+	while (tree->cmd->args[idx])
 	{
-		if (process_export_arg(data, tree->cmd->args[i]))
+		eq = ft_strchr(tree->cmd->args[idx], '=');
+		name = eq ? ft_substr(tree->cmd->args[idx], 0, eq - tree->cmd->args[idx])
+				 : ft_strdup(tree->cmd->args[idx]);
+		if (!export_valid(name) || export_set(data, name, eq))
 			status = 1;
-		i++;
+		free(name);
+		idx++;
 	}
-	return (status);
+	data->exit_status = status;
+	return (1);
 }
