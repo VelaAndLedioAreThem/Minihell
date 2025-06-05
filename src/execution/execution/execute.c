@@ -42,7 +42,8 @@ int	execute_sequence(t_ast *data, t_ast *tree)
 	execute_tree(data, tree->left);
 	return (execute_tree(data, tree->right));
 }
-int redirect_handler(t_ast *data, t_ast *tree)
+
+int	redirect_handler(t_ast *data, t_ast *tree)
 {
 	if (tree->type == AST_REDIR_IN)
 		return (setup_input_fd(data, tree));

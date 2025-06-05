@@ -16,9 +16,9 @@ pid_t	g_child_pid = 0;
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_env		*env_list;
-	char		*input;
-	char		*prompt;
+	t_env	*env_list;
+	char	*input;
+	char	*prompt;
 
 	env_list = init_env_list(envp);
 	handle_signal();
@@ -26,7 +26,7 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		prompt = generate_prompt();
- 		input = readline(prompt);
+		input = readline(prompt);
 		free(prompt);
 		if (!input)
 		{

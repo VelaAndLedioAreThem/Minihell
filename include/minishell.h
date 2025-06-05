@@ -218,15 +218,13 @@ typedef struct s_builtin
 }	t_builtin;
 
 extern pid_t	g_child_pid;
-int  add_heredoc(t_ast *data, char *path);
-void free_heredoc_list(t_ast *data);
-int  setup_input_fd(t_ast *data, t_ast *node);
-int  setup_output_fd(t_ast *data, t_ast *node);
-int  create_heredoc_temp_file(t_ast *data, t_ast *node);
-void	reset_heredoc_list(t_ast *data);
-void	free_heredoc_list(t_ast *data);
-
-
+int			add_heredoc(t_ast *data, char *path);
+void		free_heredoc_list(t_ast *data);
+int			setup_input_fd(t_ast *data, t_ast *node);
+int			setup_output_fd(t_ast *data, t_ast *node);
+int			create_heredoc_temp_file(t_ast *data, t_ast *node);
+void		reset_heredoc_list(t_ast *data);
+void		free_heredoc_list(t_ast *data);
 int			builtin_env(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_pwd(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_unset(t_ast *data, t_ast *tree, int fd_out);

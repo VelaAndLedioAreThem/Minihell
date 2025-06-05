@@ -63,7 +63,7 @@ void	free_2darray(char **array)
 
 char	*ft_strcpy(char *dest, const char *src)
 {
-	unsigned int i;
+	unsigned int	i;
 
 	i = 0;
 	while (src[i] != '\0')
@@ -92,15 +92,4 @@ char	*ft_strcat(char *dest, const char *src)
 	}
 	dest[i] = '\0';
 	return (dest);
-}
-
-t_ast  *new_ast_node(t_ast_type type)
-{
-	t_ast *n;
-
-	n = ft_calloc(1, sizeof(t_ast));   /* zeroes every byte */
-	if (!n)
-		return (NULL);
-	n->type = type;
-	return (n);
 }

@@ -81,7 +81,7 @@ int	create_heredoc_temp_file(t_ast *data, t_ast *node)
 	char	*line;
 	int		fd;
 
-	fd = mkstemp(tmp);
+	fd = mkstemp(strcpy(tmp, "/tmp/minishell_heredocXXXXXX"));
 	if (fd < 0)
 		return (perror("mkstemp"), data->exit_status = 1);
 	while (1)

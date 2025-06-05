@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/23 13:06:37 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/01 19:38:56 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 		free_ast(ast);
 		return ;
 	}
-	ast->heredoc_files = NULL; 
+	ast->heredoc_files = NULL;
 	ast->heredoc_count = 0;
 	ast->env_list = env_list;
 	execute_tree(ast, ast);
-	free_heredoc_list(ast);   
+	free_heredoc_list(ast);
 	free_ast(ast);
 }
 
