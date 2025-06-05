@@ -43,8 +43,6 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
   t_ast *ast;
 
 	ast = parse_tokens(tokens);
-	printf("%s\n", ast->cmd->args[0]);
-	printf("%s\n", ast->cmd->args[1]);
 	free_tokens(tokens);
 	if (!ast)
 	{

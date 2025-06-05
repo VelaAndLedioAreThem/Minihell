@@ -46,6 +46,7 @@ int	execute_word(t_ast *data, t_ast *tree)
 
 	if (!setup_fds(data, tree, &fd_in, &fd_out))
 		return (data->exit_status);
+	tree->cmd->args = expand_wildcards_in_args(tree->cmd->args);
 	if (handle_builtin(data, tree, fd_out))
 	{
 		return (data->exit_status);

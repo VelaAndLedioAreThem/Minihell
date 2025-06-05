@@ -54,105 +54,107 @@ char	**finalize_args_array(char **args, int count)
 	return (args);
 }
 
-char    **handle_no_wildcard(char *pattern)
+char	**handle_no_wildcard(char *pattern)
 {
-    char    **result;
+	char	**result;
 
-    result = malloc(2 * sizeof(char *));
-    if (!result)
-        return (NULL);
-    result[0] = ft_strdup(pattern);
-    if (!result[0])
-    {
-        free(result);
-        return (NULL);
-    }
-    result[1] = NULL;
-    return (result);
+	result = malloc(2 * sizeof(char *));
+	if (!result)
+		return (NULL);
+	result[0] = ft_strdup(pattern);
+	if (!result[0])
+	{
+		free(result);
+		return (NULL);
+	}
+	result[1] = NULL;
+	return (result);
 }
 
-int    match_pattern(const char *pattern, const char *string)
+int	match_pattern(const char *pattern, const char *string)
 {
-    if (*pattern == '\0' && *string == '\0')
-        return (1);
-    if (*pattern == '*')
-    {
-        while (*(pattern + 1) == '*')
-            pattern++;
-        return (match_pattern(pattern + 1, string) || 
-               (*string != '\0' && match_pattern(pattern, string + 1)));
-    }
-    if (*pattern == '?' || *pattern == *string)
-        return (*string != '\0' && match_pattern(pattern + 1, string + 1));
-    return (0);
+	if (*pattern == '\0' && *string == '\0')
+		return (1);
+	if (*pattern == '*')
+	{
+		while (*(pattern + 1) == '*')
+			pattern++;
+		return (match_pattern(pattern + 1, string) || (*string != '\0'
+				&& match_pattern(pattern, string + 1)));
+	}
+	if (*pattern == '?' || *pattern == *string)
+		return (*string != '\0' && match_pattern(pattern + 1, string + 1));
+	return (0);
 }
 
-char    **process_dir_entries(DIR *dir, char *file_part, char *dir_part, int *count)
+char	**process_dir_entries(DIR *dir, char *file_part, char *dir_part,
+		int *count)
 {
-    struct dirent   *entry;
-    char            **matches;
-    char            *full_path;
+	struct dirent	*entry;
+	char			**matches;
+	char			*full_path;
 
-    matches = malloc(sizeof(char *));
-    if (!matches)
-        return (NULL);
-    matches[0] = NULL;
-    *count = 0;
-    while ((entry = readdir(dir)) != NULL)
-    {
-        if (is_hidden_file(file_part, entry->d_name))
-            continue;
-        if (match_pattern(file_part, entry->d_name))
-        {
-            if (ft_strcmp(dir_part, "") == 0 || ft_strcmp(dir_part, "./") == 0 
-                || ft_strcmp(dir_part, ".") == 0)
-                full_path = ft_strdup(entry->d_name);
-            else
-            {
-                full_path = malloc(ft_strlen(dir_part) + ft_strlen(entry->d_name) + 2);
-                if (!full_path)
-                    continue;
-                ft_strcpy(full_path, dir_part);
-                if (dir_part[ft_strlen(dir_part) - 1] != '/')
-                    ft_strcat(full_path, "/");
-                ft_strcat(full_path, entry->d_name);
-            }
-            matches = realloc(matches, (*count + 2) * sizeof(char *));
-            if (!matches)
-            {
-                free(full_path);
-                return (NULL);
-            }
-            matches[*count] = full_path;
-            (*count)++;
-            matches[*count] = NULL;
-        }
-    }
-    return (matches);
+	matches = malloc(sizeof(char *));
+	if (!matches)
+		return (NULL);
+	matches[0] = NULL;
+	*count = 0;
+	while ((entry = readdir(dir)) != NULL)
+	{
+		if (is_hidden_file(file_part, entry->d_name))
+			continue ;
+		if (match_pattern(file_part, entry->d_name))
+		{
+			if (ft_strcmp(dir_part, "") == 0 || ft_strcmp(dir_part, "./") == 0
+				|| ft_strcmp(dir_part, ".") == 0)
+				full_path = ft_strdup(entry->d_name);
+			else
+			{
+				full_path = malloc(ft_strlen(dir_part)
+						+ ft_strlen(entry->d_name) + 2);
+				if (!full_path)
+					continue ;
+				ft_strcpy(full_path, dir_part);
+				if (dir_part[ft_strlen(dir_part) - 1] != '/')
+					ft_strcat(full_path, "/");
+				ft_strcat(full_path, entry->d_name);
+			}
+			matches = realloc(matches, (*count + 2) * sizeof(char *));
+			if (!matches)
+			{
+				free(full_path);
+				return (NULL);
+			}
+			matches[*count] = full_path;
+			(*count)++;
+			matches[*count] = NULL;
+		}
+	}
+	return (matches);
 }
 
-char    **finalize_matches(char **matches, int count)
+char	**finalize_matches(char **matches, int count)
 {
-    int     i;
-    int     j;
-    char    *temp;
+	int		i;
+	int		j;
+	char	*temp;
 
-    if (count == 0)
-    {
-        free(matches);
-        return (NULL);
-    }
-    for (i = 0; i < count - 1; i++)
-    {
-        for (j = i + 1; j < count; j++)
-        {
-            if (ft_strcmp(matches[i], matches[j]) > 0)
-            {
-                temp = matches[i];
-                matches[i] = matches[j];
-                matches[j] = temp;
-            }
-        }
-    }
-    return (matches);
+	if (count == 0)
+	{
+		free(matches);
+		return (NULL);
+	}
+	for (i = 0; i < count - 1; i++)
+	{
+		for (j = i + 1; j < count; j++)
+		{
+			if (ft_strcmp(matches[i], matches[j]) > 0)
+			{
+				temp = matches[i];
+				matches[i] = matches[j];
+				matches[j] = temp;
+			}
+		}
+	}
+	return (matches);
 }
