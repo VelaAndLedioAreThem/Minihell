@@ -81,6 +81,8 @@ static int	export_set(t_ast *data, char *name, char *eq)
 **  -------------------------------------------------------------------------
 **  Main entry point used by handle_builtin().
 */
+/* builtin_export.c */
+
 int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
 {
 	int		idx;
@@ -89,19 +91,29 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
 	char	*name;
 
 	if (!tree->cmd->args[1])
-		return (export_print(data->env_list, fd_out), 1);
+	{
+		export_print(data->env_list, fd_out);
+		return (1);
+	}
 	idx = 1;
 	status = 0;
 	while (tree->cmd->args[idx])
 	{
-		eq = ft_strchr(tree->cmd->args[idx], '=');
+		eq   = ft_strchr(tree->cmd->args[idx], '=');
 		name = eq ? ft_substr(tree->cmd->args[idx], 0, eq - tree->cmd->args[idx])
-				 : ft_strdup(tree->cmd->args[idx]);
-		if (!export_valid(name) || export_set(data, name, eq))
+				: ft_strdup(tree->cmd->args[idx]);
+
+		if (!export_valid(name))                 // invalid identifier
+		{
 			status = 1;
-		free(name);
+			free(name);                          // we bail out, so *now* we free
+		}
+		else if (export_set(data, name, eq))     // export_set takes ownership
+			status = 1;
+
 		idx++;
 	}
 	data->exit_status = status;
 	return (1);
 }
+
