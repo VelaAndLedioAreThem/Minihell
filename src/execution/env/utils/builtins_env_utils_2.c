@@ -30,21 +30,25 @@ t_env	*new_node(const char *key, const char *val)
 {
 	t_env	*node;
 
+	node = NULL;
 	node = (t_env *)malloc(sizeof(t_env));
-	if (!node)
+	if (node == NULL)
 		return (NULL);
+	node->key = NULL;
+	node->value = NULL;
 	node->key = ft_strdup(key);
-	node->value = val ? ft_strdup(val) : NULL;
-	if (!node->key || (val && !node->value))
+	if (val != NULL)
+		node->value = ft_strdup(val);
+	if (node->key == NULL || (val != NULL && node->value == NULL))
 	{
 		free(node->key);
 		free(node->value);
-		return (free(node), NULL);
+		free(node);
+		return (NULL);
 	}
 	node->next = NULL;
 	return (node);
 }
-
 
 int	add_env_node(t_env **lst, t_env *new_node)
 {
@@ -65,10 +69,15 @@ int	update_env_value(t_env *lst, const char *key, const char *val)
 {
 	t_env	*node;
 
+	node = NULL;
 	node = find_env_node(lst, key);
-	if (!node)
+	if (node == NULL)
 		return (1);
 	free(node->value);
-	node->value = val ? ft_strdup(val) : NULL;
-	return (node->value || !val ? 0 : 1);
+	node->value = NULL;
+	if (val != NULL)
+		node->value = ft_strdup(val);
+	if (val != NULL && node->value == NULL)
+		return (1);
+	return (0);
 }

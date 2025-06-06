@@ -16,7 +16,6 @@
 #include <errno.h>
 #include <string.h>
 
-
 int	execute_echo(char *args[], int fd_out)
 {
 	int	i;

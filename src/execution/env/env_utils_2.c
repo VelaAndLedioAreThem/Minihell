@@ -99,26 +99,26 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths = NULL;
+	char	**paths;
 	char	*full_path;
 	char	*result;
 	int		i;
 
+	paths = NULL;
+	i = 0;
 	result = checker(data, cmd, &paths);
-	if (result || !paths)
+	if (result != NULL || paths == NULL)
 		return (result);
-	i = -1;
-	while (paths[++i])
+	while (paths[i] != NULL)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);
-		if (!full_path)
-			continue ;
-		if (access(full_path, X_OK) == 0)
+		if (full_path != NULL && access(full_path, X_OK) == 0)
 		{
 			free_2darray(paths);
 			return (full_path);
 		}
 		free(full_path);
+		i++;
 	}
 	free_2darray(paths);
 	return (NULL);

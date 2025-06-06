@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   expand_wildcard_utils2.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 13:46:47 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/06 14:33:43 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../../include/minishell.h"
+#include "minishell.h"
 #include <dirent.h>
 
 void	process_argument(char *arg, char ***new_args, int *new_count)

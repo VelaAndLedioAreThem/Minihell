@@ -12,6 +12,13 @@
 
 #include "minishell.h"
 
+int	handle_pwd_errors(char *old_pwd, int error_code)
+{
+	free(old_pwd);
+	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
+	return (error_code);
+}
+
 int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 {
 	path = get_env_value(data->env_list, "OLDPWD");

@@ -24,10 +24,14 @@ static int	add_new(t_ast *data, char *key, char *val)
 {
 	t_env	*new;
 
-	new = val ? new_node(key, val) : new_node(key, NULL);
-	if (!new)
+	new = NULL;
+	if (val == NULL)
+		new = new_node(key, NULL);
+	else
+		new = new_node(key, val);
+	if (new == NULL)
 		return (perror("malloc"), 1);
-	if (add_env_node(&data->env_list, new))
+	if (add_env_node(&data->env_list, new) != 0)
 	{
 		free(new->key);
 		free(new->value);
@@ -37,18 +41,21 @@ static int	add_new(t_ast *data, char *key, char *val)
 	return (0);
 }
 
-/* returns 0 success, 1 error */
 int	export_one(t_ast *data, const char *arg)
 {
 	char	*key;
 	char	*val;
-	int		split_res;
+	int		s;
 
-	split_res = split_key_value(arg, &key, &val);
-	if (split_res == 1 || (!is_valid_identifier(split_res == -1 ? arg : key)))
+	key = NULL;
+	val = NULL;
+	s = split_key_value(arg, &key, &val);
+	if (s == 1
+		|| (s == -1 && !is_valid_identifier(arg))
+		|| (s != -1 && !is_valid_identifier(key)))
 		return (ft_putendl_fd("export: not a valid identifier", 2),
-				free(key), free(val), 1);
-	if (split_res == -1)
+			free(key), free(val), 1);
+	if (s == -1)
 	{
 		key = ft_strdup(arg);
 		if (!key)
@@ -85,7 +92,11 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 
 	args = tree->cmd->args;
 	if (!args[1])
-		return (print_export_list(data->env_list, fd), 0);
+	{
+		print_export_list(data->env_list, fd);
+		data->exit_status = 0;
+		return (1);
+	}
 	i = 1;
 	ret = 1;
 	while (args[i])

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../../include/minishell.h"
+#include "minishell.h"
 #include <dirent.h>
 
 int	match_pattern1(const char *pattern, const char *text)

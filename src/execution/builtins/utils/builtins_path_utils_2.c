@@ -12,12 +12,6 @@
 
 #include "minishell.h"
 
-int	handle_pwd_errors(char *old_pwd, int error_code)
-{
-	free(old_pwd);
-	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
-	return (error_code);
-}
 t_env	*get_env_node(t_env *env_list, const char *name)
 {
 	t_env	*current;
@@ -52,6 +46,7 @@ void	update_env_var(t_ast *data, const char *key, const char *value)
 		data->env_list = new_env;
 	}
 }
+
 int	update_directory(t_ast *data, char *path, char *old_pwd)
 {
 	char	*new_pwd;
