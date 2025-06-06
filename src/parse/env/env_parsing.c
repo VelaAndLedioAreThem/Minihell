@@ -14,40 +14,31 @@
 
 static char	*handle_special_utils(char *input, char *str, int *i, t_args *arg)
 {
-	if (input[*i] == '$')
-	{
-		if (input[*i + 1] == '?')
-		{
-			str = ft_itoa(arg->exit_status);
-			*i += 2;
-		}
-		else if (input[*i + 1] == '@')
-		{
-			str = join_arguments(arg);
-			*i += 2;
-		}
-		else if (input[*i + 1] == '*')
-		{
-			str = join_arguments(arg);
-			*i += 2;
-		}
-		else if (input[*i + 1] == '0')
-		{
-			str = ft_strdup(arg->argv[0]);
-			i += 2;
-		}
-	}
-	return (str);
+    if (input[*i] == '?')
+    {
+            str = ft_itoa(arg->exit_status);
+            (*i)++;
+    }
+    else if (input[*i] == '@' || input[*i] == '*')
+    {
+            str = join_arguments(arg);
+            (*i)++;
+    }
+    else if (input[*i] == '0')
+    {
+            str = ft_strdup(arg->argv[0]);
+            (*i)++;
+    }
+    return (str);
 }
 
 static char	*handle_special_var(char *input, int *i, t_args *arg)
 {
 	char	*str;
 
-	str = NULL;
-	if (input[*i] == '$')
-		str = handle_special_utils(input, str, i, arg);
-	return (str);
+    str = NULL;
+    str = handle_special_utils(input, str, i, arg);
+    return (str);
 }
 
 static char	*get_env_name(char *input, int *i, t_args *arg)
@@ -87,28 +78,43 @@ static char	*handle_shlvl(t_env *env_list)
 	return (new_value);
 }
 
-char	*env_expansion(char *input, int *i,
-	t_env *env_list, t_args *arg)
+char    *env_expansion(char *input, int *i,
+        t_env *env_list, t_args *arg)
 {
-	char		*value;
-	char		*name;
+        char    *name;
 
-	(*i)++;
-	value = NULL;
-	name = get_env_name(input, i, arg);
-	if (!name)
-		return (ft_strdup(""));
-	if (!ft_strcmp(name, "SHLVL"))
-	{
-		value = handle_shlvl(env_list);
-		free(name);
-		return (value);
-	}
-	value = get_env_value(env_list, name);
-	if (!value)
-		value = ft_strdup("");
-	else
-		value = ft_strdup(value);
-	free(name);
-	return (value);
+        (*i)++;
+        if (input[*i] == '?')
+        {
+                (*i)++;
+                return (ft_itoa(arg->exit_status));
+        }
+        if (input[*i] == '@' || input[*i] == '*')
+        {
+                (*i)++;
+                return (join_arguments(arg));
+        }
+        if (input[*i] == '0')
+        {
+                (*i)++;
+                return (ft_strdup(arg->argv[0]));
+        }
+        name = get_env_name(input, i, arg);
+        if (!name)
+                return (ft_strdup(""));
+        if (!ft_strcmp(name, "SHLVL"))
+        {
+                char    *val;
+
+                val = handle_shlvl(env_list);
+                free(name);
+                return (val);
+        }
+        char    *value = get_env_value(env_list, name);
+        if (!value)
+                value = ft_strdup("");
+        else
+                value = ft_strdup(value);
+        free(name);
+        return (value);
 }

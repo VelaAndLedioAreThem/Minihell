@@ -60,7 +60,7 @@ char	**env(t_env **lst)
 	return (envp);
 }
 
-void	create_new_shlvl(t_env *data, int shlvl)
+void	create_new_shlvl(t_env **data, int shlvl)
 {
 	t_env	*new_env;
 
@@ -69,6 +69,6 @@ void	create_new_shlvl(t_env *data, int shlvl)
 		return ;
 	new_env->key = ft_strdup("SHLVL");
 	new_env->value = ft_itoa(shlvl);
-	new_env->next = data;
-	data = new_env;
+	new_env->next = *data;
+	*data = new_env;
 }

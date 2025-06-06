@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+	/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
 /*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
@@ -16,6 +16,7 @@ static int	builtin_echo(t_ast *data, t_ast *tree, int fd_out)
 {
 	if (execute_echo(tree->cmd->args, fd_out))
 		return (data->exit_status = 1, 1);
+	data->exit_status = 0;
 	return (1);
 }
 
@@ -24,6 +25,7 @@ static int	builtin_exit(t_ast *data, t_ast *tree, int fd_out)
 	(void)fd_out;
 	if (execute_exit(data, tree))
 		return (data->exit_status = 1, 1);
+	data->exit_status = 0;
 	return (1);
 }
 

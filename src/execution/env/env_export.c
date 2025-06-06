@@ -105,5 +105,6 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 			ret = 0;
 		++i;
 	}
-	return (ret);
+	data->exit_status = ret ? 0 : 1;
+	return (1);
 }

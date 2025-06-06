@@ -36,7 +36,7 @@ void	incr_shell_lvl(t_env *data)
 		}
 		tmp = tmp->next;
 	}
-	create_new_shlvl(data, shlvl);
+	create_new_shlvl(&data, shlvl);
 }
 
 void	set_env_var(t_ast *data, char *var_name, const char *var_value)

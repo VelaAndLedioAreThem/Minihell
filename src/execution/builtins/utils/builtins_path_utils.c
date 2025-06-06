@@ -55,6 +55,7 @@ int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
 	}
 	set_env_var(data, "OLDPWD", oldpwd);
 	free(oldpwd);
+	data->exit_status = 0;
 	return (1);
 }
 
@@ -63,6 +64,7 @@ int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)
 	(void)tree;
 	if (execute_pwd(data, fd_out))
 		return (data->exit_status = 1, 1);
+	data->exit_status = 0;
 	return (1);
 }
 

@@ -51,8 +51,9 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 	}
 	ast->heredoc_files = NULL;
 	ast->heredoc_count = 0;
-	ast->env_list = env_list;
-	execute_tree(ast, ast);
+        ast->env_list = env_list;
+        execute_tree(ast, ast);
+        update_last_exit_status(ast->exit_status);
 	free_heredoc_list(ast);
 	free_ast(ast);
 }
@@ -63,11 +64,12 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 	t_args	arg;
 	char	*expandable;
 
-	arg.exit_status = 0;
-	if (*input)
-	{
-		add_history(input);
-		arg = (t_args){.argc = argc - 1, .argv = argv};
+    arg.exit_status = get_last_exit_status();
+    if (*input)
+    {
+            add_history(input);
+            arg = (t_args){.argc = argc - 1, .argv = argv,
+                            .exit_status = get_last_exit_status()};
 		expandable = expand_and_tokenize(input, env_list, &arg, &tokens);
 		if (!expandable)
 			return ;

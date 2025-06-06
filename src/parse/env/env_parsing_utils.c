@@ -99,7 +99,8 @@ char	*parse_env(char *input, t_env *env_list, t_args *arg)
 	int			i;
 
 	i = 0;
-	parse = (t_args){arg->argc, arg->argv, 0, input, 0, ft_strdup(""), 0, 0, 0};
+    parse = (t_args){arg->argc, arg->argv, arg->exit_status, input, 0,
+            ft_strdup(""), 0, 0, 0};
 	while (input[i])
 	{
 		if (quotes(input, i, &parse))

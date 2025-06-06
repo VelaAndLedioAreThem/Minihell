@@ -229,6 +229,9 @@ typedef struct s_builtin
 }	t_builtin;
 
 extern pid_t	g_child_pid;
+extern int	g_last_exit_status;
+void		update_last_exit_status(int status);
+int				get_last_exit_status(void);
 t_env		*new_node(const char *key, const char *val);
 int			update_env_value(t_env *lst, const char *key, const char *val);
 int			add_env_node(t_env **lst, t_env *new_node);
@@ -248,7 +251,7 @@ int			builtin_env(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_pwd(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_unset(t_ast *data, t_ast *tree, int fd_out);
 int			builtin_export(t_ast *data, t_ast *tree, int fd_out);
-void		create_new_shlvl(t_env *data, int shlvl);
+void		create_new_shlvl(t_env **data, int shlvl);
 void		setup_child_signals(void);
 int			builtin_cd(t_ast *data, t_ast *tree, int fd_out);
 void		update_env_var(t_ast *data, const char *key, const char *value);
