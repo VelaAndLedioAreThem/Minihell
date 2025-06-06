@@ -231,7 +231,10 @@ typedef struct s_builtin
 extern pid_t	g_child_pid;
 extern int	g_last_exit_status;
 void		update_last_exit_status(int status);
-int				get_last_exit_status(void);
+int			get_last_exit_status(void);
+char		*join_path(char *dir_part, char *name);
+char		**add_match(char **matches, int *count, char *path);
+int			match_pattern(const char *pat, const char *str);
 t_env		*new_node(const char *key, const char *val);
 int			update_env_value(t_env *lst, const char *key, const char *val);
 int			add_env_node(t_env **lst, t_env *new_node);

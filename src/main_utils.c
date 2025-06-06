@@ -6,12 +6,15 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/02 13:29:15 by ldurmish         ###   ########.fr       */
-/*   Updated: 2025/06/02 00:32:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/06 18:47:55 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+#define COL_BLUE   "\033[0;34m"
+#define COL_GREEN  "\033[0;32m"
+#define COL_RESET  "\033[0m"
 
 static char	*expand_and_tokenize(char *input, t_env *env_list, t_args *arg,
 		t_token **tokens)
@@ -51,9 +54,9 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 	}
 	ast->heredoc_files = NULL;
 	ast->heredoc_count = 0;
-        ast->env_list = env_list;
-        execute_tree(ast, ast);
-        update_last_exit_status(ast->exit_status);
+	ast->env_list = env_list;
+	execute_tree(ast, ast);
+	update_last_exit_status(ast->exit_status);
 	free_heredoc_list(ast);
 	free_ast(ast);
 }
@@ -64,12 +67,12 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 	t_args	arg;
 	char	*expandable;
 
-    arg.exit_status = get_last_exit_status();
-    if (*input)
-    {
-            add_history(input);
-            arg = (t_args){.argc = argc - 1, .argv = argv,
-                            .exit_status = get_last_exit_status()};
+	arg.exit_status = get_last_exit_status();
+	if (*input)
+	{
+		add_history(input);
+		arg = (t_args){.argc = argc - 1, .argv = argv,
+			.exit_status = get_last_exit_status()};
 		expandable = expand_and_tokenize(input, env_list, &arg, &tokens);
 		if (!expandable)
 			return ;
@@ -82,12 +85,15 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 char	*generate_prompt(void)
 {
 	char	cwd[PATH_MAX];
-	char	*str;
+	char	*tmp;
+	char	*prompt;
 
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
-		str = ft_strjoin("minihell:", cwd);
-		return (ft_strjoin(str, "$ "));
+		tmp = ft_strjoin(COL_BLUE "minishell:" COL_GREEN, cwd);
+		prompt = ft_strjoin(tmp, COL_RESET "$ ");
+		free(tmp);
+		return (prompt);
 	}
 	return (ft_strdup("minishell$ "));
 }

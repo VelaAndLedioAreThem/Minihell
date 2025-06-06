@@ -109,7 +109,7 @@ char	*parse_env(char *input, t_env *env_list, t_args *arg)
 			continue ;
 		}
 		if (input[i] == '$' && input[i + 1] && input[i + 1] != ' '
-			&& input[i + 1] != '"' && input[i + 1] != '\'')
+				&& input[i + 1] != '"' && input[i + 1] != '\'')
 		{
 			parse.result = handle_env_part(&parse, &i, env_list);
 			parse.start = i;

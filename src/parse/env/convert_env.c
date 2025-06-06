@@ -70,7 +70,7 @@ t_env	*deep_copy_env_list(t_env *env_list)
 
 char	*get_env_value(t_env *env_list, char *name)
 {
-	t_env		*current;
+	t_env	*current;
 
 	current = env_list;
 	while (current)
@@ -84,8 +84,8 @@ char	*get_env_value(t_env *env_list, char *name)
 
 t_env	*create_env_node(char *input)
 {
-	t_env		*new_node;
-	char		*equal_sign;
+	t_env	*new_node;
+	char	*equal_sign;
 
 	new_node = (t_env *)malloc(sizeof(t_env));
 	if (!new_node)
@@ -104,10 +104,10 @@ t_env	*create_env_node(char *input)
 
 t_env	*init_env_list(char **envp)
 {
-	t_env		*head;
-	t_env		*current;
-	int			i;
-	t_env		*new_node;
+	t_env	*head;
+	t_env	*current;
+	int		i;
+	t_env	*new_node;
 
 	head = NULL;
 	i = 0;

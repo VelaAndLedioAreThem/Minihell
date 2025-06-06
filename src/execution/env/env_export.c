@@ -105,6 +105,9 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 			ret = 0;
 		++i;
 	}
-	data->exit_status = ret ? 0 : 1;
+	if (ret == 1)
+		data->exit_status = 0;
+	else
+		data->exit_status = 1;
 	return (1);
 }

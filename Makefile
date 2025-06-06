@@ -67,7 +67,7 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(EXECUTION)exec_handling.c $(EXECUTION)execute_external.c $(EXECUTION)execute_external_utils.c \
 	   $(EXECUTION)execute_pipe.c $(EXECUTION)execute_pipe_utils.c $(EXECUTION)exec_word/execute_word.c \
 	   $(EXECUTION)exec_word/execute_word_utils.c $(EXECUTION)exec_word/execute_word_utils2.c $(EXECUTION)execute.c \
-	   $(WILDCARDS)expand_wildcard.c $(WILDCARDS)expand_wildcard_utils.c $(WILDCARDS)expand_wildcard_utils2.c \
+	   $(WILDCARDS)expand_wildcard.c $(WILDCARDS)expand_wildcard_utils.c $(WILDCARDS)expand_wildcard_utils2.c $(WILDCARDS)expand_wildcard_utils3.c \
 	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c $(EXEC_ENV)utils/builtins_env_utils.c $(EXEC_ENV)utils/builtins_env_utils_2.c \
 	   $(BUILTINS)utils/builtins_path_utils.c $(BUILTINS)utils/builtins_path_utils_2.c $(EXEC)redirections/redirection_utils.c \
 	   $(EXEC)redirections/redirection_utils_2.c $(EXEC)redirections/heredoc.c $(TREE)parse_commands.c \

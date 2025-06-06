@@ -13,7 +13,7 @@
 #include "../include/minishell.h"
 
 pid_t	g_child_pid = 0;
-int     g_last_exit_status = 0;
+int		g_last_exit_status = 0;
 
 int	main(int argc, char **argv, char **envp)
 {

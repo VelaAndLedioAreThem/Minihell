@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_parsing.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 18:10:57 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/06 17:39:09 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,31 @@
 
 static char	*handle_special_utils(char *input, char *str, int *i, t_args *arg)
 {
-    if (input[*i] == '?')
-    {
-            str = ft_itoa(arg->exit_status);
-            (*i)++;
-    }
-    else if (input[*i] == '@' || input[*i] == '*')
-    {
-            str = join_arguments(arg);
-            (*i)++;
-    }
-    else if (input[*i] == '0')
-    {
-            str = ft_strdup(arg->argv[0]);
-            (*i)++;
-    }
-    return (str);
+	if (input[*i] == '?')
+	{
+		str = ft_itoa(arg->exit_status);
+		(*i)++;
+	}
+	else if (input[*i] == '@' || input[*i] == '*')
+	{
+		str = join_arguments(arg);
+		(*i)++;
+	}
+	else if (input[*i] == '0')
+	{
+		str = ft_strdup(arg->argv[0]);
+		(*i)++;
+	}
+	return (str);
 }
 
 static char	*handle_special_var(char *input, int *i, t_args *arg)
 {
 	char	*str;
 
-    str = NULL;
-    str = handle_special_utils(input, str, i, arg);
-    return (str);
+	str = NULL;
+	str = handle_special_utils(input, str, i, arg);
+	return (str);
 }
 
 static char	*get_env_name(char *input, int *i, t_args *arg)
@@ -53,8 +53,8 @@ static char	*get_env_name(char *input, int *i, t_args *arg)
 	if (special)
 		return (special);
 	len = 0;
-	while (input[start + len] && (ft_isalnum(input[start + len])
-			|| input[start + len] == '_'))
+	while (input[start + len] && (ft_isalnum(input[start + len]) || input[start
+				+ len] == '_'))
 		len++;
 	if (len == 0)
 		return (NULL);
@@ -65,9 +65,9 @@ static char	*get_env_name(char *input, int *i, t_args *arg)
 
 static char	*handle_shlvl(t_env *env_list)
 {
-	char		*value;
-	int			level;
-	char		*new_value;
+	char	*value;
+	int		level;
+	char	*new_value;
 
 	value = get_env_value(env_list, "SHLVL");
 	if (!value)
@@ -78,43 +78,42 @@ static char	*handle_shlvl(t_env *env_list)
 	return (new_value);
 }
 
-char    *env_expansion(char *input, int *i,
-        t_env *env_list, t_args *arg)
+char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 {
-        char    *name;
+	char	*name;
+	char	*val;
+	char	*value;
 
-        (*i)++;
-        if (input[*i] == '?')
-        {
-                (*i)++;
-                return (ft_itoa(arg->exit_status));
-        }
-        if (input[*i] == '@' || input[*i] == '*')
-        {
-                (*i)++;
-                return (join_arguments(arg));
-        }
-        if (input[*i] == '0')
-        {
-                (*i)++;
-                return (ft_strdup(arg->argv[0]));
-        }
-        name = get_env_name(input, i, arg);
-        if (!name)
-                return (ft_strdup(""));
-        if (!ft_strcmp(name, "SHLVL"))
-        {
-                char    *val;
-
-                val = handle_shlvl(env_list);
-                free(name);
-                return (val);
-        }
-        char    *value = get_env_value(env_list, name);
-        if (!value)
-                value = ft_strdup("");
-        else
-                value = ft_strdup(value);
-        free(name);
-        return (value);
+	(*i)++;
+	if (input[*i] == '?')
+	{
+		(*i)++;
+		return (ft_itoa(arg->exit_status));
+	}
+	if (input[*i] == '@' || input[*i] == '*')
+	{
+		(*i)++;
+		return (join_arguments(arg));
+	}
+	if (input[*i] == '0')
+	{
+		(*i)++;
+		return (ft_strdup(arg->argv[0]));
+	}
+	name = get_env_name(input, i, arg);
+	if (!name)
+		return (ft_strdup(""));
+	if (!ft_strcmp(name, "SHLVL"))
+	{
+		val = handle_shlvl(env_list);
+		free(name);
+		return (val);
+	}
+	value = get_env_value(env_list, name);
+	if (!value)
+		value = ft_strdup("");
+	else
+		value = ft_strdup(value);
+	free(name);
+	return (value);
 }
