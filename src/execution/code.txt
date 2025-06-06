@@ -81,7 +81,6 @@ int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 #include <errno.h>
 #include <string.h>
 
-
 int	execute_echo(char *args[], int fd_out)
 {
 	int	i;
@@ -136,6 +135,13 @@ int	execute_exit(t_ast *data, t_ast *tree)
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	handle_pwd_errors(char *old_pwd, int error_code)
+{
+	free(old_pwd);
+	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
+	return (error_code);
+}
 
 int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 {
@@ -220,12 +226,6 @@ int	execute_pwd(t_ast *data, int fd_out)
 
 #include "minishell.h"
 
-int	handle_pwd_errors(char *old_pwd, int error_code)
-{
-	free(old_pwd);
-	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
-	return (error_code);
-}
 t_env	*get_env_node(t_env *env_list, const char *name)
 {
 	t_env	*current;
@@ -260,6 +260,7 @@ void	update_env_var(t_ast *data, const char *key, const char *value)
 		data->env_list = new_env;
 	}
 }
+
 int	update_directory(t_ast *data, char *path, char *old_pwd)
 {
 	char	*new_pwd;
@@ -346,10 +347,14 @@ static int	add_new(t_ast *data, char *key, char *val)
 {
 	t_env	*new;
 
-	new = val ? new_node(key, val) : new_node(key, NULL);
-	if (!new)
+	new = NULL;
+	if (val == NULL)
+		new = new_node(key, NULL);
+	else
+		new = new_node(key, val);
+	if (new == NULL)
 		return (perror("malloc"), 1);
-	if (add_env_node(&data->env_list, new))
+	if (add_env_node(&data->env_list, new) != 0)
 	{
 		free(new->key);
 		free(new->value);
@@ -359,18 +364,21 @@ static int	add_new(t_ast *data, char *key, char *val)
 	return (0);
 }
 
-/* returns 0 success, 1 error */
 int	export_one(t_ast *data, const char *arg)
 {
 	char	*key;
 	char	*val;
-	int		split_res;
+	int		s;
 
-	split_res = split_key_value(arg, &key, &val);
-	if (split_res == 1 || (!is_valid_identifier(split_res == -1 ? arg : key)))
+	key = NULL;
+	val = NULL;
+	s = split_key_value(arg, &key, &val);
+	if (s == 1
+		|| (s == -1 && !is_valid_identifier(arg))
+		|| (s != -1 && !is_valid_identifier(key)))
 		return (ft_putendl_fd("export: not a valid identifier", 2),
-				free(key), free(val), 1);
-	if (split_res == -1)
+			free(key), free(val), 1);
+	if (s == -1)
 	{
 		key = ft_strdup(arg);
 		if (!key)
@@ -407,7 +415,11 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 
 	args = tree->cmd->args;
 	if (!args[1])
-		return (print_export_list(data->env_list, fd), 0);
+	{
+		print_export_list(data->env_list, fd);
+		data->exit_status = 0;
+		return (1);
+	}
 	i = 1;
 	ret = 1;
 	while (args[i])
@@ -418,6 +430,7 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 	}
 	return (ret);
 }
+
 ### END OF FILE: ./env/env_export.c ###
 
 
@@ -677,26 +690,26 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths = NULL;
+	char	**paths;
 	char	*full_path;
 	char	*result;
 	int		i;
 
+	paths = NULL;
+	i = 0;
 	result = checker(data, cmd, &paths);
-	if (result || !paths)
+	if (result != NULL || paths == NULL)
 		return (result);
-	i = -1;
-	while (paths[++i])
+	while (paths[i] != NULL)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);
-		if (!full_path)
-			continue ;
-		if (access(full_path, X_OK) == 0)
+		if (full_path != NULL && access(full_path, X_OK) == 0)
 		{
 			free_2darray(paths);
 			return (full_path);
 		}
 		free(full_path);
+		i++;
 	}
 	free_2darray(paths);
 	return (NULL);
@@ -715,7 +728,7 @@ char	*find_executable_path(t_ast *data, char *cmd)
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 12:10:00 by you               #+#    #+#             */
-/*   Updated: 2025/06/06 12:41:38 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/06 14:13:41 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -770,6 +783,7 @@ void	print_env_list(t_env *lst, int fd)
 		lst = lst->next;
 	}
 }
+
 ### END OF FILE: ./env/export_utils.c ###
 
 
@@ -841,21 +855,25 @@ t_env	*new_node(const char *key, const char *val)
 {
 	t_env	*node;
 
+	node = NULL;
 	node = (t_env *)malloc(sizeof(t_env));
-	if (!node)
+	if (node == NULL)
 		return (NULL);
+	node->key = NULL;
+	node->value = NULL;
 	node->key = ft_strdup(key);
-	node->value = val ? ft_strdup(val) : NULL;
-	if (!node->key || (val && !node->value))
+	if (val != NULL)
+		node->value = ft_strdup(val);
+	if (node->key == NULL || (val != NULL && node->value == NULL))
 	{
 		free(node->key);
 		free(node->value);
-		return (free(node), NULL);
+		free(node);
+		return (NULL);
 	}
 	node->next = NULL;
 	return (node);
 }
-
 
 int	add_env_node(t_env **lst, t_env *new_node)
 {
@@ -876,12 +894,17 @@ int	update_env_value(t_env *lst, const char *key, const char *val)
 {
 	t_env	*node;
 
+	node = NULL;
 	node = find_env_node(lst, key);
-	if (!node)
+	if (node == NULL)
 		return (1);
 	free(node->value);
-	node->value = val ? ft_strdup(val) : NULL;
-	return (node->value || !val ? 0 : 1);
+	node->value = NULL;
+	if (val != NULL)
+		node->value = ft_strdup(val);
+	if (val != NULL && node->value == NULL)
+		return (1);
+	return (0);
 }
 
 ### END OF FILE: ./env/utils/builtins_env_utils_2.c ###
@@ -953,7 +976,7 @@ int	redirect_handler(t_ast *data, t_ast *tree)
 		return (0);
 }
 
-int	++execute_tree(t_ast *data, t_ast *tree)
+int	execute_tree(t_ast *data, t_ast *tree)
 {
 	if (tree->type == AST_AND || tree->type == AST_OR)
 	{
@@ -1488,326 +1511,6 @@ int	parent_process(pid_t pid, t_ast *data)
 }
 
 ### END OF FILE: ./main_exec/exec_word/execute_word_utils2.c ###
-
-
-### START OF FILE: ./main_exec/wildcards/expand_wildcard.c ###
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_wildcard.c                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 13:40:23 by marvin           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../../../include/minishell.h"
-#include <dirent.h>
-
-char	**expand_wildcard(char *pattern)
-{
-	char	*dir_part;
-	char	*file_part;
-	DIR		*dir;
-	char	**matches;
-	int		count;
-
-	split_pattern(pattern, &dir_part, &file_part);
-	if (!has_wildcard(file_part) && !has_wildcard(dir_part))
-	{
-		free(dir_part);
-		free(file_part);
-		return (handle_no_wildcard(pattern));
-	}
-	dir = opendir(dir_part);
-	if (!dir)
-	{
-		free(dir_part);
-		free(file_part);
-		return (NULL);
-	}
-	matches = process_dir_entries(dir, file_part, dir_part, &count);
-	closedir(dir);
-	free(dir_part);
-	free(file_part);
-	return (finalize_matches(matches, count));
-}
-
-void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
-{
-	*new_args = realloc(*new_args, (*new_count + 1) * sizeof(char *));
-	(*new_args)[*new_count] = ft_strdup(arg);
-	(*new_count)++;
-}
-
-void	free_matches_array(char **matches)
-{
-	int	j;
-
-	j = 0;
-	while (matches[j])
-	{
-		free(matches[j]);
-		j++;
-	}
-	free(matches);
-}
-
-char	**expand_wildcards_in_args(char **args)
-{
-	char	**new_args;
-	int		new_count;
-
-	new_args = NULL;
-	new_count = 0;
-	process_all_arguments(args, &new_args, &new_count);
-	return (finalize_args_array(new_args, new_count));
-}
-
-int	is_hidden_file(char *pattern, const char *filename)
-{
-	return (filename[0] == '.' && (pattern[0] != '.' || ft_strcmp(pattern,
-				".") == 0));
-}
-
-### END OF FILE: ./main_exec/wildcards/expand_wildcard.c ###
-
-
-### START OF FILE: ./main_exec/wildcards/expand_wildcard_utils.c ###
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_wildcard_utils.c                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 15:11:13 by marvin           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../../../include/minishell.h"
-#include <dirent.h>
-
-int	match_pattern1(const char *pattern, const char *text)
-{
-	if (!pattern || !text)
-		return (0);
-	while (*pattern)
-	{
-		if (*pattern == '*')
-		{
-			pattern++;
-			while (*text && !match_pattern1(pattern, text))
-				text++;
-		}
-		else if (*pattern == '?' || *pattern == *text)
-		{
-			pattern++;
-			text++;
-		}
-		else
-		{
-			return (0);
-		}
-	}
-	return (*text == '\0');
-}
-
-int	has_wildcard(const char *str)
-{
-	return (ft_strchr(str, '*') != NULL);
-}
-
-void	split_pattern(const char *pattern, char **dir_part,
-		char **file_part)
-{
-	char	*last_slash;
-
-	last_slash = ft_strrchr(pattern, '/');
-	if (last_slash)
-	{
-		*dir_part = ft_strndup(pattern, last_slash - pattern + 1);
-		*file_part = ft_strdup(last_slash + 1);
-	}
-	else
-	{
-		*dir_part = ft_strdup(".");
-		*file_part = ft_strdup(pattern);
-	}
-}
-
-### END OF FILE: ./main_exec/wildcards/expand_wildcard_utils.c ###
-
-
-### START OF FILE: ./main_exec/wildcards/expand_wildcard_utils2.c ###
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expand_wildcard_utils2.c                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 13:46:47 by marvin           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../../../include/minishell.h"
-#include <dirent.h>
-
-void	process_argument(char *arg, char ***new_args, int *new_count)
-{
-	char	**matches;
-	int		j;
-
-	matches = expand_wildcard(arg);
-	if (!matches)
-	{
-		add_arg_to_args(new_args, new_count, arg);
-	}
-	else
-	{
-		j = 0;
-		while (matches[j])
-		{
-			add_arg_to_args(new_args, new_count, matches[j]);
-			j++;
-		}
-		free_matches_array(matches);
-	}
-}
-
-void	process_all_arguments(char **args, char ***new_args, int *new_count)
-{
-	int	i;
-
-	i = 0;
-	while (args[i])
-	{
-		process_argument(args[i], new_args, new_count);
-		i++;
-	}
-}
-
-char	**finalize_args_array(char **args, int count)
-{
-	args = realloc(args, (count + 1) * sizeof(char *));
-	args[count] = NULL;
-	return (args);
-}
-
-char	**handle_no_wildcard(char *pattern)
-{
-	char	**result;
-
-	result = malloc(2 * sizeof(char *));
-	if (!result)
-		return (NULL);
-	result[0] = ft_strdup(pattern);
-	if (!result[0])
-	{
-		free(result);
-		return (NULL);
-	}
-	result[1] = NULL;
-	return (result);
-}
-
-int	match_pattern(const char *pattern, const char *string)
-{
-	if (*pattern == '\0' && *string == '\0')
-		return (1);
-	if (*pattern == '*')
-	{
-		while (*(pattern + 1) == '*')
-			pattern++;
-		return (match_pattern(pattern + 1, string) || (*string != '\0'
-				&& match_pattern(pattern, string + 1)));
-	}
-	if (*pattern == '?' || *pattern == *string)
-		return (*string != '\0' && match_pattern(pattern + 1, string + 1));
-	return (0);
-}
-
-char	**process_dir_entries(DIR *dir, char *file_part, char *dir_part,
-		int *count)
-{
-	struct dirent	*entry;
-	char			**matches;
-	char			*full_path;
-
-	matches = malloc(sizeof(char *));
-	if (!matches)
-		return (NULL);
-	matches[0] = NULL;
-	*count = 0;
-	while ((entry = readdir(dir)) != NULL)
-	{
-		if (is_hidden_file(file_part, entry->d_name))
-			continue ;
-		if (match_pattern(file_part, entry->d_name))
-		{
-			if (ft_strcmp(dir_part, "") == 0 || ft_strcmp(dir_part, "./") == 0
-				|| ft_strcmp(dir_part, ".") == 0)
-				full_path = ft_strdup(entry->d_name);
-			else
-			{
-				full_path = malloc(ft_strlen(dir_part)
-						+ ft_strlen(entry->d_name) + 2);
-				if (!full_path)
-					continue ;
-				ft_strcpy(full_path, dir_part);
-				if (dir_part[ft_strlen(dir_part) - 1] != '/')
-					ft_strcat(full_path, "/");
-				ft_strcat(full_path, entry->d_name);
-			}
-			matches = realloc(matches, (*count + 2) * sizeof(char *));
-			if (!matches)
-			{
-				free(full_path);
-				return (NULL);
-			}
-			matches[*count] = full_path;
-			(*count)++;
-			matches[*count] = NULL;
-		}
-	}
-	return (matches);
-}
-
-char	**finalize_matches(char **matches, int count)
-{
-	int		i;
-	int		j;
-	char	*temp;
-
-	if (count == 0)
-	{
-		free(matches);
-		return (NULL);
-	}
-	for (i = 0; i < count - 1; i++)
-	{
-		for (j = i + 1; j < count; j++)
-		{
-			if (ft_strcmp(matches[i], matches[j]) > 0)
-			{
-				temp = matches[i];
-				matches[i] = matches[j];
-				matches[j] = temp;
-			}
-		}
-	}
-	return (matches);
-}
-
-### END OF FILE: ./main_exec/wildcards/expand_wildcard_utils2.c ###
 
 
 ### START OF FILE: ./redirections/heredoc.c ###
@@ -2389,3 +2092,323 @@ char	*ft_strcat(char *dest, const char *src)
 }
 
 ### END OF FILE: ./utils/utils4.c ###
+
+
+### START OF FILE: ./wildcards/expand_wildcard.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/04/12 13:40:23 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include <dirent.h>
+
+char	**expand_wildcard(char *pattern)
+{
+	char	*dir_part;
+	char	*file_part;
+	DIR		*dir;
+	char	**matches;
+	int		count;
+
+	split_pattern(pattern, &dir_part, &file_part);
+	if (!has_wildcard(file_part) && !has_wildcard(dir_part))
+	{
+		free(dir_part);
+		free(file_part);
+		return (handle_no_wildcard(pattern));
+	}
+	dir = opendir(dir_part);
+	if (!dir)
+	{
+		free(dir_part);
+		free(file_part);
+		return (NULL);
+	}
+	matches = process_dir_entries(dir, file_part, dir_part, &count);
+	closedir(dir);
+	free(dir_part);
+	free(file_part);
+	return (finalize_matches(matches, count));
+}
+
+void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
+{
+	*new_args = realloc(*new_args, (*new_count + 1) * sizeof(char *));
+	(*new_args)[*new_count] = ft_strdup(arg);
+	(*new_count)++;
+}
+
+void	free_matches_array(char **matches)
+{
+	int	j;
+
+	j = 0;
+	while (matches[j])
+	{
+		free(matches[j]);
+		j++;
+	}
+	free(matches);
+}
+
+char	**expand_wildcards_in_args(char **args)
+{
+	char	**new_args;
+	int		new_count;
+
+	new_args = NULL;
+	new_count = 0;
+	process_all_arguments(args, &new_args, &new_count);
+	return (finalize_args_array(new_args, new_count));
+}
+
+int	is_hidden_file(char *pattern, const char *filename)
+{
+	return (filename[0] == '.' && (pattern[0] != '.' || ft_strcmp(pattern,
+				".") == 0));
+}
+
+### END OF FILE: ./wildcards/expand_wildcard.c ###
+
+
+### START OF FILE: ./wildcards/expand_wildcard_utils.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard_utils.c                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/04/12 15:11:13 by marvin           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include <dirent.h>
+
+int	match_pattern1(const char *pattern, const char *text)
+{
+	if (!pattern || !text)
+		return (0);
+	while (*pattern)
+	{
+		if (*pattern == '*')
+		{
+			pattern++;
+			while (*text && !match_pattern1(pattern, text))
+				text++;
+		}
+		else if (*pattern == '?' || *pattern == *text)
+		{
+			pattern++;
+			text++;
+		}
+		else
+		{
+			return (0);
+		}
+	}
+	return (*text == '\0');
+}
+
+int	has_wildcard(const char *str)
+{
+	return (ft_strchr(str, '*') != NULL);
+}
+
+void	split_pattern(const char *pattern, char **dir_part,
+		char **file_part)
+{
+	char	*last_slash;
+
+	last_slash = ft_strrchr(pattern, '/');
+	if (last_slash)
+	{
+		*dir_part = ft_strndup(pattern, last_slash - pattern + 1);
+		*file_part = ft_strdup(last_slash + 1);
+	}
+	else
+	{
+		*dir_part = ft_strdup(".");
+		*file_part = ft_strdup(pattern);
+	}
+}
+
+### END OF FILE: ./wildcards/expand_wildcard_utils.c ###
+
+
+### START OF FILE: ./wildcards/expand_wildcard_utils2.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_wildcard_utils2.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/06 14:33:43 by vela             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include <dirent.h>
+
+void	process_argument(char *arg, char ***new_args, int *new_count)
+{
+	char	**matches;
+	int		j;
+
+	matches = expand_wildcard(arg);
+	if (!matches)
+	{
+		add_arg_to_args(new_args, new_count, arg);
+	}
+	else
+	{
+		j = 0;
+		while (matches[j])
+		{
+			add_arg_to_args(new_args, new_count, matches[j]);
+			j++;
+		}
+		free_matches_array(matches);
+	}
+}
+
+void	process_all_arguments(char **args, char ***new_args, int *new_count)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+	{
+		process_argument(args[i], new_args, new_count);
+		i++;
+	}
+}
+
+char	**finalize_args_array(char **args, int count)
+{
+	args = realloc(args, (count + 1) * sizeof(char *));
+	args[count] = NULL;
+	return (args);
+}
+
+char	**handle_no_wildcard(char *pattern)
+{
+	char	**result;
+
+	result = malloc(2 * sizeof(char *));
+	if (!result)
+		return (NULL);
+	result[0] = ft_strdup(pattern);
+	if (!result[0])
+	{
+		free(result);
+		return (NULL);
+	}
+	result[1] = NULL;
+	return (result);
+}
+
+int	match_pattern(const char *pattern, const char *string)
+{
+	if (*pattern == '\0' && *string == '\0')
+		return (1);
+	if (*pattern == '*')
+	{
+		while (*(pattern + 1) == '*')
+			pattern++;
+		return (match_pattern(pattern + 1, string) || (*string != '\0'
+				&& match_pattern(pattern, string + 1)));
+	}
+	if (*pattern == '?' || *pattern == *string)
+		return (*string != '\0' && match_pattern(pattern + 1, string + 1));
+	return (0);
+}
+
+char	**process_dir_entries(DIR *dir, char *file_part, char *dir_part,
+		int *count)
+{
+	struct dirent	*entry;
+	char			**matches;
+	char			*full_path;
+
+	matches = malloc(sizeof(char *));
+	if (!matches)
+		return (NULL);
+	matches[0] = NULL;
+	*count = 0;
+	while ((entry = readdir(dir)) != NULL)
+	{
+		if (is_hidden_file(file_part, entry->d_name))
+			continue ;
+		if (match_pattern(file_part, entry->d_name))
+		{
+			if (ft_strcmp(dir_part, "") == 0 || ft_strcmp(dir_part, "./") == 0
+				|| ft_strcmp(dir_part, ".") == 0)
+				full_path = ft_strdup(entry->d_name);
+			else
+			{
+				full_path = malloc(ft_strlen(dir_part)
+						+ ft_strlen(entry->d_name) + 2);
+				if (!full_path)
+					continue ;
+				ft_strcpy(full_path, dir_part);
+				if (dir_part[ft_strlen(dir_part) - 1] != '/')
+					ft_strcat(full_path, "/");
+				ft_strcat(full_path, entry->d_name);
+			}
+			matches = realloc(matches, (*count + 2) * sizeof(char *));
+			if (!matches)
+			{
+				free(full_path);
+				return (NULL);
+			}
+			matches[*count] = full_path;
+			(*count)++;
+			matches[*count] = NULL;
+		}
+	}
+	return (matches);
+}
+
+char	**finalize_matches(char **matches, int count)
+{
+	int		i;
+	int		j;
+	char	*temp;
+
+	if (count == 0)
+	{
+		free(matches);
+		return (NULL);
+	}
+	for (i = 0; i < count - 1; i++)
+	{
+		for (j = i + 1; j < count; j++)
+		{
+			if (ft_strcmp(matches[i], matches[j]) > 0)
+			{
+				temp = matches[i];
+				matches[i] = matches[j];
+				matches[j] = temp;
+			}
+		}
+	}
+	return (matches);
+}
+
+### END OF FILE: ./wildcards/expand_wildcard_utils2.c ###
