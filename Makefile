@@ -25,7 +25,7 @@ BUILTINS = $(EXEC)builtins/
 EXEC_UTILS = $(EXEC)utils/
 SIGNALS = $(EXEC)signals/
 EXEC = $(SRC)execution/
-EXECUTION= $(EXEC)execution/
+EXECUTION= $(EXEC)main_exec/
 EXEC_ENV = $(EXEC)env/
 SRC = src/
 PARSE = $(SRC)parse/
@@ -67,7 +67,7 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(EXECUTION)execute_pipe.c $(EXECUTION)execute_pipe_utils.c $(EXECUTION)exec_word/execute_word.c \
 	   $(EXECUTION)exec_word/execute_word_utils.c $(EXECUTION)exec_word/execute_word_utils2.c $(EXECUTION)execute.c \
 	   $(EXECUTION)wildcards/expand_wildcard.c $(EXECUTION)wildcards/expand_wildcard_utils.c $(EXECUTION)wildcards/expand_wildcard_utils2.c \
-	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c $(BUILTINS)utils/builtins_env_utils.c $(BUILTINS)utils/builtins_env_utils_2.c \
+	   $(BUILTINS)builtins_utils.c $(BUILTINS)builtins.c $(EXEC_ENV)utils/builtins_env_utils.c $(EXEC_ENV)utils/builtins_env_utils_2.c \
 	   $(BUILTINS)utils/builtins_path_utils.c $(BUILTINS)utils/builtins_path_utils_2.c $(EXEC)redirections/redirection_utils.c \
 	   $(EXEC)redirections/redirection_utils_2.c $(EXEC)redirections/heredoc.c $(TREE)parse_commands.c \
 	   $(EXEC_UTILS)free.c $(EXEC_UTILS)utils4.c $(TREE)parse_redir.c \
