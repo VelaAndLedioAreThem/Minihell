@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: you <you@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 12:10:00 by you               #+#    #+#             */
-/*   Updated: 2025/06/05 12:10:00 by you              ###   ########.fr       */
+/*   Updated: 2025/06/06 12:41:38 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,16 +54,9 @@ void	print_env_list(t_env *lst, int fd)
 	{
 		if (lst->value)
 		{
-			ft_putstr_fd("declare -x ", fd);
 			ft_putstr_fd(lst->key, fd);
-			ft_putstr_fd("=\"", fd);
-			ft_putstr_fd(lst->value, fd);
-			ft_putendl_fd("\"", fd);
-		}
-		else
-		{
-			ft_putstr_fd("declare -x ", fd);
-			ft_putendl_fd(lst->key, fd);
+			ft_putstr_fd("=", fd);
+			ft_putendl_fd(lst->value, fd);
 		}
 		lst = lst->next;
 	}

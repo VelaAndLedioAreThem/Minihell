@@ -60,6 +60,23 @@ int	export_one(t_ast *data, const char *arg)
 	return (free(key), free(val), 0);
 }
 
+static void	print_export_list(t_env *lst, int fd)
+{
+	while (lst)
+	{
+		ft_putstr_fd("declare -x ", fd);
+		ft_putstr_fd(lst->key, fd);
+		if (lst->value)
+		{
+			ft_putstr_fd("=\"", fd);
+			ft_putstr_fd(lst->value, fd);
+			ft_putstr_fd("\"", fd);
+		}
+		ft_putchar_fd('\n', fd);
+		lst = lst->next;
+	}
+}
+
 int	builtin_export(t_ast *data, t_ast *tree, int fd)
 {
 	char	**args;
@@ -68,7 +85,7 @@ int	builtin_export(t_ast *data, t_ast *tree, int fd)
 
 	args = tree->cmd->args;
 	if (!args[1])
-		return (print_env_list(data->env_list, fd), 0);
+		return (print_export_list(data->env_list, fd), 0);
 	i = 1;
 	ret = 1;
 	while (args[i])

@@ -81,18 +81,6 @@ int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 #include <errno.h>
 #include <string.h>
 
-bool	is_valid_identifier(const char *name)
-{
-	if (!name || !*name || ft_isdigit(*name))
-		return (false);
-	while (*name)
-	{
-		if (!ft_isalnum(*name) && *name != '_')
-			return (false);
-		name++;
-	}
-	return (true);
-}
 
 int	execute_echo(char *args[], int fd_out)
 {
@@ -131,120 +119,6 @@ int	execute_exit(t_ast *data, t_ast *tree)
 }
 
 ### END OF FILE: ./builtins/builtins_utils.c ###
-
-
-### START OF FILE: ./builtins/utils/builtins_env_utils.c ###
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "minishell.h"
-
-int	builtin_export(t_ast *data, t_ast *tree, int fd_out)
-{
-	if (!tree->cmd->args[1])
-		print_env_list(data->env_list, fd_out);
-	else
-		execute_export(data, tree, fd_out);
-	return (1);
-}
-
-int	builtin_unset(t_ast *data, t_ast *tree, int fd_out)
-{
-	(void)fd_out;
-	if (execute_unset(data, tree))
-		return (data->exit_status = 1, 1);
-	return (1);
-}
-
-int	builtin_env(t_ast *data, t_ast *tree, int fd_out)
-{
-	(void)tree;
-	print_env_list(data->env_list, fd_out);
-	return (1);
-}
-
-### END OF FILE: ./builtins/utils/builtins_env_utils.c ###
-
-
-### START OF FILE: ./builtins/utils/builtins_env_utils_2.c ###
-
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "minishell.h"
-
-t_env	*get_env_node(t_env *env_list, const char *name)
-{
-	t_env	*current;
-
-	current = env_list;
-	while (current)
-	{
-		if (strcmp(current->key, name) == 0)
-			return (current);
-		current = current->next;
-	}
-	return (NULL);
-}
-
-void	update_env_var(t_ast *data, const char *key, const char *value)
-{
-	t_env	*env;
-	t_env	*new_env;
-
-	env = get_env_node(data->env_list, key);
-	if (env)
-	{
-		free(env->value);
-		env->value = ft_strdup(value);
-	}
-	else
-	{
-		new_env = malloc(sizeof(t_env));
-		new_env->key = ft_strdup(key);
-		new_env->value = ft_strdup(value);
-		new_env->next = data->env_list;
-		data->env_list = new_env;
-	}
-}
-
-int	create_new_env(t_ast *d, char *n, char *eq)
-{
-	t_env	*env;
-
-	env = malloc(sizeof(t_env));
-	if (!env)
-		return (free(n), 1);
-	env->key = n;
-	if (eq)
-		env->value = ft_strdup(eq + 1);
-	else
-		env->value = ft_strdup("");
-	env->next = d->env_list;
-	d->env_list = env;
-	return (0);
-}
-
-### END OF FILE: ./builtins/utils/builtins_env_utils_2.c ###
 
 
 ### START OF FILE: ./builtins/utils/builtins_path_utils.c ###
@@ -352,7 +226,40 @@ int	handle_pwd_errors(char *old_pwd, int error_code)
 	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
 	return (error_code);
 }
+t_env	*get_env_node(t_env *env_list, const char *name)
+{
+	t_env	*current;
 
+	current = env_list;
+	while (current)
+	{
+		if (strcmp(current->key, name) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+void	update_env_var(t_ast *data, const char *key, const char *value)
+{
+	t_env	*env;
+	t_env	*new_env;
+
+	env = get_env_node(data->env_list, key);
+	if (env)
+	{
+		free(env->value);
+		env->value = ft_strdup(value);
+	}
+	else
+	{
+		new_env = malloc(sizeof(t_env));
+		new_env->key = ft_strdup(key);
+		new_env->value = ft_strdup(value);
+		new_env->next = data->env_list;
+		data->env_list = new_env;
+	}
+}
 int	update_directory(t_ast *data, char *path, char *old_pwd)
 {
 	char	*new_pwd;
@@ -416,73 +323,101 @@ int	execute_home(t_ast *data, char *path, char *oldpwd)
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   export_arg.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: you <you@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/05 12:12:00 by you               #+#    #+#             */
+/*   Updated: 2025/06/05 12:12:00 by you              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "minishell.h"
+#include "libft.h"
 
-static void	update_env_variable(t_env *env, char *name, char *eq)
+static int	handle_existing(t_ast *data, char *key, char *val)
 {
-	if (eq)
-	{
-		free(env->value);
-		env->value = ft_strdup(eq + 1);
-	}
-	free(name);
-}
-
-static int	handle_export_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static int	process_export_arg(t_ast *data, char *arg)
-{
-	char	*eq;
-	char	*name;
-	t_env	*env;
-
-	eq = ft_strchr(arg, '=');
-	if (eq)
-		name = ft_substr(arg, 0, eq - arg);
-	else
-		name = ft_strdup(arg);
-	if (!name || !is_valid_identifier(name))
-		return (free(name), handle_export_error(arg));
-	env = get_env_node(data->env_list, name);
-	if (env)
-		update_env_variable(env, name, eq);
-	else if (create_new_env(data, name, eq))
-		return (1);
+	if (val && update_env_value(data->env_list, key, val))
+		return (perror("malloc"), 1);
 	return (0);
 }
 
-int	execute_export(t_ast *data, t_ast *tree, int fd_out)
+static int	add_new(t_ast *data, char *key, char *val)
 {
-	int		i;
-	int		status;
+	t_env	*new;
 
-	(void)fd_out;
-	i = 1;
-	status = 0;
-	while (tree->cmd->args[i])
+	new = val ? new_node(key, val) : new_node(key, NULL);
+	if (!new)
+		return (perror("malloc"), 1);
+	if (add_env_node(&data->env_list, new))
 	{
-		if (process_export_arg(data, tree->cmd->args[i]))
-			status = 1;
-		i++;
+		free(new->key);
+		free(new->value);
+		free(new);
+		return (perror("malloc"), 1);
 	}
-	return (status);
+	return (0);
 }
 
+/* returns 0 success, 1 error */
+int	export_one(t_ast *data, const char *arg)
+{
+	char	*key;
+	char	*val;
+	int		split_res;
+
+	split_res = split_key_value(arg, &key, &val);
+	if (split_res == 1 || (!is_valid_identifier(split_res == -1 ? arg : key)))
+		return (ft_putendl_fd("export: not a valid identifier", 2),
+				free(key), free(val), 1);
+	if (split_res == -1)
+	{
+		key = ft_strdup(arg);
+		if (!key)
+			return (perror("malloc"), 1);
+	}
+	if (find_env_node(data->env_list, key))
+		return (handle_existing(data, key, val), free(key), free(val), 0);
+	add_new(data, key, val);
+	return (free(key), free(val), 0);
+}
+
+static void	print_export_list(t_env *lst, int fd)
+{
+	while (lst)
+	{
+		ft_putstr_fd("declare -x ", fd);
+		ft_putstr_fd(lst->key, fd);
+		if (lst->value)
+		{
+			ft_putstr_fd("=\"", fd);
+			ft_putstr_fd(lst->value, fd);
+			ft_putstr_fd("\"", fd);
+		}
+		ft_putchar_fd('\n', fd);
+		lst = lst->next;
+	}
+}
+
+int	builtin_export(t_ast *data, t_ast *tree, int fd)
+{
+	char	**args;
+	int		i;
+	int		ret;
+
+	args = tree->cmd->args;
+	if (!args[1])
+		return (print_export_list(data->env_list, fd), 0);
+	i = 1;
+	ret = 1;
+	while (args[i])
+	{
+		if (export_one(data, args[i]))
+			ret = 0;
+		++i;
+	}
+	return (ret);
+}
 ### END OF FILE: ./env/env_export.c ###
 
 
@@ -586,20 +521,6 @@ char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 	res = ft_strjoin(tmp, s3);
 	free(tmp);
 	return (res);
-}
-
-void	print_env_list(t_env *env_list, int fd_out)
-{
-	while (env_list)
-	{
-		ft_putstr_fd(env_list->key, fd_out);
-		ft_putstr_fd("=", fd_out);
-		if (env_list->value)
-			ft_putendl_fd(env_list->value, fd_out);
-		else
-			ft_putendl_fd("", fd_out);
-		env_list = env_list->next;
-	}
 }
 
 static int	count_env_nodes(t_env *lst)
@@ -784,7 +705,189 @@ char	*find_executable_path(t_ast *data, char *cmd)
 ### END OF FILE: ./env/env_utils_2.c ###
 
 
-### START OF FILE: ./execution/execute.c ###
+### START OF FILE: ./env/export_utils.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/05 12:10:00 by you               #+#    #+#             */
+/*   Updated: 2025/06/06 12:41:38 by vela             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include "libft.h"
+
+/* --- tiny helpers -------------------------------------------------------- */
+
+int	is_valid_identifier(const char *s)
+{
+	int	i;
+
+	if (!s || (!ft_isalpha(*s) && *s != '_'))
+		return (0);
+	i = 1;
+	while (s[i])
+	{
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
+		++i;
+	}
+	return (1);
+}
+
+/* returns: 0 ok, 1 malloc fail, -1 no '=' */
+int	split_key_value(const char *arg, char **key, char **val)
+{
+	char	*eq;
+
+	eq = ft_strchr(arg, '=');
+	if (!eq)
+		return (-1);
+	*key = ft_substr(arg, 0, eq - arg);
+	if (!*key)
+		return (1);
+	*val = ft_strdup(eq + 1);
+	if (!*val)
+		return (free(*key), 1);
+	return (0);
+}
+
+void	print_env_list(t_env *lst, int fd)
+{
+	while (lst)
+	{
+		if (lst->value)
+		{
+			ft_putstr_fd(lst->key, fd);
+			ft_putstr_fd("=", fd);
+			ft_putendl_fd(lst->value, fd);
+		}
+		lst = lst->next;
+	}
+}
+### END OF FILE: ./env/export_utils.c ###
+
+
+### START OF FILE: ./env/utils/builtins_env_utils.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
+/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	builtin_unset(t_ast *data, t_ast *tree, int fd_out)
+{
+	(void)fd_out;
+	if (execute_unset(data, tree))
+		return (data->exit_status = 1, 1);
+	return (1);
+}
+
+int	builtin_env(t_ast *data, t_ast *tree, int fd_out)
+{
+	(void)tree;
+	print_env_list(data->env_list, fd_out);
+	return (1);
+}
+
+### END OF FILE: ./env/utils/builtins_env_utils.c ###
+
+
+### START OF FILE: ./env/utils/builtins_env_utils_2.c ###
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: you <you@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/05 12:05:00 by you               #+#    #+#             */
+/*   Updated: 2025/06/05 12:05:00 by you              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+#include "libft.h" /* your usual libft */
+
+/* --- basic linked-list helpers ------------------------------------------ */
+
+t_env	*find_env_node(t_env *lst, const char *key)
+{
+	while (lst)
+	{
+		if (!ft_strcmp(lst->key, key))
+			return (lst);
+		lst = lst->next;
+	}
+	return (NULL);
+}
+
+t_env	*new_node(const char *key, const char *val)
+{
+	t_env	*node;
+
+	node = (t_env *)malloc(sizeof(t_env));
+	if (!node)
+		return (NULL);
+	node->key = ft_strdup(key);
+	node->value = val ? ft_strdup(val) : NULL;
+	if (!node->key || (val && !node->value))
+	{
+		free(node->key);
+		free(node->value);
+		return (free(node), NULL);
+	}
+	node->next = NULL;
+	return (node);
+}
+
+
+int	add_env_node(t_env **lst, t_env *new_node)
+{
+	t_env	*cur;
+
+	if (!new_node)
+		return (1);
+	if (!*lst)
+		return (*lst = new_node, 0);
+	cur = *lst;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = new_node;
+	return (0);
+}
+
+int	update_env_value(t_env *lst, const char *key, const char *val)
+{
+	t_env	*node;
+
+	node = find_env_node(lst, key);
+	if (!node)
+		return (1);
+	free(node->value);
+	node->value = val ? ft_strdup(val) : NULL;
+	return (node->value || !val ? 0 : 1);
+}
+
+### END OF FILE: ./env/utils/builtins_env_utils_2.c ###
+
+
+### START OF FILE: ./main_exec/execute.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -850,7 +953,7 @@ int	redirect_handler(t_ast *data, t_ast *tree)
 		return (0);
 }
 
-int	execute_tree(t_ast *data, t_ast *tree)
+int	++execute_tree(t_ast *data, t_ast *tree)
 {
 	if (tree->type == AST_AND || tree->type == AST_OR)
 	{
@@ -879,10 +982,10 @@ int	execute_tree(t_ast *data, t_ast *tree)
 	return (0);
 }
 
-### END OF FILE: ./execution/execute.c ###
+### END OF FILE: ./main_exec/execute.c ###
 
 
-### START OF FILE: ./execution/execute_external.c ###
+### START OF FILE: ./main_exec/execute_external.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -937,10 +1040,10 @@ int	parent_process_handler(t_ast *data, pid_t pid, int fd_inp, int fd_out)
 	return (1);
 }
 
-### END OF FILE: ./execution/execute_external.c ###
+### END OF FILE: ./main_exec/execute_external.c ###
 
 
-### START OF FILE: ./execution/execute_external_utils.c ###
+### START OF FILE: ./main_exec/execute_external_utils.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1020,10 +1123,10 @@ void	child_process_handler(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
 	execute_child_process(data, tree);
 }
 
-### END OF FILE: ./execution/execute_external_utils.c ###
+### END OF FILE: ./main_exec/execute_external_utils.c ###
 
 
-### START OF FILE: ./execution/execute_pipe.c ###
+### START OF FILE: ./main_exec/execute_pipe.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1119,10 +1222,10 @@ int	execute_pipe(t_ast *data, t_ast *tree)
 	return (wait_for_processes(data, left_pid, right_pid));
 }
 
-### END OF FILE: ./execution/execute_pipe.c ###
+### END OF FILE: ./main_exec/execute_pipe.c ###
 
 
-### START OF FILE: ./execution/execute_pipe_utils.c ###
+### START OF FILE: ./main_exec/execute_pipe_utils.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1154,10 +1257,10 @@ void	close_pipe(int fd[2])
 	close(fd[1]);
 }
 
-### END OF FILE: ./execution/execute_pipe_utils.c ###
+### END OF FILE: ./main_exec/execute_pipe_utils.c ###
 
 
-### START OF FILE: ./execution/exec_handling.c ###
+### START OF FILE: ./main_exec/exec_handling.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1205,10 +1308,10 @@ int	execute_or(t_ast *data, t_ast *tree)
 	return (right_status);
 }
 
-### END OF FILE: ./execution/exec_handling.c ###
+### END OF FILE: ./main_exec/exec_handling.c ###
 
 
-### START OF FILE: ./execution/exec_word/execute_word.c ###
+### START OF FILE: ./main_exec/exec_word/execute_word.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1267,10 +1370,10 @@ int	execute_word(t_ast *data, t_ast *tree)
 	return (data->exit_status);
 }
 
-### END OF FILE: ./execution/exec_word/execute_word.c ###
+### END OF FILE: ./main_exec/exec_word/execute_word.c ###
 
 
-### START OF FILE: ./execution/exec_word/execute_word_utils.c ###
+### START OF FILE: ./main_exec/exec_word/execute_word_utils.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1314,10 +1417,10 @@ void	setup_child_redirections(int fd_in, int fd_out)
 	}
 }
 
-### END OF FILE: ./execution/exec_word/execute_word_utils.c ###
+### END OF FILE: ./main_exec/exec_word/execute_word_utils.c ###
 
 
-### START OF FILE: ./execution/exec_word/execute_word_utils2.c ###
+### START OF FILE: ./main_exec/exec_word/execute_word_utils2.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1384,10 +1487,10 @@ int	parent_process(pid_t pid, t_ast *data)
 	return (data->exit_status);
 }
 
-### END OF FILE: ./execution/exec_word/execute_word_utils2.c ###
+### END OF FILE: ./main_exec/exec_word/execute_word_utils2.c ###
 
 
-### START OF FILE: ./execution/wildcards/expand_wildcard.c ###
+### START OF FILE: ./main_exec/wildcards/expand_wildcard.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1470,10 +1573,10 @@ int	is_hidden_file(char *pattern, const char *filename)
 				".") == 0));
 }
 
-### END OF FILE: ./execution/wildcards/expand_wildcard.c ###
+### END OF FILE: ./main_exec/wildcards/expand_wildcard.c ###
 
 
-### START OF FILE: ./execution/wildcards/expand_wildcard_utils.c ###
+### START OF FILE: ./main_exec/wildcards/expand_wildcard_utils.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1538,10 +1641,10 @@ void	split_pattern(const char *pattern, char **dir_part,
 	}
 }
 
-### END OF FILE: ./execution/wildcards/expand_wildcard_utils.c ###
+### END OF FILE: ./main_exec/wildcards/expand_wildcard_utils.c ###
 
 
-### START OF FILE: ./execution/wildcards/expand_wildcard_utils2.c ###
+### START OF FILE: ./main_exec/wildcards/expand_wildcard_utils2.c ###
 
 /* ************************************************************************** */
 /*                                                                            */
@@ -1704,7 +1807,7 @@ char	**finalize_matches(char **matches, int count)
 	return (matches);
 }
 
-### END OF FILE: ./execution/wildcards/expand_wildcard_utils2.c ###
+### END OF FILE: ./main_exec/wildcards/expand_wildcard_utils2.c ###
 
 
 ### START OF FILE: ./redirections/heredoc.c ###

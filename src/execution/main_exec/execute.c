@@ -62,7 +62,7 @@ int	redirect_handler(t_ast *data, t_ast *tree)
 		return (0);
 }
 
-int	execute_tree(t_ast *data, t_ast *tree)
+int	++execute_tree(t_ast *data, t_ast *tree)
 {
 	if (tree->type == AST_AND || tree->type == AST_OR)
 	{
