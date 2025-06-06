@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/06 14:33:43 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/06 15:23:40 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,19 +71,31 @@ char	**handle_no_wildcard(char *pattern)
 	return (result);
 }
 
-int	match_pattern(const char *pattern, const char *string)
+int	match_pattern(const char *pat, const char *str)
 {
-	if (*pattern == '\0' && *string == '\0')
-		return (1);
-	if (*pattern == '*')
+	/* pattern exhausted → match only if str is also exhausted */
+	if (*pat == '\0')
+		return (*str == '\0');
+
+	/* collapse consecutive '*' to a single '*' */
+	if (*pat == '*')
 	{
-		while (*(pattern + 1) == '*')
-			pattern++;
-		return (match_pattern(pattern + 1, string) || (*string != '\0'
-				&& match_pattern(pattern, string + 1)));
+		while (*pat == '*')
+			++pat;
+		/* a terminal '*' always matches */
+		if (*pat == '\0')
+			return (1);
+		/* try every suffix of str until we find one that the rest of pat matches */
+		for (; *str; ++str)
+			if (match_pattern(pat, str))
+				return (1);
+		return (0);
 	}
-	if (*pattern == '?' || *pattern == *string)
-		return (*string != '\0' && match_pattern(pattern + 1, string + 1));
+	/* single-character wildcard or literal match */
+	if (*pat == '?' || *pat == *str)
+		return (*str && match_pattern(pat + 1, str + 1));
+
+	/* mismatch */
 	return (0);
 }
 

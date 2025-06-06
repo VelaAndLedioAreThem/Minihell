@@ -24,8 +24,6 @@ int	handle_single_operator(t_token **token, char c)
 		current = create_node("<", TOKEN_REDIRECT_IN);
 	else if (c == '>')
 		current = create_node(">", TOKEN_REDIRECT_OUT);
-	else if (c == '*')
-		current = create_node("*", TOKEN_WILDCARD);
 	else if (c == '&')
 	{
 		report_error(ERR_SYNTAX, "background processes (&) are not supported");
