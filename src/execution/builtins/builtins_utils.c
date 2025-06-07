@@ -11,10 +11,10 @@
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
-#include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int	execute_echo(char *args[], int fd_out)
 {
@@ -48,6 +48,6 @@ int	execute_exit(t_ast *data, t_ast *tree)
 	if (tree->cmd->args[1])
 		status = ft_atoi(tree->cmd->args[1]);
 	free_data(data);
-	exit (status);
+	exit(status);
 	return (0);
 }

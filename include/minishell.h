@@ -229,7 +229,6 @@ typedef struct s_builtin
 }	t_builtin;
 
 extern pid_t	g_child_pid;
-extern int	g_last_exit_status;
 void		update_last_exit_status(int status);
 int			get_last_exit_status(void);
 char		*join_path(char *dir_part, char *name);
