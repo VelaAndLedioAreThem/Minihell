@@ -11,12 +11,12 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 /* push `path` into data->heredoc_files (O(1) amortised) */
 int	add_heredoc(t_ast *data, char *path)

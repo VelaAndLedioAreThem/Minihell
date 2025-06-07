@@ -33,6 +33,7 @@
 # include "../libft/include/libft.h"
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
+# define HEREDOC_TEMPLATE "/tmp/minishell_heredocXXXXXX"
 
 // Parsing struct
 typedef enum e_token_type
@@ -229,6 +230,10 @@ typedef struct s_builtin
 }	t_builtin;
 
 extern pid_t	g_child_pid;
+int			handle_line(int fd, char *line, char *delim);
+int			run_heredoc_loop(int fd, char *delim);
+int			fork_heredoc(int fd, char *delim);
+int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(int status);
 int			get_last_exit_status(void);
 char		*join_path(char *dir_part, char *name);
