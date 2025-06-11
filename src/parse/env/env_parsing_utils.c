@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 00:37:42 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/08 17:09:23 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:05:40 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ char	*join_arguments(t_args *arg)
 	return (result);
 }
 
-static int	quotes(char	*input, int i, t_args *parse)
+int	quotes(char	*input, int i, t_args *parse)
 {
 	if (input[i] == '"')
 	{
@@ -58,7 +58,7 @@ static int	quotes(char	*input, int i, t_args *parse)
 	return (0);
 }
 
-static char	*handle_env_part(t_args *parse, int *i, t_env *env_list)
+char	*handle_env_part(t_args *parse, int *i, t_env *env_list)
 {
 	char		*temp;
 
@@ -67,6 +67,7 @@ static char	*handle_env_part(t_args *parse, int *i, t_env *env_list)
 		temp = ft_substr(parse->input, parse->start, *i - parse->start);
 		parse->result = ft_strjoin(parse->result, temp);
 		free(temp);
+		(*i)++;
 		return (parse->result);
 	}
 	if (*i > parse->start)
@@ -96,29 +97,11 @@ static void	handle_remaining(t_args *parse, int *i)
 char	*parse_env(char *input, t_env *env_list, t_args *arg)
 {
 	t_args		parse;
-	int			i;
 
-	i = 0;
-    parse = (t_args){arg->argc, arg->argv, arg->exit_status, input, 0,
-            ft_strdup(""), 0, 0, 0};
-	while (input[i])
-	{
-		if (quotes(input, i, &parse))
-		{
-			i++;
-			continue ;
-		}
-		if (input[i] == '$' && input[i + 1] && input[i + 1] != ' '
-				&& input[i + 1] != '"' && input[i + 1] != '\'')
-		{
-			parse.result = handle_env_part(&parse, &i, env_list);
-			parse.start = i;
-		}
-		else
-			i++;
-		if (i > ft_strlen(input))
-			i = ft_strlen(input);
-	}
-	handle_remaining(&parse, &i);
+	parse = (t_args){arg->argc, arg->argv, arg->exit_status, input, 0,
+		ft_strdup(""), 0, 0, 0, 0};
+	while (input[parse.i] && parse.i < ft_strlen(input))
+		process_env_var(&parse, env_list, input);
+	handle_remaining(&parse, &parse.i);
 	return (parse.result);
 }

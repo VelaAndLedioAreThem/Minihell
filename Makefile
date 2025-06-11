@@ -6,7 +6,7 @@
 #    By: codespace <codespace@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/06/09 18:29:17 by ldurmish         ###   ########.fr        #
+#    Updated: 2025/06/11 11:10:43 by ldurmish         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,8 +74,8 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(EXEC_UTILS)free.c $(EXEC_UTILS)utils4.c $(EXEC_UTILS)exit_status.c $(TREE)parse_redir.c \
 	   $(TREE)tree_utils.c $(TREE)tree_utils_1.c $(EXEC_ENV)env_utils.c \
 	   $(EXEC_ENV)env_utils_2.c $(EXEC_ENV)env_export.c $(EXEC_ENV)env_unset.c $(EXEC_ENV)export_utils.c \
-	   $(TREE)parse_wildcards.c $(ENV)env_utils.c $(ENV)env_utils_1.c\
-	   $(TOKENIZE)tokenize_assignment.c $(PARENTHESIS)assignment_paren.c\
+	   $(TREE)parse_wildcards.c $(ENV)env_utils.c $(ENV)env_utils_1.c $(TREE)parse_wildcards_utils.c\
+	   $(TOKENIZE)tokenize_assignment.c $(PARENTHESIS)assignment_paren.c $(TREE)parse_parenthesis.c\
 
 # Object files
 OBJS = $(SRCS:.c=.o)

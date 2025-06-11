@@ -6,76 +6,21 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:32:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 13:39:28 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 12:45:09 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-/* Helper function to determine if token sequence looks like a command */
-static int is_command_like(t_token *token)
+void	*skip_node(t_token **tokens, t_token *curr)
 {
-    /* Skip whitespace */
-    while (token && token->type == TOKEN_WHITESPACE)
-        token = token->next;
-    
-    if (!token)
-        return (0);
-    
-    /* Check if it starts with a word that could be a command */
-    if (token->type == TOKEN_WORD)
-    {
-        /* Look for command-like patterns: word followed by args, pipes, etc. */
-        token = token->next;
-        while (token && token->type == TOKEN_WHITESPACE)
-            token = token->next;
-        
-        /* If followed by pipe, redirect, or other operators, likely a command */
-        if (token && (token->type == TOKEN_PIPE || 
-                     token->type == TOKEN_REDIRECT_OUT ||
-                     token->type == TOKEN_REDIRECT_IN ||
-                     token->type == TOKEN_APPEND ||
-                     token->type == TOKEN_HEREDOC))
-            return (1);
-        
-        /* If followed by more words, could be command with args */
-        if (token && token->type == TOKEN_WORD)
-            return (1);
-    }
-    
-    return (0);
+	if (!tokens || !*tokens)
+		return (NULL);
+	curr = *tokens;
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	return (curr);
 }
-
-t_ast *parse_command(t_token **tokens)
-{
-    t_token *current;
-    t_token *lookahead;
-
-    if (!tokens || !*tokens)
-        return (NULL);
-    
-    current = *tokens;
-    skip_tree_whitespaces(&current);
-    *tokens = current;
-    
-    /* Check if this is actually a subshell or just literal parentheses */
-    if (current->type == TOKEN_PAREN_OPEN)
-    {
-        /* Look ahead to see if this looks like a subshell */
-        lookahead = current->next;
-        skip_tree_whitespaces(&lookahead);
-        
-        /* If the content inside parentheses looks like a command, treat as subshell */
-        if (lookahead && is_command_like(lookahead))
-            return (parse_subshell(tokens));
-        
-        /* Otherwise, treat parentheses as literal text for echo/commands */
-        return (parse_simple_commands(tokens));
-    }
-    
-    return (parse_simple_commands(tokens));
-}
-
 
 t_ast	*parse_pipeline(t_token **tokens)
 {

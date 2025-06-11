@@ -6,120 +6,81 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 07:55:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 10:45:09 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-static int	count_expanded_wildcards(char **args)
+static int	handle_word_token(t_expand_wild *exp, char ***temp_args)
 {
-	t_expand_wild	expanded;
-	int				count;
+	char		*token_value;
 
-	ft_memset(&expanded, 0, sizeof(t_expand_wild));
-	count = 0;
-	expanded.i = -1;
-	while (args[++expanded.i] != NULL)
+	token_value = exp->curr->value;
+	if (ft_strchr(token_value, '\'') && ft_strncmp(token_value, "'$", 2) == 0)
+		(*temp_args)[exp->i] = ft_strndup(token_value + 1,
+				ft_strlen(token_value) - 2);
+	else
+		(*temp_args)[exp->i] = ft_strdup(token_value);
+	if (!(*temp_args)[exp->i])
+		return (0);
+	exp->curr = exp->curr->next;
+	exp->i++;
+	return (1);
+}
+
+static int	process_collect_loop(t_expand_wild *exp, char **temp_args,
+	int word_count)
+{
+	while (exp->curr && exp->i < word_count)
 	{
-		if (has_wildcard(args[expanded.i]))
+		skip_tree_whitespaces(&exp->curr);
+		if (!exp->curr)
+			break ;
+		if (exp->curr->type == TOKEN_PAREN_OPEN)
 		{
-			expanded.expanded = expand_wildcard(args[expanded.i]);
-			if (expanded.expanded)
+			if (!handle_paren_token(exp, &temp_args))
+				return (0);
+		}
+		else if (exp->curr->type == TOKEN_WILDCARD
+			|| exp->curr->type == TOKEN_WORD)
+		{
+			if (!handle_word_token(exp, &temp_args))
 			{
-				expanded.j = -1;
-				while (expanded.expanded[++expanded.j])
-					count++;
-				free_matches_array(expanded.expanded);
+				free_2darray(temp_args);
+				return (0);
 			}
-			else
-				count++;
 		}
 		else
-			count++;
+			exp->curr = exp->curr->next;
 	}
-	return (count);
+	return (1);
 }
 
 static char	**collect_temp_args(t_token *start, int word_count, int *arg_count)
 {
-	t_expand_wild	expanded;
-	char			*striped_value;
-
-	expanded.temp_args = malloc(sizeof(char *) * (word_count + 1));
-	if (!expanded.temp_args)
-		return (NULL);
-	expanded.i = -1;
-	expanded.curr = start;
-	while (++expanded.i < word_count)
-	{
-		skip_tree_whitespaces(&expanded.curr);
-		if (expanded.curr && (expanded.curr->type == TOKEN_WORD
-				|| expanded.curr->type == TOKEN_WILDCARD
-				|| expanded.curr->type == TOKEN_PAREN_OPEN
-				|| expanded.curr->type == TOKEN_PAREN_CLOSE))
-		{
-			striped_value = strip_quotes_and_parens_tokens(expanded.curr);
-			if (!striped_value)
-				return (free_2darray(expanded.temp_args), NULL);
-			expanded.temp_args[expanded.i] = striped_value;
-			expanded.curr = expanded.curr->next;
-		}
-		else
-			break ;
-	}
-	expanded.temp_args[expanded.i] = NULL;
-	if (arg_count)
-		*arg_count = expanded.i;
-	return (expanded.temp_args);
-}
-
-static void	fill_expand_args(char **temp_args, int temp_count,
-				t_expand_wild *exp)
-{
-	exp->i = 0;
-	exp->k = 0;
-	while (exp->i < temp_count)
-	{
-		if (has_wildcard(temp_args[exp->i]))
-		{
-			exp->expanded = expand_wildcard(temp_args[exp->i]);
-			if (exp->expanded)
-			{
-				exp->j = 0;
-				while (exp->expanded[exp->j])
-					exp->final_args[exp->k++]
-						= ft_strdup(exp->expanded[exp->j++]);
-				free_2darray(exp->expanded);
-			}
-			else
-				exp->final_args[exp->k++] = ft_strdup(temp_args[exp->i]);
-		}
-		else
-			exp->final_args[exp->k++] = ft_strdup(temp_args[exp->i]);
-		exp->i++;
-	}
-	exp->final_args[exp->k] = NULL;
-}
-
-static char	**expand_command_args(char **temp_args, int temp_count)
-{
 	t_expand_wild	exp;
-	int				final_count;
+	char			**temp_args;
 
-	final_count = count_expanded_wildcards(temp_args);
-	exp.final_args = malloc(sizeof(char *) * (final_count + 1));
-	if (!exp.final_args)
+	temp_args = malloc(sizeof(char *) * (word_count + 1));
+	if (!temp_args)
 		return (NULL);
-	fill_expand_args(temp_args, temp_count, &exp);
-	return (exp.final_args);
+	ft_memset(&exp, 0, sizeof(t_expand_wild));
+	exp.curr = start;
+	if (!process_collect_loop(&exp, temp_args, word_count))
+		return (NULL);
+	temp_args[exp.i] = NULL;
+	if (arg_count)
+		*arg_count = exp.i;
+	return (temp_args);
 }
+
 
 t_ast	*create_command_node(t_token *start, int word_count)
 {
-	t_ast	*node;
-	char	**temp_args;
-	int		arg_count;
+	t_ast		*node;
+	char		**temp_args;
+	int			arg_count;
 
 	temp_args = collect_temp_args(start, word_count, &arg_count);
 	if (!temp_args)
@@ -129,13 +90,15 @@ t_ast	*create_command_node(t_token *start, int word_count)
 		return (free_2darray(temp_args), NULL);
 	node->cmd = create_command_struct();
 	if (!node->cmd)
-		return (free(node), free_2darray(temp_args), NULL);
+		return (free_2darray(temp_args), NULL);
 	node->cmd->args = expand_command_args(temp_args, arg_count);
 	if (!node->cmd->args)
 	{
 		free(node->cmd);
 		free(node);
+		free_2darray(temp_args);
 		return (NULL);
 	}
+	free_2darray(temp_args);
 	return (node);
 }

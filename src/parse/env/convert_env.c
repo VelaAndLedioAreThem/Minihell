@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/08 21:42:47 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:04:27 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,29 @@ t_env	*create_copy_env_node(t_env *original)
 			return (free(env_node->key), free(env_node), NULL);
 	}
 	return (env_node);
+}
+
+void	process_env_var(t_args *parse, t_env *env_list, char *input)
+{
+	int		old_i;
+
+	if (quotes(input, parse->i, parse))
+	{
+		parse->i++;
+		return ;
+	}
+	if (input[parse->i] == '$' && input[parse->i + 1]
+		&& input[parse->i + 1] != '\'' && input[parse->i + 1] != ' '
+		&& input[parse->i + 1] != '"')
+	{
+		old_i = parse->i;
+		parse->result = handle_env_part(parse, &parse->i, env_list);
+		if (parse->i == old_i)
+			parse->i++;
+		parse->start = parse->i;
+	}
+	else
+		parse->i++;
 }
 
 t_env	*deep_copy_env_list(t_env *env_list)

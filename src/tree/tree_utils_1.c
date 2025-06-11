@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 13:41:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 12:45:40 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,43 +74,33 @@ t_ast	*parse_subshell(t_token **tokens)
 	return (node);
 }
 
-/* Alternative: Modified parse_command_words to handle parentheses as literal text */
-t_ast *parse_command_words(t_token **tokens)
+t_ast	*parse_command_words(t_token **tokens)
 {
-    t_ast *cmd_node;
-    t_token *curr;
-    t_token *start;
-    int word_count;
+	t_ast		*cmd_node;
+	t_token		*curr;
+	t_token		*start;
+	int			word_count;
 
-    if (!tokens || !*tokens)
-        return (NULL);
-    
-    curr = *tokens;
-    skip_tree_whitespaces(&curr);
-    *tokens = curr;
-    start = curr;
-    word_count = 0;
-    
-    /* Include parentheses as part of word tokens for literal usage */
-    while (curr && (curr->type == TOKEN_WORD || 
-                   curr->type == TOKEN_WILDCARD ||
-                   curr->type == TOKEN_PAREN_OPEN ||
-                   curr->type == TOKEN_PAREN_CLOSE))
-    {
-        word_count++;
-        curr = curr->next;
-        skip_tree_whitespaces(&curr);
-    }
-    
-    if (word_count == 0)
-        return (NULL);
-    
-    cmd_node = create_command_node(start, word_count);
-    if (!cmd_node)
-        return (NULL);
-    
-    *tokens = curr;
-    return (cmd_node);
+	curr = *tokens;
+	if (!skip_node(tokens, curr))
+		return (NULL);
+	start = curr;
+	word_count = 0;
+	while (curr && (curr->type == TOKEN_WORD || curr->type == TOKEN_WILDCARD
+			|| curr->type == TOKEN_PAREN_OPEN
+			|| curr->type == TOKEN_PAREN_CLOSE))
+	{
+		word_count++;
+		curr = curr->next;
+		skip_tree_whitespaces(&curr);
+	}
+	if (word_count == 0)
+		return (NULL);
+	cmd_node = create_command_node(start, word_count);
+	if (!cmd_node)
+		return (NULL);
+	*tokens = curr;
+	return (cmd_node);
 }
 
 t_ast	*parse_simple_commands(t_token **tokens)

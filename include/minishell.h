@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 08:39:49 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:03:40 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,6 +193,7 @@ typedef struct s_args
 	int				single_quotes;
 	int				double_quotes;
 	int				last_quotes;
+	int				i;
 }	t_args;
 
 typedef struct s_expand_wild
@@ -252,6 +253,15 @@ typedef struct s_validation_context
 	char				*input;
 	t_token				*token;
 }	t_validation_context;
+
+typedef struct s_quote_state
+{
+	char		*result;
+	int			i;
+	int			j;
+	int			in_quotes;
+	char		quote_char;
+}	t_quote_state;
 
 extern pid_t	g_child_pid;
 int			handle_line(int fd, char *line, char *delim);
@@ -360,6 +370,9 @@ int			handle_whitespace(t_token **token, char *input, int *i);
 
 // Environmental variables
 t_env		*init_env_list(char **envp);
+int			quotes(char	*input, int i, t_args *parse);
+char		*handle_env_part(t_args *parse, int *i, t_env *env_list);
+void		process_env_var(t_args *parse, t_env *env_list, char *input);
 char		*gen_env_value(t_env *env_list, char *key);
 char		*parse_env(char *input, t_env *env_list, t_args *arg);
 char		*get_env_value(t_env *env_list, char *name);
@@ -367,7 +380,7 @@ char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
 char		*strip_quotes_and_parens_tokens(t_token *tokens);
-char		*strip_quotes_and_parens(char *str);
+char		*remove_quotes_and_paren(char *str);
 
 // Validation
 bool		validation(t_token *tokens);
@@ -470,16 +483,20 @@ void		free_stack(t_token *token);
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
 t_ast		*parse_command_line(t_token **curr);
+t_ast		*parse_command(t_token **tokens);
 t_ast		*parse_logic_sequence(t_token **tokens);
 t_ast		*create_ast_node(t_ast_type type, t_token *token);
 void		free_ast(t_ast *node);
 t_ast		*parse_simple_commands(t_token **tokens);
 t_commands	*create_command_struct(void);
+char		**expand_command_args(char **temp_args, int temp_count);
 t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
+void		*skip_node(t_token **tokens, t_token *curr);
 t_ast		*parse_redirection(t_token **tokens, t_ast *cmd_node);
 t_ast		*parse_subshell(t_token **tokens);
 t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
+int			handle_paren_token(t_expand_wild *exp, char ***temp_args);
 
 // Utils functions
 int			ft_strcmp(const char *s1, const char *s2);
