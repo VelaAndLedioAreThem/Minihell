@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/12 20:57:25 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/08 21:42:47 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,26 +80,6 @@ char	*get_env_value(t_env *env_list, char *name)
 		current = current->next;
 	}
 	return (NULL);
-}
-
-t_env	*create_env_node(char *input)
-{
-	t_env	*new_node;
-	char	*equal_sign;
-
-	new_node = (t_env *)malloc(sizeof(t_env));
-	if (!new_node)
-		return (NULL);
-	equal_sign = ft_strchr(input, '=');
-	if (!equal_sign)
-	{
-		free(new_node);
-		return (NULL);
-	}
-	new_node->key = ft_substr(input, 0, equal_sign - input);
-	new_node->value = ft_strdup(equal_sign + 1);
-	new_node->next = NULL;
-	return (new_node);
 }
 
 t_env	*init_env_list(char **envp)

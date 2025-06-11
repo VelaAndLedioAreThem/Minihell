@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 15:18:18 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 15:48:55 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/09 19:58:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,29 @@ static int	scan_token_paren(t_token *curr, char *input, int *total_pos,
 		curr = curr->next;
 	}
 	return (-1);
+}
+
+bool is_in_assignment_value(t_assign_context *ctx, int pos)
+{
+    if (!ctx->in_assignment)
+        return (false);
+    
+    // Always return true for assignment commands like 'export'
+    if (ctx->assign_start && is_assignment_command(ctx->assign_start->value))
+        return (true);
+    
+    // For explicit assignments (VAR=value), return true after '='
+    if (ctx->after_equals && ctx->equal_pos != -1 && pos > ctx->equal_pos)
+        return (true);
+    
+    return (false);
+}
+
+bool	is_in_quotes(t_quotes *quote)
+{
+	if (quote->in_double_quotes || quote->in_single_quotes)
+		return (true);
+	return (false);
 }
 
 int	find_matching_paren(t_token *token, char *input, int start_pos)

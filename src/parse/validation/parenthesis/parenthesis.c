@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/02 22:45:08 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:23:25 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,30 +119,33 @@ static int	process_open_paren(t_token *token, char *input, int i,
 	return (end_pos);
 }
 
-bool	check_parenthesis(t_token *token, char *input, int i,
-	t_paren *commands)
+bool	check_parenthesis(t_validation_context *vctx, int i)
 {
-	int			new_pos;
+	int		new_pos;
+	char	prev_char;
 
-	if (!commands->quote.in_single_quotes
-		&& !commands->quote.in_double_quotes)
+	if (i > 0)
+		prev_char = vctx->input[i - 1];
+	else
+		prev_char = '\0';
+	process_quotes_enhanced(vctx->input[i], prev_char, &vctx->command->quote);
+	if (is_in_quotes(&vctx->token->quotes))
+		return (true);
+	if (is_in_assignment_value(vctx->ctx, i))
+		return (true);
+	if (vctx->command->has_commands && is_valid_command_char(vctx->input[i]))
+		vctx->command->has_commands = true;
+	else if (vctx->command->has_commands && ft_isspace(vctx->input[i]))
+		vctx->command->has_commands = false;
+	if (vctx->input[i] == '(')
 	{
-		if (!commands->has_commands && is_valid_command_char(input[i]))
-			commands->has_commands = true;
-		else if (commands->has_commands && ft_isspace(input[i]))
-			commands->has_commands = false;
-		if (input[i] == '(')
-		{
-			new_pos = process_open_paren(token, input, i, commands);
-			if (new_pos <= 0)
-				return (false);
-			i = new_pos;
-		}
-		else if (input[i] == ')')
-		{
-			if (!process_close_paren(input, i, token, commands))
-				return (false);
-		}
+		new_pos = process_open_paren(vctx->token, vctx->input,
+				i, vctx->command);
+		if (new_pos <= 0)
+			return (false);
 	}
+	if (vctx->input[i] == ')')
+		return (process_close_paren(vctx->input, i,
+				vctx->token, vctx->command));
 	return (true);
 }

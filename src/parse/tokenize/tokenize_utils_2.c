@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:12:02 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/18 23:17:53 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:13:13 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,13 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	if (quote_type == '"')
 	{
 		current->expandable = 1;
-		current->double_quotes = 1;
+		current->quotes.in_double_quotes = true;
 	}
 	else if (quote_type == '\'')
-		current->single_quotes = 1;
+	{
+		current->expandable = 0;
+		current->quotes.in_single_quotes = true;
+	}
 	append_node(token, current);
 	return (1);
 }

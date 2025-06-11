@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 17:21:58 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/24 19:30:38 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:22:37 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,48 +38,43 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-int	count_parenthesise_util(char *input)
-{
-	t_quotes	quotes;
-	int			i;
-	int			open_paren;
-	int			close_paren;
-
-	i = 0;
-	open_paren = 0;
-	close_paren = 0;
-	quotes = (t_quotes){false, false};
-	while (input[i] != '\0')
-	{
-		process_quotes(input[i], &quotes);
-		if (!quotes.in_double_quotes && !quotes.in_single_quotes)
-		{
-			if (input[i] == '(')
-				open_paren++;
-			else if (input[i] == ')')
-				close_paren++;
-		}
-		i++;
-	}
-	return (open_paren - close_paren);
-}
-
-int	count_parenthesis(t_token *tokens)
+int count_parenthesis(t_token *tokenize)
 {
 	int		count;
-	int		total_count;
+	t_token	*current;
+	int		i;
 
-	if (!tokens)
-		return (0);
-	total_count = 0;
-	while (tokens)
+	count = 0;
+	current = tokenize;
+	while (current)
 	{
-		if (tokens->value)
+		// Skip quoted content - don't count parentheses inside quotes
+		if (current->quotes.in_single_quotes || current->quotes.in_double_quotes)
 		{
-			count = count_parenthesise_util(tokens->value);
-			total_count += count;
+			current = current->next;
+			continue;
 		}
-		tokens = tokens->next;
+		
+		// Only count parentheses in unquoted tokens
+		if (current->type == TOKEN_PAREN_OPEN)
+			count++;
+		else if (current->type == TOKEN_PAREN_CLOSE)
+			count--;
+		else if (current->type == TOKEN_WORD && current->value)
+		{
+			// Count parentheses in unquoted word tokens
+			i = 0;
+			while (current->value[i])
+			{
+				if (current->value[i] == '(')
+					count++;
+				else if (current->value[i] == ')')
+					count--;
+				i++;
+			}
+		}
+		current = current->next;
 	}
-	return (total_count);
+	return (count);
 }
+

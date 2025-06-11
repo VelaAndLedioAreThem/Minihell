@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 15:33:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/07 15:24:26 by codespace        ###   ########.fr       */
+/*   Updated: 2025/06/10 10:57:14 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ int	tokenize_utils(t_token **token, char *input, int *i)
 {
 	int		status;
 
-	status = 0;
+	status = handle_assignment(token, input, i);
+	if (status != 0)
+		return (status);
 	if (input[*i] == '\'' || input[*i] == '"')
 		status = handle_quotes(token, input, i);
 	else if (is_operator(input[*i]))

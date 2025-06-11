@@ -6,11 +6,11 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 13:24:36 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/11 08:05:25 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../../../../include/minishell.h"
 
 int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 {

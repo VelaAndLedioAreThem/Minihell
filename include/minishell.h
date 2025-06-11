@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/02 10:16:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 08:00:03 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,15 @@ typedef enum e_flag_state
 	FLAG_DOUBLE_DASH
 }	t_flag_state;
 
+typedef struct s_rm_quotes
+{
+	char			*result;
+	int				i;
+	int				j;
+	int				in_quotes;
+	char			quote_char;
+}	t_rm_quotes;
+
 typedef struct s_env
 {
 	char			*key;
@@ -135,8 +144,7 @@ typedef struct s_token
 	char			*value;
 	t_token_type	type;
 	int				expandable;
-	int				double_quotes;
-	int				single_quotes;
+	t_quotes		quotes;
 	t_stack			*top;
 	struct s_token	*next;
 }	t_token;
@@ -228,6 +236,22 @@ typedef struct s_builtin
 	const char		*name;
 	t_builtin_func	func;
 }	t_builtin;
+
+typedef struct s_assign_context
+{
+	bool			in_assignment;
+	bool			after_equals;
+	int				equal_pos;
+	t_token			*assign_start;
+}	t_assign_context;
+
+typedef struct s_validation_context
+{
+	t_paren				*command;
+	t_assign_context	*ctx;
+	char				*input;
+	t_token				*token;
+}	t_validation_context;
 
 extern pid_t	g_child_pid;
 int			handle_line(int fd, char *line, char *delim);
@@ -324,6 +348,7 @@ int			execute_exit(t_ast *data, t_ast *tree);
 t_env		*create_env_node(char *input);
 t_token		*create_node(char *str, t_token_type type);
 t_token		*tokenize(char *input);
+int			handle_assignment(t_token **token, char *input, int *i);
 void		append_node(t_token **token, t_token *current_token);
 int			is_operator(char c);
 int			return_parenthesis(t_token **token, char c);
@@ -341,15 +366,19 @@ char		*get_env_value(t_env *env_list, char *name);
 char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
+char		*strip_quotes_and_parens_tokens(t_token *tokens);
+char		*remove_quotes_and_paren(char *str);
 
 // Validation
 bool		validation(t_token *tokens);
 bool		validation_parenthesis(t_token *tokenize);
 
 // Parenthesis
-bool		check_parenthesis(t_token *token, char *input, int i,
-				t_paren *commands);
+bool		check_parenthesis(t_validation_context *vctx, int i);
+bool		is_in_quotes(t_quotes *quote);
 void		process_quotes(char c, t_quotes *quote);
+void		process_quotes_enhanced(char c, char prev_char, t_quotes *quote);
+bool		is_in_assignment_value(t_assign_context *ctx, int pos);
 bool		valid_before_open_paren(char c);
 bool		is_valid_after_open_paren(char c);
 int			find_matching_paren(t_token *token, char *input, int start_pos);
@@ -373,10 +402,17 @@ bool		process_close_paren(char *input, int i, t_token *token,
 				t_paren *command);
 bool		skip_whitespaces(char *input, int *i, int end);
 bool		check_next_token(t_token *next);
+bool		contains_assignment(const char *value, int *equal_pos);
 bool		check_after_close_paren(char *input, int *i, t_token *token);
 bool		it_is_log_or_pipe(char *input, int *i, t_token *token);
 bool		it_is_logical_op(char *input, int *i, int *j, t_token *token);
 bool		it_is_pipe(char *input, int *i, int *j, t_token *token);
+bool		is_assignment_command(const char *value);
+void		handle_assignment_token(t_assign_context *ctx, t_token *token);
+void		reset_assign(t_assign_context *ctx);
+bool		check_paren_syntax(t_token *curr, t_token *prev,
+				t_assign_context *ctx);
+void		update_assignment_context(t_assign_context *ctx, t_token *current);
 
 // Operators
 bool		ft_is_operator(char c);

@@ -6,11 +6,40 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 02:26:37 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/05/02 17:22:35 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/09 18:15:42 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+
+bool	contains_assignment(const char *value, int *equal_pos)
+{
+    t_quotes quotes = {false, false};
+    int i = 0;
+    char prev_char;
+    
+    if (!value)
+        return (false);
+    
+    while (value[i])
+    {
+        if (i > 0)
+            prev_char = value[i - 1];
+        else
+            prev_char = '\0';
+            
+        process_quotes_enhanced(value[i], prev_char, &quotes);
+        
+        if (value[i] == '=' && !is_in_quotes(&quotes))
+        {
+            if (equal_pos)
+                *equal_pos = i;
+            return (true);
+        }
+        i++;
+    }
+    return (false);
+}
 
 bool	validate_redirect_in_paren(char *input, t_open_paren *paren, int end,
 	t_token *token)

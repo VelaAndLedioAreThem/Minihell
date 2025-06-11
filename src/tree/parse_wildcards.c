@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/02 12:01:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 07:55:00 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ static int	count_expanded_wildcards(char **args)
 static char	**collect_temp_args(t_token *start, int word_count, int *arg_count)
 {
 	t_expand_wild	expanded;
+	char			*striped_value;
 
 	expanded.temp_args = malloc(sizeof(char *) * (word_count + 1));
 	if (!expanded.temp_args)
@@ -54,11 +55,14 @@ static char	**collect_temp_args(t_token *start, int word_count, int *arg_count)
 	{
 		skip_tree_whitespaces(&expanded.curr);
 		if (expanded.curr && (expanded.curr->type == TOKEN_WORD
-				|| expanded.curr->type == TOKEN_WILDCARD))
+				|| expanded.curr->type == TOKEN_WILDCARD
+				|| expanded.curr->type == TOKEN_PAREN_OPEN
+				|| expanded.curr->type == TOKEN_PAREN_CLOSE))
 		{
-			expanded.temp_args[expanded.i] = ft_strdup(expanded.curr->value);
-			if (!expanded.temp_args[expanded.i])
+			striped_value = strip_quotes_and_parens_tokens(expanded.curr);
+			if (!striped_value)
 				return (free_2darray(expanded.temp_args), NULL);
+			expanded.temp_args[expanded.i] = striped_value;
 			expanded.curr = expanded.curr->next;
 		}
 		else
