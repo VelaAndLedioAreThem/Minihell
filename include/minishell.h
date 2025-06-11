@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 08:00:03 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/11 08:39:49 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,7 +367,7 @@ char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
 char		*strip_quotes_and_parens_tokens(t_token *tokens);
-char		*remove_quotes_and_paren(char *str);
+char		*strip_quotes_and_parens(char *str);
 
 // Validation
 bool		validation(t_token *tokens);
