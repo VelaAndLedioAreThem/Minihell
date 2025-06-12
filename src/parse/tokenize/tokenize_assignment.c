@@ -6,12 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 00:19:26 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:03:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:05:08 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
-#include <curses.h>
 
 static int	is_assignment_pattern(char *input, int i)
 {
