@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 18:03:40 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:01:13 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -327,6 +327,7 @@ char		*ft_strcat(char *dest, const char *src);
 int			handle_pwd_errors(char *old_pwd, int error_code);
 int			update_directory(t_ast *data, char *path, char *old_pwd);
 void		incr_shell_lvl(t_env *data);
+int			validate_assignment_value(char *assignment);
 void		print_export_error(char *arg);
 void		print_unset_error(char *name);
 char		*get_export_name(char *arg, char *eq);
@@ -371,6 +372,7 @@ int			handle_whitespace(t_token **token, char *input, int *i);
 // Environmental variables
 t_env		*init_env_list(char **envp);
 int			quotes(char	*input, int i, t_args *parse);
+int			validate_parentheses(char *str);
 char		*handle_env_part(t_args *parse, int *i, t_env *env_list);
 void		process_env_var(t_args *parse, t_env *env_list, char *input);
 char		*gen_env_value(t_env *env_list, char *key);

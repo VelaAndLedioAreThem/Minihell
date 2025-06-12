@@ -6,11 +6,12 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 00:19:26 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/09 18:41:08 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:03:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
+#include <curses.h>
 
 static int	is_assignment_pattern(char *input, int i)
 {
@@ -71,13 +72,27 @@ static int	create_assignment(t_token **token, char *input, int start, int end)
 int	handle_assignment(t_token **token, char *input, int *i)
 {
 	int		start;
+	char	*assignment;
 
 	start = *i;
 	if (!is_assignment_pattern(input, *i))
 		return (0);
 	consume_assignment(input, i);
-	if (create_assignment(token, input, start, *i) == -1)
+	assignment = ft_substr(input, start, *i - start);
+	if (!assignment)
 		return (-1);
+	if (!validate_assignment_value(assignment))
+	{
+		free(assignment);
+		report_error(ERR_SYNTAX, "invalid parenthesis in assignment");
+		return (-1);
+	}
+	if (create_assignment(token, input, start, *i) == -1)
+	{
+		free(assignment);
+		return (-1);
+	}
+	free(assignment);
 	(*i)--;
 	return (1);
 }

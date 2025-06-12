@@ -6,14 +6,13 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 22:22:31 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 13:47:15 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:00:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
-#include <time.h>
 
-static int	validate_parentheses(char *str)
+int	validate_parentheses(char *str)
 {
 	int		i;
 	int		paren;
