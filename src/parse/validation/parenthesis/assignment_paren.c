@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 10:15:35 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 15:29:12 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:44:46 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,5 +85,15 @@ bool	check_paren_syntax(t_token *curr, t_token *prev, t_assign_context *ctx)
 		return (true);
 	if (ctx->in_assignment && ctx->after_equals)
 		return (true);
+	if (prev && prev->type == TOKEN_WORD && is_assignment_command(prev->value))
+		return (true);
+	if (prev && prev->type == TOKEN_WORD)
+	{
+		if (!is_assignment_command(prev->value))
+		{
+			report_error(ERR_SYNTAX, "unexpected '(' after command");
+			return (false);
+		}
+	}
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:28:17 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:34:40 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,26 @@ static char	*handle_special_utils(char *input, char *str, int *i, t_args *arg)
 	return (str);
 }
 
-static char	*get_env_name(char *input, int *i)
+static char	*handle_special_var(char *input, int *i, t_args *arg)
+{
+	char	*str;
+
+	str = NULL;
+	str = handle_special_utils(input, str, i, arg);
+	return (str);
+}
+
+static char	*get_env_name(char *input, int *i, t_args *arg)
 {
 	int		start;
 	int		len;
 	char	*name;
+	char	*special;
 
 	start = *i;
+	special = handle_special_var(input, i, arg);
+	if (special)
+		return (special);
 	len = 0;
 	while (input[start + len] && (ft_isalnum(input[start + len]) || input[start
 				+ len] == '_'))
@@ -65,33 +78,14 @@ static char	*handle_shlvl(t_env *env_list)
 	return (new_value);
 }
 
-static char	*handle_variable_parsing(char *input, int *i, t_args *arg,
-				int *is_special)
-{
-	char	*result;
-
-	*is_special = 0;
-	result = handle_special_utils(input, NULL, i, arg);
-	if (result)
-	{
-		*is_special = 1;
-		return (result);
-	}
-	(*i)--;
-	return (get_env_name(input, i));
-}
-
 char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 {
 	char	*name;
 	char	*val;
 	char	*value;
-	int		is_special;
 
 	(*i)++;
-	name = handle_variable_parsing(input, i, arg, &is_special);
-	if (is_special)
-		return (name);
+	name = get_env_name(input, i, arg);
 	if (!name)
 		return (ft_strdup(""));
 	if (!ft_strcmp(name, "SHLVL"))

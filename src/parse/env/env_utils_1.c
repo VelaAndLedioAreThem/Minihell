@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 22:22:31 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:00:52 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:26:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ static int	should_strip_paren(char *str, int len)
 {
 	if (str[0] != '(' || str[len - 1] != ')')
 		return (0);
-	if (len > 1 && str[0] == '"' && str[len - 1] == '"')
+	if (len > 1 && str[1] == '"' && str[len - 2] == '"')
 		return (0);
-	if (len > 1 && str[0] == '\'' && str[len - 1] == '\'')
+	if (len > 1 && str[1] == '\'' && str[len - 2] == '\'')
 		return (0);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 17:04:23 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:47:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,12 @@ void	update_assignment_context(t_assign_context *ctx, t_token *current)
 		}
 		else if (ctx->in_assignment && ctx->assign_start
 			&& is_assignment_command(ctx->assign_start->value))
-			ctx->after_equals = true;
+		{
+			if (contains_assignment(current->value, &ctx->equal_pos))
+				ctx->after_equals = true;
+			else
+				ctx->after_equals = false;
+		}
 	}
 	else if (ctx->in_assignment && (current->type == TOKEN_PIPE
 			|| current->type == TOKEN_AND || current->type == TOKEN_OR))
