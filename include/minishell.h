@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 17:47:29 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:40:18 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,7 @@ typedef struct s_token
 	int				expandable;
 	t_quotes		quotes;
 	t_stack			*top;
+	int				from_expansion;
 	struct s_token	*next;
 }	t_token;
 

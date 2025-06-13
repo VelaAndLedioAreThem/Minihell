@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 10:46:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:53:44 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,28 @@
 #define COL_BLUE   "\033[0;34m"
 #define COL_GREEN  "\033[0;32m"
 #define COL_RESET  "\033[0m"
+
+static t_token	*tokenize_and_mark_expanded(char *input, char *expandable)
+{
+	t_token	*tokens;
+	t_token	*curr;
+	bool	was_expanded;
+
+	tokens = tokenize(expandable);
+	if (!tokens)
+		return (NULL);
+	was_expanded = (ft_strcmp(input, expandable) != 0);
+	if (was_expanded)
+	{
+		curr = tokens;
+		while (curr)
+		{
+			curr->from_expansion = 1;
+			curr = curr->next;
+		}
+	}
+	return (tokens);
+}
 
 static char	*expand_and_tokenize(char *input, t_env *env_list, t_args *arg,
 		t_token **tokens)
@@ -37,6 +59,9 @@ static char	*expand_and_tokenize(char *input, t_env *env_list, t_args *arg,
 		free_tokens(*tokens);
 		return (NULL);
 	}
+	*tokens = tokenize_and_mark_expanded(input, expandable);
+	if (!*tokens)
+		return (free_tokens(*tokens), free_env_list(copy), NULL);
 	free_env_list(copy);
 	return (expandable);
 }

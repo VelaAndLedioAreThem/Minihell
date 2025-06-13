@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 15:12:26 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 17:46:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:45:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,10 @@ bool	check_command_paren_sequence(t_token *curr, t_token *prev,
 	if (curr->type == TOKEN_PAREN_OPEN && prev
 		&& prev->type == TOKEN_WORD && !ctx->in_assignment)
 	{
+		if (curr->from_expansion)
+			return (true);
+		if (ctx->in_assignment)
+			return (true);
 		if (!is_assignment_command(prev->value))
 		{
 			report_error(ERR_SYNTAX, "unexpected '(' after command");
