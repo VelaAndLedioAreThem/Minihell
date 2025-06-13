@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 10:45:09 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:59:31 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ static char	**collect_temp_args(t_token *start, int word_count, int *arg_count)
 		*arg_count = exp.i;
 	return (temp_args);
 }
-
 
 t_ast	*create_command_node(t_token *start, int word_count)
 {

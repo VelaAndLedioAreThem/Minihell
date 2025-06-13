@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 09:55:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 13:57:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:59:14 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ static char	*combine_parentheses_tokens(t_token **token)
 	return (result);
 }
 
-int handle_paren_token(t_expand_wild *exp, char ***temp_args)
+int	handle_paren_token(t_expand_wild *exp, char ***temp_args)
 {
 	char		*combined_tokens;
 

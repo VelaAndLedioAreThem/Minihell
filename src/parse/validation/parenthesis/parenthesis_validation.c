@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 13:07:06 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:04:23 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ bool	validation_parenthesis(t_token *tokenize)
 	while (current)
 	{
 		update_assignment_context(&ctx, current);
+		if (!check_command_paren_sequence(current, prev, &ctx))
+			return (false);
 		if (!check_paren_syntax(current, prev, &ctx))
 			return (false);
 		if (current->type != TOKEN_WHITESPACE)

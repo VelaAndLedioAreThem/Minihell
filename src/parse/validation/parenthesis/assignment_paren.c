@@ -6,11 +6,12 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 10:15:35 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 13:15:44 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:29:12 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+#include <stdbool.h>
 
 static bool	is_assignment_token(const char *value, int *equal_pos)
 {

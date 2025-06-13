@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:01:13 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:47:29 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -391,6 +391,11 @@ bool		validation_parenthesis(t_token *tokenize);
 // Parenthesis
 bool		check_parenthesis(t_validation_context *vctx, int i);
 bool		is_in_quotes(t_quotes *quote);
+bool		find_command_before_paren(char *input, int i, t_paren *command);
+bool		check_operator_before_command(char *input, t_paren *command);
+bool		check_command_paren_sequence(t_token *curr, t_token *prev,
+				t_assign_context *ctx);
+bool		check_command_before(char *input, int i, t_token *token);
 void		process_quotes(char c, t_quotes *quote);
 void		process_quotes_enhanced(char c, char prev_char, t_quotes *quote);
 bool		is_in_assignment_value(t_assign_context *ctx, int pos);

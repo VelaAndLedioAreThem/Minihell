@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 01:24:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 11:23:25 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 17:51:33 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,10 @@
 
 static bool	validate_open_paren(char *input, int i, t_token *token)
 {
-	if (i == 0)
-		return (true);
 	if (i > 0)
 	{
-		if (is_command_or_arg_char(input[i - 1]))
-		{
-			report_error(ERR_SYNTAX, "missing operator or space before '(");
-			return (free_stack(token), false);
-		}
+		if (!check_command_before(input, i, token))
+			return (false);
 		if (ft_is_redirection(input[i - 1]) || ft_is_wildcard(input[i - 1]))
 		{
 			report_error(ERR_SYNTAX, "invalid token before the '('");
@@ -34,34 +29,29 @@ static bool	validate_open_paren(char *input, int i, t_token *token)
 			return (false);
 		}
 	}
-	if (input[i + 1] && !is_valid_after_open_paren(input[i + 1]))
+	if (input[i + 1] && !is_valid_after_open_paren(input[i + 1])
+		&& !ft_isspace(input[i + 1]))
 		return (report_error(ERR_SYNTAX, "invalid token after '('"), false);
 	return (true);
 }
 
 static bool	validate_command_paren(char *input, int i, t_paren *command)
 {
-	command->j = i - 1;
-	while (command->j >= 0 && ft_isspace(input[command->j]))
-		command->j--;
-	if (command->j >= 0 && is_command_or_arg_char(input[command->j]))
+	if (!input || i < 0 || !command)
+		return (false);
+	command->has_cmd_before = false;
+	command->has_operator = false;
+	command->j = -1;
+	if (!find_command_before_paren(input, i, command))
+		return (false);
+	if (!command->has_cmd_before)
+		return (false);
+	if (!check_operator_before_command(input, command))
+		return (false);
+	if (command->has_cmd_before && !command->has_operator && command->j >= 0)
 	{
-		while (command->j >= 0 && is_command_or_arg_char(input[command->j]))
-			command->j--;
-		command->has_cmd_before = true;
-	}
-	if (command->has_cmd_before)
-	{
-		command->j++;
-		command->has_operator = false;
-		while (command->j < i && !command->has_operator)
-		{
-			if (ft_is_operator(input[command->j]))
-				command->has_operator = true;
-			command->j++;
-		}
-		if (!command->has_operator)
-			return (false);
+		report_error(ERR_SYNTAX, "missing operator between comand and '('");
+		return (false);
 	}
 	return (true);
 }
@@ -122,13 +112,8 @@ static int	process_open_paren(t_token *token, char *input, int i,
 bool	check_parenthesis(t_validation_context *vctx, int i)
 {
 	int		new_pos;
-	char	prev_char;
 
-	if (i > 0)
-		prev_char = vctx->input[i - 1];
-	else
-		prev_char = '\0';
-	process_quotes_enhanced(vctx->input[i], prev_char, &vctx->command->quote);
+	process_quotes(vctx->input[i], &vctx->command->quote);
 	if (is_in_quotes(&vctx->token->quotes))
 		return (true);
 	if (is_in_assignment_value(vctx->ctx, i))
