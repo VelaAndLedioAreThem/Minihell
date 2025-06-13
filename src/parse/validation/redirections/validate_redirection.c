@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:11:15 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 15:22:54 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 00:53:33 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ bool	validate_redirection(t_token *tokenize)
 				return (false);
 			next = curr->next;
 			if (!validate_next_redirect(&next, &curr))
-				return (true);
+				return (false);
 		}
 		curr = curr->next;
 	}

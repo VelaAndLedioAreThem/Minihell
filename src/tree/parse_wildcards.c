@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 17:59:31 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 01:13:00 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,7 @@ static int	process_collect_loop(t_expand_wild *exp, char **temp_args,
 		skip_tree_whitespaces(&exp->curr);
 		if (!exp->curr)
 			break ;
-		if (exp->curr->type == TOKEN_PAREN_OPEN)
-		{
-			if (!handle_paren_token(exp, &temp_args))
-				return (0);
-		}
-		else if (exp->curr->type == TOKEN_WILDCARD
+		if (exp->curr->type == TOKEN_WILDCARD
 			|| exp->curr->type == TOKEN_WORD)
 		{
 			if (!handle_word_token(exp, &temp_args))
@@ -50,6 +45,11 @@ static int	process_collect_loop(t_expand_wild *exp, char **temp_args,
 				free_2darray(temp_args);
 				return (0);
 			}
+		}
+		else if (exp->curr->type == TOKEN_PAREN_OPEN)
+		{
+			if (!handle_paren_token(exp, &temp_args))
+				return (0);
 		}
 		else
 			exp->curr = exp->curr->next;

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:12:46 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 15:23:31 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 00:50:13 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,7 @@ bool	validate_next_redirect(t_token **next, t_token **curr)
 {
 	while (*next && (*next)->type == TOKEN_WHITESPACE)
 		*next = (*next)->next;
-	if (!*next || ((*next)->type != TOKEN_WORD
-			&& (*next)->type != TOKEN_PROCESSED))
+	if (!*next || (*next)->type != TOKEN_WORD)
 	{
 		if (!*next)
 			report_error(ERR_UNEXPECTED_TOKEN, "newline");

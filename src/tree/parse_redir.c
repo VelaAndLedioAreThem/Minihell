@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/11 08:01:17 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 00:47:54 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,13 +91,13 @@ t_ast	*parse_redirection(t_token **tokens, t_ast *cmd_node)
 	node = create_redir(&curr, cmd_node);
 	if (!node || !curr || curr->type != TOKEN_WORD)
 	{
-		free(node);
+		free_ast(node);
 		return (NULL);
 	}
 	node->right = create_right_node(&curr);
 	if (!node->right)
 	{
-		free(node);
+		free_ast(node);
 		return (NULL);
 	}
 	skip_tree_whitespaces(&curr);
