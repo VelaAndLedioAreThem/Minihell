@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 18:34:40 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 23:19:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,10 @@ static char	*handle_shlvl(t_env *env_list)
 
 char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 {
-	char	*name;
 	char	*val;
+	char	*name;
 	char	*value;
+	char	*processed_value;
 
 	(*i)++;
 	name = get_env_name(input, i, arg);
@@ -96,7 +97,10 @@ char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 	}
 	value = get_env_value(env_list, name);
 	if (!value)
-		value = ft_strdup("");
+		return (free(name), ft_strdup(""));
+	processed_value = remove_quotes_and_paren(value);
+	if (processed_value)
+		value = processed_value;
 	else
 		value = ft_strdup(value);
 	free(name);

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 13:11:15 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/14 00:53:33 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 23:51:39 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,6 @@ bool	check_redirection(t_token **next)
 	{
 		report_error(ERR_UNEXPECTED_TOKEN, (*next)->value);
 		return (false);
-	}
-	return (true);
-}
-
-bool	check_adjacent_redirection(t_token **curr)
-{
-	if ((*curr)->type == TOKEN_REDIRECT_IN && (*curr)->next
-		&& (*curr)->next->type == TOKEN_REDIRECT_OUT)
-	{
-		(*curr)->type = TOKEN_READWRITE;
-		free((*curr)->value);
-		(*curr)->value = ft_strdup("<>");
-		(*curr)->next->type = TOKEN_PROCESSED;
-		return (true);
 	}
 	return (true);
 }
@@ -78,20 +64,16 @@ bool	validate_redirection_combinations(t_token *tokenize)
 	curr = tokenize;
 	while (curr && curr->next)
 	{
-		if (curr->type == TOKEN_HEREDOC || curr->type == TOKEN_REDIRECT_OUT
+		if (curr->type == TOKEN_HEREDOC || curr->type == TOKEN_REDIRECT_IN
 			|| curr->type == TOKEN_APPEND || curr->type == TOKEN_REDIRECT_OUT)
 		{
 			next = curr->next;
 			while (next && next->type == TOKEN_WHITESPACE)
 				next = next->next;
-			if (next && (next->type == TOKEN_REDIRECT_OUT
-					|| next->type == TOKEN_APPEND
-					|| next->type == TOKEN_REDIRECT_IN
-					|| next->type == TOKEN_HEREDOC))
-			{
-				report_error(ERR_UNEXPECTED_TOKEN, next->value);
-				return (false);
-			}
+			if (!next)
+				return (report_error(ERR_UNEXPECTED_TOKEN, "newline"), false);
+			if (next->type == TOKEN_AND || next->type == TOKEN_OR)
+				return (report_error(ERR_UNEXPECTED_TOKEN, next->value), false);
 		}
 		curr = curr->next;
 	}
@@ -114,10 +96,8 @@ bool	validate_redirection(t_token *tokenize)
 		if (curr->type == TOKEN_APPEND || curr->type == TOKEN_REDIRECT_IN
 			|| curr->type == TOKEN_REDIRECT_OUT || curr->type == TOKEN_HEREDOC)
 		{
-			if (!check_adjacent_redirection(&curr))
-				return (false);
 			next = curr->next;
-			if (!validate_next_redirect(&next, &curr))
+			if (!validate_next_redirect(&next))
 				return (false);
 		}
 		curr = curr->next;

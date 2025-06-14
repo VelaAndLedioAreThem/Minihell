@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 09:55:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/14 01:13:13 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 01:27:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ static char	*join_extract_token(char *result, char *token_value)
 		tmp = ft_strjoin(result, " ");
 		if (!tmp)
 			return (NULL);
-		free(result);
 		result = tmp;
 	}
 	tmp = ft_strjoin(result, token_value);

@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 23:59:01 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 19:43:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,12 @@ bool	validation_parenthesis(t_token *tokenize)
 	current = tokenize;
 	prev = NULL;
 	ctx = (t_assign_context){false, false, -1, NULL};
+	if (current && current->value[0] == '('
+		&& current->next->value[0] == '(')
+	{
+		report_error(ERR_SYNTAX, "double parenthesis '((' not supported");
+		return (false);
+	}
 	while (current)
 	{
 		update_assignment_context(&ctx, current);

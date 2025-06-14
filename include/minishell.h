@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 23:40:18 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 00:41:55 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -206,6 +206,8 @@ typedef struct s_expand_wild
 	char			**final_args;
 	char			**temp_args;
 	t_token			*curr;
+	t_env			*env;
+	t_args			*args;
 }	t_expand_wild;
 
 // Main struct
@@ -440,13 +442,10 @@ bool		ft_is_operator(char c);
 bool		ft_is_logical_op(char current, char next);
 bool		validate_logical_op(t_token *tokens);
 
-// Quotes
-bool		validation_quotes(t_token *tokens);
-
 // Redirections
 bool		ft_is_redirection(char c);
 bool		ft_is_redirection_op(char current, char next);
-bool		validate_next_redirect(t_token **next, t_token **curr);
+bool		validate_next_redirect(t_token **next);
 
 //Commands
 bool		ft_is_commands_position(char *input, int i);
@@ -502,6 +501,7 @@ t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
 void		*skip_node(t_token **tokens, t_token *curr);
 t_ast		*parse_redirection(t_token **tokens, t_ast *cmd_node);
+t_ast		*parse_redirection_chain(t_token **tokens, t_ast *cmd_node);
 t_ast		*parse_subshell(t_token **tokens);
 t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 int			handle_paren_token(t_expand_wild *exp, char ***temp_args);

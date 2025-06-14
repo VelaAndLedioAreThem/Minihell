@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/14 00:47:54 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 00:16:47 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ t_ast	*create_right_node(t_token **token)
 	if (!right_node)
 		return (NULL);
 	right_node->cmd = create_command_struct();
-	if (!right_node->cmd)
+	if (!right_node)
 	{
 		free(right_node);
 		return (NULL);
@@ -67,7 +67,6 @@ t_ast	*create_right_node(t_token **token)
 	right_node->cmd->args = malloc(sizeof(char *) * 2);
 	if (!right_node->cmd->args)
 	{
-		free(right_node->cmd);
 		free(right_node);
 		return (NULL);
 	}
@@ -91,13 +90,13 @@ t_ast	*parse_redirection(t_token **tokens, t_ast *cmd_node)
 	node = create_redir(&curr, cmd_node);
 	if (!node || !curr || curr->type != TOKEN_WORD)
 	{
-		free_ast(node);
+		free(node);
 		return (NULL);
 	}
 	node->right = create_right_node(&curr);
 	if (!node->right)
 	{
-		free_ast(node);
+		free(node);
 		return (NULL);
 	}
 	skip_tree_whitespaces(&curr);
