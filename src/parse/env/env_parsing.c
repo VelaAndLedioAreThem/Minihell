@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/14 23:19:17 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 02:02:53 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,58 @@ static char	*handle_shlvl(t_env *env_list)
 	return (new_value);
 }
 
+char	*safe_expand_env_var(char *value)
+{
+	char	*processed_value;
+	char	*result;
+	int		needs_quotes;
+	int		i;
+
+	if (!value)
+		return (ft_strdup(""));
+	
+	processed_value = remove_quotes_and_paren(value);
+	if (!processed_value)
+		processed_value = ft_strdup(value);
+	
+	/* Check if the content needs to be quoted for safe tokenization */
+	needs_quotes = 0;
+	i = 0;
+	while (processed_value[i])
+	{
+		if (processed_value[i] == '(' || processed_value[i] == ')' ||
+		    processed_value[i] == ' ' || processed_value[i] == '\t' ||
+		    processed_value[i] == '|' || processed_value[i] == '&' ||
+		    processed_value[i] == '<' || processed_value[i] == '>')
+		{
+			needs_quotes = 1;
+			break;
+		}
+		i++;
+	}
+	
+	if (needs_quotes)
+	{
+		result = malloc(ft_strlen(processed_value) + 3); /* +2 for quotes, +1 for null */
+		if (!result)
+		{
+			free(processed_value);
+			return (NULL);
+		}
+		sprintf(result, "\"%s\"", processed_value);
+		free(processed_value);
+		return (result);
+	}
+	
+	return (processed_value);
+}
+
+/* Updated env_expansion function in env_parsing.c */
 char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 {
 	char	*val;
 	char	*name;
 	char	*value;
-	char	*processed_value;
 
 	(*i)++;
 	name = get_env_name(input, i, arg);
@@ -98,11 +144,9 @@ char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 	value = get_env_value(env_list, name);
 	if (!value)
 		return (free(name), ft_strdup(""));
-	processed_value = remove_quotes_and_paren(value);
-	if (processed_value)
-		value = processed_value;
-	else
-		value = ft_strdup(value);
+	
+	/* Use safe expansion that preserves tokenization safety */
+	val = safe_expand_env_var(value);
 	free(name);
-	return (value);
+	return (val);
 }

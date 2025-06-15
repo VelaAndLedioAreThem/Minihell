@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 22:22:31 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 01:17:14 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 01:50:08 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	validate_parentheses(char *str)
 			paren++;
 		else if (str[i] == ')')
 			paren--;
-		if (paren < 0 || paren > 1)
+		if (paren < 0)
 			return (0);
 		i++;
 	}
