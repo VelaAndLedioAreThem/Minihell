@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 22:22:31 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 01:50:08 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 12:13:07 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,28 @@ int	validate_parentheses(char *str)
 {
 	int		i;
 	int		paren;
+	int		in_single_quotes;
+	int		in_double_quotes;
 
 	i = 0;
 	paren = 0;
+	in_single_quotes = 0;
+	in_double_quotes = 0;
 	while (str[i])
 	{
-		if (str[i] == '(')
-			paren++;
-		else if (str[i] == ')')
-			paren--;
-		if (paren < 0)
-			return (0);
+		if (str[i] == '\'' && !in_double_quotes)
+			in_single_quotes = !in_single_quotes;
+		else if (str[i] == '"' && !in_single_quotes)
+			in_double_quotes = !in_double_quotes;
+		else if (!in_single_quotes && !in_double_quotes)
+		{
+			if (str[i] == '(')
+				paren++;
+			else if (str[i] == ')')
+				paren--;
+			if (paren < 0)
+				return (0);
+		}
 		i++;
 	}
 	if (paren != 0)

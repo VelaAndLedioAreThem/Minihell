@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 00:41:55 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 10:40:34 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -375,6 +375,7 @@ int			handle_whitespace(t_token **token, char *input, int *i);
 // Environmental variables
 t_env		*init_env_list(char **envp);
 int			quotes(char	*input, int i, t_args *parse);
+char		*safe_and_expand_var(char *value);
 int			validate_parentheses(char *str);
 char		*handle_env_part(t_args *parse, int *i, t_env *env_list);
 void		process_env_var(t_args *parse, t_env *env_list, char *input);
