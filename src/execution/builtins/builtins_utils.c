@@ -6,15 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/03/25 13:17:20 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/16 00:45:22 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
-#include <errno.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 int	execute_echo(char *args[], int fd_out)
 {

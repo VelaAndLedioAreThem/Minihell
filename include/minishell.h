@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 10:40:34 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/16 00:39:27 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,13 @@ typedef struct s_state
 	int				paren_count;
 }	t_state;
 
+typedef struct s_redir_list
+{
+	int					type;
+	char				*filename;
+	struct s_redir_list	*next;
+}	t_redir_list;
+
 typedef struct s_command
 {
 	char			**args;
@@ -181,6 +188,7 @@ typedef struct s_command
 	char			*heredoc_delim;
 	int				append;
 	int				is_builtin;
+	t_redir_list	*redirections;
 }	t_commands;
 
 typedef struct s_args
@@ -491,6 +499,8 @@ void		free_stack(t_token *token);
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
 t_ast		*parse_command_line(t_token **curr);
+t_ast_type	get_redir_type(t_token *tokens);
+t_redir_list *create_redir_node(int type, char *filename);
 t_ast		*parse_command(t_token **tokens);
 t_ast		*parse_logic_sequence(t_token **tokens);
 t_ast		*create_ast_node(t_ast_type type, t_token *token);
@@ -501,8 +511,7 @@ char		**expand_command_args(char **temp_args, int temp_count);
 t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
 void		*skip_node(t_token **tokens, t_token *curr);
-t_ast		*parse_redirection(t_token **tokens, t_ast *cmd_node);
-t_ast		*parse_redirection_chain(t_token **tokens, t_ast *cmd_node);
+int			parse_redirection(t_token **tokens, t_ast *cmd_node);
 t_ast		*parse_subshell(t_token **tokens);
 t_ast		*parse_pipeline_node(t_ast *left, t_token **tokens);
 int			handle_paren_token(t_expand_wild *exp, char ***temp_args);

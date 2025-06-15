@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 11:33:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/16 00:45:53 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ t_commands	*create_command_struct(void)
 	cmd->outfile = NULL;
 	cmd->heredoc_delim = NULL;
 	cmd->append = 0;
+	cmd->redirections = NULL;
 	cmd->is_builtin = 0;
 	return (cmd);
 }
@@ -101,30 +102,176 @@ t_ast	*parse_command_words(t_token **tokens)
 	return (cmd_node);
 }
 
-t_ast	*parse_simple_commands(t_token **tokens)
+static int is_redirection_token(t_token_type type)
 {
-	t_ast		*redir_node;
-	t_ast		*cmd_node;
-	t_token		*curr;
+    return (type == TOKEN_APPEND || 
+            type == TOKEN_REDIRECT_IN || 
+            type == TOKEN_HEREDOC ||
+            type == TOKEN_REDIRECT_OUT);
+}
 
-	cmd_node = parse_command_words(tokens);
-	if (!cmd_node)
-		return (NULL);
-	curr = *tokens;
-	while (curr && (curr->type == TOKEN_APPEND
-			|| curr->type == TOKEN_REDIRECT_IN || curr->type == TOKEN_HEREDOC
-			|| curr->type == TOKEN_REDIRECT_OUT))
-	{
-		redir_node = parse_redirection(tokens, cmd_node);
-		if (!redir_node)
-		{
-			free_ast(cmd_node);
-			return (NULL);
-		}
-		cmd_node = redir_node;
-		curr = *tokens;
-		skip_tree_whitespaces(&curr);
-		*tokens = curr;
-	}
-	return (cmd_node);
+
+int set_command_name(t_ast *cmd_node, char *name)
+{
+    if (!cmd_node || !cmd_node->cmd || !name)
+        return (0);
+    
+    // Free the empty args array
+    if (cmd_node->cmd->args)
+        free(cmd_node->cmd->args);
+    
+    // Allocate new args array with command name
+    cmd_node->cmd->args = malloc(sizeof(char *) * 2);
+    if (!cmd_node->cmd->args)
+        return (0);
+    
+    cmd_node->cmd->args[0] = ft_strdup(name);
+    cmd_node->cmd->args[1] = NULL;
+    
+    if (!cmd_node->cmd->args[0])
+    {
+        free(cmd_node->cmd->args);
+        cmd_node->cmd->args = NULL;
+        return (0);
+    }
+    
+    return (1);
+}
+
+int add_command_arg(t_ast *cmd_node, char *arg)
+{
+    int argc = 0;
+    char **new_args;
+    
+    if (!cmd_node || !cmd_node->cmd || !cmd_node->cmd->args || !arg)
+        return (0);
+    
+    // Count current arguments
+    while (cmd_node->cmd->args[argc])
+        argc++;
+    
+    // Reallocate for new argument
+    new_args = realloc(cmd_node->cmd->args, sizeof(char *) * (argc + 2));
+    if (!new_args)
+        return (0);
+    
+    cmd_node->cmd->args = new_args;
+    cmd_node->cmd->args[argc] = ft_strdup(arg);
+    cmd_node->cmd->args[argc + 1] = NULL;
+    
+    if (!cmd_node->cmd->args[argc])
+        return (0);
+    
+    return (1);
+}
+
+
+t_ast *parse_simple_commands(t_token **tokens)
+{
+    t_ast *cmd_node = NULL;
+    t_token *curr;
+    int has_command = 0;
+    
+    if (!tokens || !*tokens)
+        return (NULL);
+    
+    curr = *tokens;
+    skip_tree_whitespaces(&curr);
+    *tokens = curr;
+    
+    if (!curr)
+        return (NULL);
+    
+    // Parse command words and redirections in any order
+    while (curr)
+    {
+        skip_tree_whitespaces(&curr);
+        *tokens = curr;
+        
+        if (!curr)
+            break;
+            
+        if (is_redirection_token(curr->type))
+        {
+            // We need a command node to attach redirections to
+            if (!cmd_node)
+            {
+                // Create empty command node for redirections
+                cmd_node = create_ast_node(AST_COMMAND, curr);
+                if (!cmd_node)
+                    return (NULL);
+                
+                cmd_node->cmd = create_command_struct();
+                if (!cmd_node->cmd)
+                {
+                    free(cmd_node);
+                    return (NULL);
+                }
+                
+                // Initialize empty args array
+                cmd_node->cmd->args = malloc(sizeof(char *) * 1);
+                if (!cmd_node->cmd->args)
+                {
+                    free(cmd_node->cmd);
+                    free(cmd_node);
+                    return (NULL);
+                }
+                cmd_node->cmd->args[0] = NULL;
+            }
+            
+            // Parse redirection and add to command's redirection list
+            if (!parse_redirection(tokens, cmd_node))
+            {
+                free_ast(cmd_node);
+                return (NULL);
+            }
+            
+            curr = *tokens;
+        }
+        else if (curr->type == TOKEN_WORD || curr->type == TOKEN_WILDCARD)
+        {
+            if (!has_command)
+            {
+                // Create initial command node or set command name
+                if (!cmd_node)
+                {
+                    cmd_node = create_ast_node(AST_COMMAND, curr);
+                    if (!cmd_node)
+                        return (NULL);
+                    
+                    cmd_node->cmd = create_command_struct();
+                    if (!cmd_node->cmd)
+                    {
+                        free(cmd_node);
+                        return (NULL);
+                    }
+                }
+                
+                if (!set_command_name(cmd_node, curr->value))
+                {
+                    free_ast(cmd_node);
+                    return (NULL);
+                }
+                
+                has_command = 1;
+            }
+            else
+            {
+                // Add argument to command
+                if (!add_command_arg(cmd_node, curr->value))
+                {
+                    free_ast(cmd_node);
+                    return (NULL);
+                }
+            }
+            curr = curr->next;
+            *tokens = curr;
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    return (cmd_node);
 }
