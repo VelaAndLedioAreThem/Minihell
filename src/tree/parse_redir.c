@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/16 00:44:24 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 15:07:37 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,11 @@ t_ast	*create_redir(t_token **token, t_ast *cmd_node)
 	return (node);
 }
 
-t_redir_list *create_redir_node(int type, char *filename)
+t_redir_ls	*create_redir_node(int type, char *filename)
 {
-    t_redir_list *redir;
+    t_redir_ls *redir;
     
-    redir = malloc(sizeof(t_redir_list));
+    redir = malloc(sizeof(t_redir_ls));
     if (!redir)
         return (NULL);
     redir->type = type;
@@ -69,8 +69,8 @@ t_redir_list *create_redir_node(int type, char *filename)
 
 int add_redirection(t_commands *cmd, int type, char *filename)
 {
-    t_redir_list *new_redir;
-    t_redir_list *curr;
+    t_redir_ls *new_redir;
+    t_redir_ls *curr;
     
     // Validate filename
     if (!filename || !*filename)

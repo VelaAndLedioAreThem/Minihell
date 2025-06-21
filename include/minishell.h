@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/16 00:39:27 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:10:22 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,12 +173,12 @@ typedef struct s_state
 	int				paren_count;
 }	t_state;
 
-typedef struct s_redir_list
+typedef struct s_redir_ls
 {
 	int					type;
 	char				*filename;
-	struct s_redir_list	*next;
-}	t_redir_list;
+	struct s_redir_ls	*next;
+}	t_redir_ls;
 
 typedef struct s_command
 {
@@ -188,7 +188,7 @@ typedef struct s_command
 	char			*heredoc_delim;
 	int				append;
 	int				is_builtin;
-	t_redir_list	*redirections;
+	t_redir_ls		*redirections;
 }	t_commands;
 
 typedef struct s_args
@@ -276,7 +276,7 @@ typedef struct s_quote_state
 
 extern pid_t	g_child_pid;
 int	handle_file_error(char *filename);
-int  create_heredoc_file(t_ast *data, t_redir_list *redir);
+int  create_heredoc_file(t_ast *data, t_redir_ls *redir);
 char		*redir_path(t_ast *n);
 int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out);
 int	cd_too_many_args(t_ast *data);
@@ -289,6 +289,7 @@ int			run_heredoc_loop(int fd, char *delim);
 int			fork_heredoc(int fd, char *delim);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(int status);
+void		cleanup_heredoc_files(t_ast *data);
 int			get_last_exit_status(void);
 char		*join_path(char *dir_part, char *name);
 char		**add_match(char **matches, int *count, char *path);
@@ -298,9 +299,9 @@ int			update_env_value(t_env *lst, const char *key, const char *val);
 int			add_env_node(t_env **lst, t_env *new_node);
 int			add_heredoc(t_ast *data, char *path);
 void		free_heredoc_list(t_ast *data);
+int			setup_input_fd(t_ast *data, t_ast *node);
 int			setup_output_fd(t_ast *data, t_ast *node);
 int			create_heredoc_temp_file(t_ast *data, t_ast *node);
-int			execute_redirections(t_ast *data, t_ast *node);
 void		reset_heredoc_list(t_ast *data);
 void		free_heredoc_list(t_ast *data);
 int			split_key_value(const char *arg, char **key, char **val);
@@ -316,6 +317,7 @@ void		create_new_shlvl(t_env **data, int shlvl);
 void		setup_child_signals(void);
 void		display_command_not_found(char *cmd);
 int			builtin_cd(t_ast *data, t_ast *tree,int fd);
+int			builtin_cd(t_ast *data, t_ast *tree, int fd_out);
 void		update_env_var(t_ast *data, const char *key, const char *value);
 int			execute_home(t_ast *data, char *path, char *oldpwd);
 void		print_error(char *filename, char *error_msg);
@@ -379,7 +381,6 @@ int			execute_echo(char *args[], int fd_out);
 int			execute_exit(t_ast *data, t_ast *tree);
 t_env		*create_env_node(char *input);
 t_token		*create_node(char *str, t_token_type type);
-void		shift_arguments(char **args, int shift);
 t_token		*tokenize(char *input);
 int			handle_assignment(t_token **token, char *input, int *i);
 void		append_node(t_token **token, t_token *current_token);
@@ -413,11 +414,13 @@ bool		validation_parenthesis(t_token *tokenize);
 
 // Parenthesis
 bool		check_parenthesis(t_validation_context *vctx, int i);
+char		*append_token_result(char *result, char *token_value);
 bool		is_in_quotes(t_quotes *quote);
 bool		find_command_before_paren(char *input, int i, t_paren *command);
 bool		check_operator_before_command(char *input, t_paren *command);
 bool		check_command_paren_sequence(t_token *curr, t_token *prev,
 				t_assign_context *ctx);
+int			looks_like_subshell(t_token *curr);
 bool		check_command_before(char *input, int i, t_token *token);
 void		process_quotes(char c, t_quotes *quote);
 void		process_quotes_enhanced(char c, char prev_char, t_quotes *quote);
@@ -511,7 +514,8 @@ void		free_stack(t_token *token);
 t_ast		*parse_tokens(t_token *tokens);
 t_ast		*parse_command_line(t_token **curr);
 t_ast_type	get_redir_type(t_token *tokens);
-t_redir_list *create_redir_node(int type, char *filename);
+int			looks_like_subshell(t_token *curr);
+t_redir_ls	*create_redir_node(int type, char *filename);
 t_ast		*parse_command(t_token **tokens);
 t_ast		*parse_logic_sequence(t_token **tokens);
 t_ast		*create_ast_node(t_ast_type type, t_token *token);
