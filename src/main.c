@@ -31,7 +31,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!input)
 		{
 			printf("exit\n");
-			exit(1);
+			exit(get_last_exit_status());
 		}
 		handle_input(input, env_list, argc, argv);
 		free(input);

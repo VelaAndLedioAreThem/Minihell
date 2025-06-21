@@ -52,13 +52,16 @@ void	free_heredoc_list(t_ast *data)
 {
 	int	i;
 
-	i = -1;
-	data->heredoc_files = NULL;
-	data->heredoc_count = 0;
-	while (++i < data->heredoc_count)
+	if (!data->heredoc_files)
+		return ;
+	i = 0;
+	while (i < data->heredoc_count && data->heredoc_files[i])
 	{
 		free(data->heredoc_files[i]);
 		data->heredoc_files[i] = NULL;
+		i++;
 	}
 	free(data->heredoc_files);
+	data->heredoc_files = NULL;
+	data->heredoc_count = 0;
 }

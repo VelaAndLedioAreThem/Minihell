@@ -36,8 +36,17 @@ int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
 {
 	char	*path;
 	char	*oldpwd;
+	int		count;
 
 	(void)fd_out;
+	count = 0;
+	while (tree->cmd->args && tree->cmd->args[count])
+		count++;
+	if (count > 2)
+	{
+		ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
+		return (data->exit_status = 1, 1);
+	}
 	path = tree->cmd->args[1];
 	oldpwd = getcwd(NULL, 0);
 	if (!path || !ft_strcmp(path, "~"))
@@ -70,17 +79,14 @@ int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)
 
 int	execute_pwd(t_ast *data, int fd_out)
 {
-	char	*cwd;
+	char	*pwd;
 
-	(void)data;
-	cwd = getcwd(NULL, 0);
-	if (!cwd)
+	pwd = get_env_value(data->env_list, "PWD");
+	if (pwd)
 	{
-		ft_putendl_fd("minishell: pwd: error retrieving current directory",
-			STDERR_FILENO);
-		return (1);
+		ft_putendl_fd(pwd, fd_out);
+		return (0);
 	}
-	ft_putendl_fd(cwd, fd_out);
-	free(cwd);
-	return (0);
+	ft_putendl_fd("minishell: pwd: PWD not set", STDERR_FILENO);
+	return (1);
 }

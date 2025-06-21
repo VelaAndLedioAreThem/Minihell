@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: Invalid date        by user              #+#    #+#             */
+/*   Updated: 2025/06/21 14:53:22 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,10 @@ static int	builtin_exit(t_ast *data, t_ast *tree, int fd_out)
 int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 {
 	int						i;
-	static const t_builtin	builtins[] = {
-	{"export", builtin_export},
-	{"unset", builtin_unset},
-	{"env", builtin_env},
-	{"cd", builtin_cd},
-	{"pwd", builtin_pwd},
-	{"echo", builtin_echo},
-	{"exit", builtin_exit},
-	{NULL, NULL}
-	};
+	static const t_builtin	builtins[] = {{"export", builtin_export}, {"unset",
+		builtin_unset}, {"env", builtin_env}, {"cd", builtin_cd}, {"pwd",
+		builtin_pwd}, {"echo", builtin_echo},
+		{"exit", builtin_exit}, {NULL, NULL}};
 
 	i = 0;
 	if (!tree->cmd->args || !tree->cmd->args[0])

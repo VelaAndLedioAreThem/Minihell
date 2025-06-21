@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 23:53:44 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 14:51:55 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,8 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 	ast->env_list = env_list;
 	execute_tree(ast, ast);
 	update_last_exit_status(ast->exit_status);
-	free_heredoc_list(ast);
-	free_ast(ast);
+       cleanup_heredoc_files(ast);
+       free_ast(ast);
 }
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)

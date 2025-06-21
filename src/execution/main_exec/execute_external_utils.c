@@ -65,6 +65,7 @@ void	execute_child_process(t_ast *data, t_ast *tree)
 	envp = env(&(data->env_list));
 	execve(cmd_path, tree->cmd->args, envp);
 	perror("minishell: execve");
+	free(cmd_path);
 	free_2darray(envp);
 	exit(1);
 }

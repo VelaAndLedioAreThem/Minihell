@@ -75,7 +75,6 @@ int	handle_double_operator(t_token **head, char *input, int *i)
 	if (result == 1)
 	{
 		append_node(head, current);
-		printf("%s\n", current->value);
 	}
 	return (result);
 }
