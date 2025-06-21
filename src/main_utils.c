@@ -6,15 +6,15 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 14:51:55 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 15:01:08 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-#define COL_BLUE   "\033[0;34m"
-#define COL_GREEN  "\033[0;32m"
-#define COL_RESET  "\033[0m"
+#define COL_BLUE "\033[0;34m"
+#define COL_GREEN "\033[0;32m"
+#define COL_RESET "\033[0m"
 
 static t_token	*tokenize_and_mark_expanded(char *input, char *expandable)
 {
@@ -82,8 +82,8 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 	ast->env_list = env_list;
 	execute_tree(ast, ast);
 	update_last_exit_status(ast->exit_status);
-       cleanup_heredoc_files(ast);
-       free_ast(ast);
+	cleanup_heredoc_files(ast);
+	free_ast(ast);
 }
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)

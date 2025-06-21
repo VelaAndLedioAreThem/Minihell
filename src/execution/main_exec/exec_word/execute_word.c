@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 14:47:45 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 15:53:28 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	return (0);
 }
 
-static int  create_heredoc_file(t_ast *data, t_redir_list *redir)
+int  create_heredoc_file(t_ast *data, t_redir_list *redir)
 {
         char    tmp[sizeof(HEREDOC_TEMPLATE)];
         int             fd;
@@ -56,56 +56,6 @@ static int  create_heredoc_file(t_ast *data, t_redir_list *redir)
         free(redir->filename);
         redir->filename = ft_strdup(tmp);
         redir->type = TOKEN_REDIRECT_IN;
-        return (1);
-}
-
-static int      setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
-{
-        t_redir_list    *curr;
-        int             fd;
-        int             flags;
-
-        *fd_in = STDIN_FILENO;
-        *fd_out = STDOUT_FILENO;
-        curr = tree->cmd->redirections;
-        while (curr)
-        {
-                if (curr->type == TOKEN_HEREDOC)
-                {
-                        if (!create_heredoc_file(data, curr))
-                                return (0);
-                }
-                curr = curr->next;
-        }
-        curr = tree->cmd->redirections;
-        while (curr)
-        {
-                if (curr->type == TOKEN_REDIRECT_IN)
-                {
-                        if (*fd_in != STDIN_FILENO)
-                                close(*fd_in);
-                        fd = open(curr->filename, O_RDONLY);
-                        if (fd < 0)
-                                return (perror(curr->filename), 0);
-                        *fd_in = fd;
-                }
-                else if (curr->type == TOKEN_REDIRECT_OUT ||
-                                curr->type == TOKEN_APPEND)
-                {
-                        if (*fd_out != STDOUT_FILENO)
-                                close(*fd_out);
-                        flags = O_WRONLY | O_CREAT;
-                        if (curr->type == TOKEN_APPEND)
-                                flags |= O_APPEND;
-                        else
-                                flags |= O_TRUNC;
-                        fd = open(curr->filename, flags, 0644);
-                        if (fd < 0)
-                                return (perror(curr->filename), 0);
-                        *fd_out = fd;
-                }
-                curr = curr->next;
-        }
         return (1);
 }
 

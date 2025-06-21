@@ -275,6 +275,14 @@ typedef struct s_quote_state
 }	t_quote_state;
 
 extern pid_t	g_child_pid;
+int	handle_file_error(char *filename);
+int  create_heredoc_file(t_ast *data, t_redir_list *redir);
+char		*redir_path(t_ast *n);
+int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out);
+int	cd_too_many_args(t_ast *data);
+int			open_infile(char *path);
+int			open_outfile(char *path, int type);
+void		create_intermediate_outfile(char *path, int type);
 void		cleanup_heredoc_files(t_ast *data);
 int			handle_line(int fd, char *line, char *delim);
 int			run_heredoc_loop(int fd, char *delim);
@@ -307,7 +315,7 @@ int			builtin_export(t_ast *data, t_ast *tree, int fd_out);
 void		create_new_shlvl(t_env **data, int shlvl);
 void		setup_child_signals(void);
 void		display_command_not_found(char *cmd);
-int			builtin_cd(t_ast *data, t_ast *tree, int fd_out);
+int			builtin_cd(t_ast *data, t_ast *tree,int fd);
 void		update_env_var(t_ast *data, const char *key, const char *value);
 int			execute_home(t_ast *data, char *path, char *oldpwd);
 void		print_error(char *filename, char *error_msg);

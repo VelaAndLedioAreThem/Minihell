@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   builtins_path_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/21 15:33:04 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/21 15:42:22 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,31 +32,24 @@ int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 	return (0);
 }
 
-int	builtin_cd(t_ast *data, t_ast *tree, int fd_out)
+int	builtin_cd(t_ast *data, t_ast *tree, int fd)
 {
+	int		count;
 	char	*path;
 	char	*oldpwd;
-	int		count;
 
-	(void)fd_out;
+	(void)fd;
 	count = 0;
 	while (tree->cmd->args && tree->cmd->args[count])
 		count++;
 	if (count > 2)
-	{
-		ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
-		return (data->exit_status = 1, 1);
-	}
+		return (cd_too_many_args(data));
 	path = tree->cmd->args[1];
 	oldpwd = getcwd(NULL, 0);
 	if (!path || !ft_strcmp(path, "~"))
-	{
 		execute_home(data, path, oldpwd);
-	}
 	else if (!ft_strcmp(path, "-"))
-	{
 		execute_oldpwd(data, path, oldpwd);
-	}
 	if (execute_cd(data, path))
 	{
 		free(oldpwd);

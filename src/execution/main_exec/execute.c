@@ -6,12 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 14:08:22 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 15:04:02 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 int	execute_group(t_ast *data, t_ast *tree)
 {

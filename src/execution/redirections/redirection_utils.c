@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/07 15:40:33 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/21 15:37:29 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,4 +80,13 @@ int	setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp)
 	if (!node->right->cmd->args[0] || add_heredoc(data, ft_strdup(tmp)))
 		return (1);
 	return (0);
+}
+
+char	*redir_path(t_ast *n)
+{
+	if (!n)
+		return (NULL);
+	if (n->cmd && n->cmd->args && n->cmd->args[0])
+		return (n->cmd->args[0]);
+	return (NULL);
 }

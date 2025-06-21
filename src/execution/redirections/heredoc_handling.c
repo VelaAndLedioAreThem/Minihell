@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 13:54:17 by vela              #+#    #+#             */
-/*   Updated: 2025/06/07 15:39:53 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/21 15:43:21 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,34 +15,6 @@
 #include <readline/readline.h>
 #include <sys/wait.h>
 #include <unistd.h>
-
-static void	create_intermediate_outfile(char *path, int type)
-{
-	int	flags;
-	int	fd;
-
-	if (!path)
-		return ;
-	flags = O_WRONLY | O_CREAT;
-	if (type == AST_REDIR_APPEND)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	fd = open(path, flags, 0644);
-	if (fd >= 0)
-		close(fd);
-	else
-		perror(path);
-}
-
-static char	*redir_path(t_ast *n)
-{
-	if (!n)
-		return (NULL);
-	if (n->cmd && n->cmd->args && n->cmd->args[0])
-		return (n->cmd->args[0]);
-	return (NULL);
-}
 
 int	setup_output_fd(t_ast *data, t_ast *node)
 {
@@ -97,7 +69,7 @@ static t_ast	*collect_redirections(t_ast *node, char **in_file,
 		char **out_file, int *out_type)
 {
 	t_ast	*next;
-	char 	*path;
+	char	*path;
 
 	if (!node)
 		return (NULL);
@@ -120,32 +92,6 @@ static t_ast	*collect_redirections(t_ast *node, char **in_file,
 		*out_type = node->type;
 	}
 	return (next);
-}
-
-static int	open_infile(char *path)
-{
-	int	fd;
-
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-		perror(path);
-	return (fd);
-}
-
-static int	open_outfile(char *path, int type)
-{
-	int	flags;
-	int	fd;
-
-	flags = O_WRONLY | O_CREAT;
-	if (type == AST_REDIR_APPEND)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	fd = open(path, flags, 0644);
-	if (fd < 0)
-		perror(path);
-	return (fd);
 }
 
 int	execute_redirections(t_ast *data, t_ast *node)

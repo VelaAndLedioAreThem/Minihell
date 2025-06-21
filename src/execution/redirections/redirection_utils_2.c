@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*   redirection_utils_2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/07 15:39:20 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/21 15:37:17 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,4 +70,22 @@ int	get_output_file(t_ast *tree)
 			return (-1);
 	}
 	return (fd);
+}
+void	create_intermediate_outfile(char *path, int type)
+{
+	int	flags;
+	int	fd;
+
+	if (!path)
+		return ;
+	flags = O_WRONLY | O_CREAT;
+	if (type == AST_REDIR_APPEND)
+		flags |= O_APPEND;
+	else
+		flags |= O_TRUNC;
+	fd = open(path, flags, 0644);
+	if (fd >= 0)
+		close(fd);
+	else
+		perror(path);
 }

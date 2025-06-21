@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: Invalid date        by user              #+#    #+#             */
-/*   Updated: 2025/06/21 14:53:22 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/21 15:03:33 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/21 15:03:45 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 	static const t_builtin	builtins[] = {{"export", builtin_export}, {"unset",
 		builtin_unset}, {"env", builtin_env}, {"cd", builtin_cd}, {"pwd",
 		builtin_pwd}, {"echo", builtin_echo},
-		{"exit", builtin_exit}, {NULL, NULL}};
+	{"exit", builtin_exit}, {NULL, NULL}};
 
 	i = 0;
 	if (!tree->cmd->args || !tree->cmd->args[0])
