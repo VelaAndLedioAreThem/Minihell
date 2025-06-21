@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 16:10:22 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:23:12 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -513,7 +513,7 @@ void		free_stack(t_token *token);
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
 t_ast		*parse_command_line(t_token **curr);
-t_ast_type	get_redir_type(t_token *tokens);
+int			is_redirection_token(t_token_type type);
 int			looks_like_subshell(t_token *curr);
 t_redir_ls	*create_redir_node(int type, char *filename);
 t_ast		*parse_command(t_token **tokens);
@@ -522,6 +522,7 @@ t_ast		*create_ast_node(t_ast_type type, t_token *token);
 void		free_ast(t_ast *node);
 t_ast		*parse_simple_commands(t_token **tokens);
 t_commands	*create_command_struct(void);
+int			add_redirection(t_commands *cmd, int type, char *filename);
 char		**expand_command_args(char **temp_args, int temp_count);
 t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
