@@ -6,36 +6,11 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 16:26:21 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:22:56 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-static int	validate_redirection_filename(char *filename)
-{
-	char	*dir;
-	char	*last_slash;
-
-	if (!filename || !*filename)
-		return (0);
-	if (ft_strchr(filename, '/') && access(filename, F_OK) == -1)
-	{
-		dir = ft_strdup(filename);
-		last_slash = ft_strrchr(dir, '/');
-		if (last_slash)
-		{
-			*last_slash = '\0';
-			if (access(dir, W_OK) == -1)
-			{
-				free(dir);
-				return (0);
-			}
-		}
-		free(dir);
-	}
-	return (1);
-}
 
 static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
 	t_token **filename_token)
@@ -69,12 +44,6 @@ static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
 		return (0);
 	if (!validate_redirection_tokens(tokens, &redir_token, &filename_token))
 		return (0);
-	if (!validate_redirection_filename(filename_token->value))
-	{
-		printf("minishell: %s: No such file or directory\n",
-			filename_token->value);
-		return (0);
-	}
 	if (!add_redirection(cmd, redir_token->type, filename_token->value))
 		return (0);
 	*tokens = (*tokens)->next;
@@ -95,5 +64,46 @@ int	parse_redirection(t_token **tokens, t_ast *cmd_node)
 		skip_tree_whitespaces(&curr);
 	}
 	*tokens = curr;
+	return (1);
+}
+
+int	add_command_arg(t_ast *cmd_node, char *arg)
+{
+	int		argc;
+	char	**new_args;
+
+	argc = 0;
+	if (!cmd_node || !cmd_node->cmd || !cmd_node->cmd->args || !arg)
+		return (0);
+	while (cmd_node->cmd->args[argc])
+		argc++;
+	new_args = realloc(cmd_node->cmd->args, sizeof(char *) * (argc + 2));
+	if (!new_args)
+		return (0);
+	cmd_node->cmd->args = new_args;
+	cmd_node->cmd->args[argc] = ft_strdup(arg);
+	cmd_node->cmd->args[argc + 1] = NULL;
+	if (!cmd_node->cmd->args[argc])
+		return (0);
+	return (1);
+}
+
+int	set_command_name(t_ast *cmd_node, char *name)
+{
+	if (!cmd_node || !cmd_node->cmd || !name)
+		return (0);
+	if (cmd_node->cmd->args)
+		free(cmd_node->cmd->args);
+	cmd_node->cmd->args = malloc(sizeof(char *) * 2);
+	if (!cmd_node->cmd->args)
+		return (0);
+	cmd_node->cmd->args[0] = ft_strdup(name);
+	cmd_node->cmd->args[1] = NULL;
+	if (!cmd_node->cmd->args[0])
+	{
+		free(cmd_node->cmd->args);
+		cmd_node->cmd->args = NULL;
+		return (0);
+	}
 	return (1);
 }

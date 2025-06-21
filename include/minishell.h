@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 16:23:12 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 22:26:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,6 +279,7 @@ int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
 void		restore_fds(int *save);
 int			redirect_output(char *file, int type, int *save, int has_in);
+void		*ft_realloc(void *ptr, size_t oldsize, size_t newsize);
 int			create_heredoc_file(t_ast *data, t_redir_ls *redir);
 char		*redir_path(t_ast *n);
 int			setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out);
@@ -318,7 +319,7 @@ int			builtin_export(t_ast *data, t_ast *tree, int fd_out);
 void		create_new_shlvl(t_env **data, int shlvl);
 void		setup_child_signals(void);
 void		display_command_not_found(char *cmd);
-int			builtin_cd(t_ast *data, t_ast *tree,int fd);
+int			builtin_cd(t_ast *data, t_ast *tree, int fd);
 void		update_env_var(t_ast *data, const char *key, const char *value);
 int			execute_home(t_ast *data, char *path, char *oldpwd);
 void		print_error(char *filename, char *error_msg);
@@ -399,6 +400,7 @@ t_env		*init_env_list(char **envp);
 int			quotes(char	*input, int i, t_args *parse);
 char		*safe_and_expand_var(char *value);
 int			validate_parentheses(char *str);
+char		*process_env_value(char *value, t_args *arg);
 char		*handle_env_part(t_args *parse, int *i, t_env *env_list);
 void		process_env_var(t_args *parse, t_env *env_list, char *input);
 char		*gen_env_value(t_env *env_list, char *key);
@@ -515,7 +517,10 @@ void		free_stack(t_token *token);
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
 t_ast		*parse_command_line(t_token **curr);
+int			parse_setup_tokens(t_token **tokens);
 int			is_redirection_token(t_token_type type);
+int			set_command_name(t_ast *cmd_node, char *name);
+int			add_command_arg(t_ast *cmd_node, char *arg);
 int			looks_like_subshell(t_token *curr);
 t_redir_ls	*create_redir_node(int type, char *filename);
 t_ast		*parse_command(t_token **tokens);

@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 12:14:59 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 20:04:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,16 +98,7 @@ char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 	value = get_env_value(env_list, name);
 	if (!value)
 		return (free(name), ft_strdup(""));
-	if (arg->double_quotes)
-	{
-		processed_value = remove_quotes_and_paren(value);
-		if (!processed_value)
-			processed_value = ft_strdup(value);
-	}
-	else
-	{
-		processed_value = safe_and_expand_var(value);
-	}
+	processed_value = process_env_value(value, arg);
 	free(name);
 	return (processed_value);
 }

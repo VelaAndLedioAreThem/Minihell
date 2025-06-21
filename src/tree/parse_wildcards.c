@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 11:35:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 20:27:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,4 +100,31 @@ t_ast	*create_command_node(t_token *start, int word_count)
 	}
 	free_2darray(temp_args);
 	return (node);
+}
+
+t_ast	*parse_command_words(t_token **tokens)
+{
+	t_ast		*cmd_node;
+	t_token		*curr;
+	t_token		*start;
+	int			word_count;
+
+	curr = *tokens;
+	if (!skip_node(tokens, curr))
+		return (NULL);
+	start = curr;
+	word_count = 0;
+	while (curr && (curr->type == TOKEN_WORD || curr->type == TOKEN_WILDCARD))
+	{
+		word_count++;
+		curr = curr->next;
+		skip_tree_whitespaces(&curr);
+	}
+	if (word_count == 0)
+		return (NULL);
+	cmd_node = create_command_node(start, word_count);
+	if (!cmd_node)
+		return (NULL);
+	*tokens = curr;
+	return (cmd_node);
 }

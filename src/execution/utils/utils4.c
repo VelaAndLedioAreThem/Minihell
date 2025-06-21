@@ -6,22 +6,32 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/04/12 13:51:19 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/21 20:29:14 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void	*ft_realloc(void *ptr, size_t oldsize, size_t newsize)
 {
 	char	*newptr;
+	size_t	copy_size;
 
+	if (newsize == 0)
+	{
+		free(ptr);
+		return (NULL);
+	}
 	newptr = malloc(newsize);
 	if (!newptr)
 		return (NULL);
 	if (ptr)
 	{
-		ft_memcpy(newptr, ptr, oldsize);
+		if (oldsize < newsize)
+			copy_size = oldsize;
+		else
+			copy_size = newsize;
+		ft_memcpy(newptr, ptr, copy_size);
 		free(ptr);
 	}
 	return (newptr);
