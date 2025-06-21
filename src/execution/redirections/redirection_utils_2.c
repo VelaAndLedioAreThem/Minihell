@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/21 15:37:17 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:37:03 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ int	get_output_file(t_ast *tree)
 	}
 	return (fd);
 }
+
 void	create_intermediate_outfile(char *path, int type)
 {
 	int	flags;

@@ -102,15 +102,6 @@ t_ast	*parse_command_words(t_token **tokens)
 	return (cmd_node);
 }
 
-static int is_redirection_token(t_token_type type)
-{
-    return (type == TOKEN_APPEND || 
-            type == TOKEN_REDIRECT_IN || 
-            type == TOKEN_HEREDOC ||
-            type == TOKEN_REDIRECT_OUT);
-}
-
-
 int set_command_name(t_ast *cmd_node, char *name)
 {
     if (!cmd_node || !cmd_node->cmd || !name)

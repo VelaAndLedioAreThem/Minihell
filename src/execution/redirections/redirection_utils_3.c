@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/21 15:55:45 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:33:58 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 
 /* ---------- 1st pass : create all heredoc temp files --------------------- */
 
-static int	handle_heredocs(t_ast *data, t_redir_list *list)
+static int	handle_heredocs(t_ast *data, t_redir_ls *list)
 {
-	t_redir_list	*curr;
+	t_redir_ls	*curr;
 
 	curr = list;
 	while (curr)
@@ -38,7 +38,7 @@ static int	handle_heredocs(t_ast *data, t_redir_list *list)
 
 /* ---------- helpers to open files ---------------------------------------- */
 
-static int	open_infiles(t_redir_list *curr, int *fd_in)
+static int	open_infiles(t_redir_ls *curr, int *fd_in)
 {
 	int	fd;
 
@@ -54,7 +54,7 @@ static int	open_infiles(t_redir_list *curr, int *fd_in)
 	return (1);
 }
 
-static int	open_outfiles(t_redir_list *curr, int *fd_out)
+static int	open_outfiles(t_redir_ls *curr, int *fd_out)
 {
 	int	fd;
 	int	flags;
@@ -78,9 +78,9 @@ static int	open_outfiles(t_redir_list *curr, int *fd_out)
 
 /* ---------- 2nd pass : apply redirections -------------------------------- */
 
-static int	apply_redirs(t_redir_list *list, int *fd_in, int *fd_out)
+static int	apply_redirs(t_redir_ls *list, int *fd_in, int *fd_out)
 {
-	t_redir_list	*curr;
+	t_redir_ls	*curr;
 
 	curr = list;
 	while (curr)

@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 13:54:17 by vela              #+#    #+#             */
-/*   Updated: 2025/06/21 15:43:21 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:35:03 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,43 +99,22 @@ int	execute_redirections(t_ast *data, t_ast *node)
 	char	*in_file;
 	char	*out_file;
 	int		out_type;
-	int		save_in;
-	int		save_out;
-	int		fd;
+	int		save[2];
 	t_ast	*cmd;
 
 	in_file = NULL;
 	out_file = NULL;
 	out_type = AST_REDIR_OUT;
 	cmd = collect_redirections(node, &in_file, &out_file, &out_type);
-	save_in = dup(STDIN_FILENO);
-	save_out = dup(STDOUT_FILENO);
-	if (in_file)
+	save[0] = dup(STDIN_FILENO);
+	save[1] = dup(STDOUT_FILENO);
+	if (!redirect_input(in_file, save)
+		|| !redirect_output(out_file, out_type, save, in_file != NULL))
 	{
-		fd = open_infile(in_file);
-		if (fd < 0)
-			return (close(save_in), close(save_out), data->exit_status = 1);
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	if (out_file)
-	{
-		fd = open_outfile(out_file, out_type);
-		if (fd < 0)
-		{
-			if (in_file)
-				dup2(save_in, STDIN_FILENO);
-			close(save_in);
-			close(save_out);
-			return (data->exit_status = 1);
-		}
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
+		restore_fds(save);
+		return (data->exit_status = 1);
 	}
 	data->exit_status = execute_tree(data, cmd);
-	dup2(save_in, STDIN_FILENO);
-	dup2(save_out, STDOUT_FILENO);
-	close(save_in);
-	close(save_out);
+	restore_fds(save);
 	return (data->exit_status);
 }
