@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 16:10:35 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 16:14:45 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/06/21 16:04:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -60,7 +60,7 @@ int	create_heredoc_file(t_ast *data, t_redir_ls *redir)
         return (1);
 }
 
-static int      setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
+int      setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
 {
         t_redir_ls		*curr;
         int             fd;
