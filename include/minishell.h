@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 22:26:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:45:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,6 +203,8 @@ typedef struct s_args
 	int				double_quotes;
 	int				last_quotes;
 	int				i;
+	char			*old_result;
+	char			*temp;
 }	t_args;
 
 typedef struct s_expand_wild
@@ -542,6 +544,8 @@ int			handle_paren_token(t_expand_wild *exp, char ***temp_args);
 // Utils functions
 int			ft_strcmp(const char *s1, const char *s2);
 int			count_parenthesis(t_token *tokens);
+void		cleanup_minishell(t_env *env_list, char *input, t_ast *ast_root,
+				t_token *token);
 int			ft_isspace(int num);
 void		clear_data(t_env **data, char **envp);
 void		handle_signal(void);

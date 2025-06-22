@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/14 13:21:04 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/18 23:49:57 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:44:55 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,28 @@ t_token	*free_tokens(t_token *token)
 	while (token)
 	{
 		temp = token->next;
-		free(token->value);
+		if (token->value)
+		{
+			free(token->value);
+			token->value = NULL;
+		}
 		free(token);
 		token = temp;
 	}
 	return (NULL);
+}
+
+void	cleanup_minishell(t_env *env_list, char *input, t_ast *ast_root,
+	t_token *token)
+{
+	if (env_list)
+		free_env_list(env_list);
+	if (input)
+		free(input);
+	if (ast_root)
+		free_ast(ast_root);
+	if (token)
+		free_tokens(token);
 }
 
 void	report_error(t_errors_code code, char *token)

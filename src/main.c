@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 21:52:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/10 11:00:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:01:26 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,12 @@ int	main(int argc, char **argv, char **envp)
 		if (!input)
 		{
 			printf("exit\n");
+			cleanup_minishell(env_list, NULL, NULL, NULL);
 			exit(get_last_exit_status());
 		}
 		handle_input(input, env_list, argc, argv);
 		free(input);
 	}
-	free_env_list(env_list);
+	cleanup_minishell(env_list, NULL, NULL, NULL);
 	return (0);
 }

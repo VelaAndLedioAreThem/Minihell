@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 22:22:31 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 20:11:15 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 15:38:14 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ char	*remove_quotes_and_paren(char *str)
 	int		len;
 	int		start;
 	int		end;
+	char	*result;
 
 	if (!str)
 		return (NULL);
@@ -102,7 +103,7 @@ char	*remove_quotes_and_paren(char *str)
 	if (len == 0)
 		return (ft_strdup(""));
 	if (!validate_parentheses(str))
-		return (NULL);
+		return (ft_strdup(str));
 	start = 0;
 	if (should_strip_paren(str, len))
 		start = 1;
@@ -110,5 +111,8 @@ char	*remove_quotes_and_paren(char *str)
 		end = len - 1;
 	else
 		end = len;
-	return (strip_quotes(str, start, end));
+	result = strip_quotes(str, start, end);
+	if (!result)
+		return (ft_strdup(str));
+	return (result);
 }

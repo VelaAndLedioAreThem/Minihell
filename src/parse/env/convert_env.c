@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/15 11:00:44 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 15:36:47 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ t_env	*init_env_list(char **envp)
 		new_node = create_env_node(envp[i]);
 		if (!new_node)
 		{
-			free_env_list(new_node);
+			free_env_list(head);
 			return (NULL);
 		}
 		if (!head)

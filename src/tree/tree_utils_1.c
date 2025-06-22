@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 22:25:42 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:23:24 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,11 @@ int	parse_process_redirection(t_token **tokens, t_ast **cmd_node)
 			return (0);
 	}
 	if (!parse_redirection(tokens, *cmd_node))
+	{
+		free_ast(*cmd_node);
+		*cmd_node = NULL;
 		return (0);
+	}
 	return (1);
 }
 
@@ -63,13 +67,13 @@ int	parse_process_word_token(t_token **tokens, t_ast **cmd_node, int *has_cmd)
 				return (0);
 		}
 		if (!set_command_name(*cmd_node, curr->value))
-			return (0);
+			return (free_ast(*cmd_node), *cmd_node = NULL, 0);
 		*has_cmd = 1;
 	}
 	else
 	{
 		if (!add_command_arg(*cmd_node, curr->value))
-			return (0);
+			return (free_ast(*cmd_node), *cmd_node = NULL, 0);
 	}
 	*tokens = curr->next;
 	return (1);

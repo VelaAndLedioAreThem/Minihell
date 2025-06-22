@@ -6,7 +6,7 @@
 #    By: codespace <codespace@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/24 19:19:51 by ldurmish          #+#    #+#              #
-#    Updated: 2025/06/21 22:26:43 by ldurmish         ###   ########.fr        #
+#    Updated: 2025/06/22 13:49:59 by ldurmish         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -116,9 +116,12 @@ fclean: clean
 
 re: fclean all
 
-# Valgrind 
+# Valgrind
 valgrind: re
-	valgrind --leak-check=full --show-leak-kinds=all  --show-reachable=yes --show-possibly-lost=no ./minishell
+	@echo "Running Minishell with Valgrind..."
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind.log \
+		--suppressions=readline.supp ./minishell
+
 
 # Phony targets
 .PHONY: all clean fclean re

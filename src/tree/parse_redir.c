@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 22:22:56 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:11:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ int	add_command_arg(t_ast *cmd_node, char *arg)
 		return (0);
 	while (cmd_node->cmd->args[argc])
 		argc++;
-	new_args = realloc(cmd_node->cmd->args, sizeof(char *) * (argc + 2));
+	new_args = ft_realloc(cmd_node->cmd->args, sizeof(char *) * (argc + 1),
+			sizeof(char *) * (argc + 2));
 	if (!new_args)
 		return (0);
 	cmd_node->cmd->args = new_args;
@@ -90,10 +91,17 @@ int	add_command_arg(t_ast *cmd_node, char *arg)
 
 int	set_command_name(t_ast *cmd_node, char *name)
 {
+	int		i;
+
 	if (!cmd_node || !cmd_node->cmd || !name)
 		return (0);
 	if (cmd_node->cmd->args)
+	{
+		i = -1;
+		while (cmd_node->cmd->args[++i])
+			free(cmd_node->cmd->args[i]);
 		free(cmd_node->cmd->args);
+	}
 	cmd_node->cmd->args = malloc(sizeof(char *) * 2);
 	if (!cmd_node->cmd->args)
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 21:23:10 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/02 13:35:07 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:24:29 by ldurmish         ###   ########.fr       */
 /*   Updated: 2025/06/02 00:38:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -29,13 +29,13 @@ t_ast	*parse_pipeline_node(t_ast *left, t_token **tokens)
 	if (curr->next)
 		curr = curr->next;
 	else
-		return (node);
+		return (free_ast(node), NULL);
 	skip_tree_whitespaces(&curr);
 	*tokens = curr;
 	node->right = parse_command_line(tokens);
 	if (!node->right)
 	{
-		free_ast(left);
+		free_ast(node);
 		return (NULL);
 	}
 	return (node);
@@ -66,32 +66,4 @@ t_ast	*create_ast_node(t_ast_type type, t_token *token)
 t_ast	*parse_command_line(t_token **tokens)
 {
 	return (parse_logic_sequence(tokens));
-}
-
-void	free_ast(t_ast *node)
-{
-	int			i;
-
-	if (!node)
-		return ;
-	free_ast(node->left);
-	free_ast(node->right);
-	if (node->cmd)
-	{
-		if (node->cmd->args)
-		{
-			i = -1;
-			while (node->cmd->args[++i])
-				free(node->cmd->args[i]);
-			free(node->cmd->args);
-		}
-		if (node->cmd->infile)
-			free(node->cmd->infile);
-		if (node->cmd->outfile)
-			free(node->cmd->outfile);
-		if (node->cmd->heredoc_delim)
-			free(node->cmd->heredoc_delim);
-		free(node->cmd);
-	}
-	free(node);
 }

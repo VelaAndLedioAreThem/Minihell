@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 15:01:08 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:48:54 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,13 @@ static char	*expand_and_tokenize(char *input, t_env *env_list, t_args *arg,
 		free_env_list(copy);
 		return (NULL);
 	}
-	*tokens = tokenize(expandable);
-	if (!*tokens)
-	{
-		free_tokens(*tokens);
-		return (NULL);
-	}
 	*tokens = tokenize_and_mark_expanded(input, expandable);
 	if (!*tokens)
-		return (free_tokens(*tokens), free_env_list(copy), NULL);
+	{
+		free(expandable);
+		free_env_list(copy);
+		return (NULL);
+	}
 	free_env_list(copy);
 	return (expandable);
 }
@@ -84,6 +82,7 @@ static void	execute_input(t_token *tokens, t_env *env_list, char *expandable)
 	update_last_exit_status(ast->exit_status);
 	cleanup_heredoc_files(ast);
 	free_ast(ast);
+	free(expandable);
 }
 
 void	handle_input(char *input, t_env *env_list, int argc, char **argv)
@@ -102,7 +101,10 @@ void	handle_input(char *input, t_env *env_list, int argc, char **argv)
 		if (!expandable)
 			return ;
 		if (!validation(tokens))
+		{
+			free(expandable);
 			return ;
+		}
 		execute_input(tokens, env_list, expandable);
 	}
 }
