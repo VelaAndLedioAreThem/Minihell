@@ -117,10 +117,10 @@ fclean: clean
 re: fclean all
 
 # Valgrind
-valgrind: re
+valgrind: $(NAME)
 	@echo "Running Minishell with Valgrind..."
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --log-file=valgrind.log \
-		--suppressions=readline.supp ./minishell
+	valgrind --leak-check=full --show-leak-kinds=all --show-reachable=no --track-origins=yes --log-file=valgrind.log \
+		--suppressions=readline.supp ./$(NAME)
 
 
 # Phony targets
