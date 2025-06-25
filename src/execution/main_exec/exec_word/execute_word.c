@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 16:33:40 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/25 12:58:54 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ int	create_heredoc_file(t_ast *data, t_redir_ls *redir)
 	int		fd;
 	int		status;
 
-	fd = mkstemp(strcpy(tmp, HEREDOC_TEMPLATE));
+	fd = open_unique_tmp(ft_strcpy(tmp, HEREDOC_TEMPLATE));
 	if (fd < 0)
-		return (perror("mkstemp"), 0);
+		return (perror("open_unique_tmp"), 0);
 	status = fork_heredoc(fd, redir->filename);
 	close(fd);
 	if (status != 0)
@@ -81,4 +81,29 @@ int	execute_word(t_ast *data, t_ast *tree)
 	fork_external_command(data, tree, fd_in, fd_out);
 	close_fds(fd_in, fd_out);
 	return (data->exit_status);
+}
+
+int	open_unique_tmp(char *path)
+{
+	static unsigned int	count;
+	unsigned int		val;
+	int					fd;
+	int					len;
+	int					i;
+
+	len = ft_strlen(path) - 6;
+	while (1)
+	{
+		val = ++count;
+		i = 0;
+		while (i < 6)
+		{
+			path[len + i] = "0123456789abcdef"[val & 0xf];
+			val >>= 4;
+			i++;
+		}
+		fd = open(path, O_CREAT | O_EXCL | O_RDWR, 0600);
+		if (fd >= 0 || errno != EEXIST)
+			return (fd);
+	}
 }

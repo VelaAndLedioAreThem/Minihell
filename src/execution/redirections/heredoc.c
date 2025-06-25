@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 15:37:49 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/25 13:06:01 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-/* push `path` into data->heredoc_files (O(1) amortised) */
 int	add_heredoc(t_ast *data, char *path)
 {
 	int		i;
@@ -37,15 +36,15 @@ int	add_heredoc(t_ast *data, char *path)
 		i = 0;
 		while (data->heredoc_files[i])
 			i++;
-		new_files = realloc(data->heredoc_files, sizeof(char *) * (i + 2));
+		new_files = ft_realloc(data->heredoc_files,
+				sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 		if (!new_files)
 			return (1);
 		new_files[i] = path;
 		new_files[i + 1] = NULL;
 		data->heredoc_files = new_files;
 	}
-	data->heredoc_count++;
-	return (0);
+	return (data->heredoc_count++, 0);
 }
 
 void	free_heredoc_list(t_ast *data)

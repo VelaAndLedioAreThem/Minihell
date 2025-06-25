@@ -277,6 +277,7 @@ typedef struct s_quote_state
 }	t_quote_state;
 
 extern pid_t	g_child_pid;
+int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
 void		restore_fds(int *save);

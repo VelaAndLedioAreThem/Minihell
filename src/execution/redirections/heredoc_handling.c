@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 13:54:17 by vela              #+#    #+#             */
-/*   Updated: 2025/06/21 16:35:03 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/25 12:56:27 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ int	create_heredoc_temp_file(t_ast *data, t_ast *node)
 	int		fd;
 	int		status;
 
-	fd = mkstemp(strcpy(tmp, HEREDOC_TEMPLATE));
+	fd = open_unique_tmp(ft_strcpy(tmp, HEREDOC_TEMPLATE));
 	if (fd < 0)
-		return (perror("mkstemp"), 1);
+		return (perror("open_unique_tmp"), 1);
 	status = fork_heredoc(fd, node->right->cmd->args[0]);
 	close(fd);
 	if (status != 0)

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   builtins_path_utils_2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/25 12:58:36 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/25 12:58:38 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_env	*get_env_node(t_env *env_list, const char *name)
 	current = env_list;
 	while (current)
 	{
-		if (strcmp(current->key, name) == 0)
+		if (ft_strcmp(current->key, name) == 0)
 			return (current);
 		current = current->next;
 	}

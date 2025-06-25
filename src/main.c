@@ -32,6 +32,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			printf("exit\n");
 			cleanup_minishell(env_list, NULL, NULL, NULL);
+			signal(SIGQUIT, SIG_IGN);
 			exit(get_last_exit_status());
 		}
 		handle_input(input, env_list, argc, argv);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_wildcard_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/06 18:35:48 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/25 13:08:18 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,8 @@ char	**add_match(char **matches, int *count, char *path)
 {
 	char	**new_tab;
 
-	new_tab = realloc(matches, (*count + 2) * sizeof(char *));
+	new_tab = ft_realloc(matches,
+			(*count + 1) * sizeof(char *), (*count + 2) * sizeof(char *));
 	if (new_tab == NULL)
 	{
 		free(path);

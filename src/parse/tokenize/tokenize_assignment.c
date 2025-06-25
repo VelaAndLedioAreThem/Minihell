@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenize_assignment.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 00:19:26 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:05:08 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/23 17:59:09 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ static int	create_assignment(t_token **token, char *input, int start, int end)
 		return (-1);
 	curr->expandable = 1;
 	append_node(token, curr);
+	free(assignment);
 	return (1);
 }
 

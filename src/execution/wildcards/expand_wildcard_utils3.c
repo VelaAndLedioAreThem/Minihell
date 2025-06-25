@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_wildcard_utils3.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/06 18:48:32 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/25 13:08:21 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ void	process_all_arguments(char **args, char ***new_args, int *new_count)
 
 char	**finalize_args_array(char **args, int count)
 {
-	args = realloc(args, (count + 1) * sizeof(char *));
+	args = ft_realloc(args,
+			(count + 1) * sizeof(char *), (count + 2) * sizeof(char *));
 	args[count] = NULL;
 	return (args);
 }

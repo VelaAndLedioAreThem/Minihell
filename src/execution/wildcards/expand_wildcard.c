@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_wildcard.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 19:36:52 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 13:40:23 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/25 13:08:33 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@ char	**expand_wildcard(char *pattern)
 
 void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
 {
-	*new_args = realloc(*new_args, (*new_count + 1) * sizeof(char *));
+	*new_args = ft_realloc(*new_args,
+			(*new_count + 1) * sizeof(char *),
+			(*new_count + 2) * sizeof(char *));
 	(*new_args)[*new_count] = ft_strdup(arg);
 	(*new_count)++;
 }
