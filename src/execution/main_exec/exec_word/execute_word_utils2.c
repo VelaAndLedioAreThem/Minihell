@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_word_utils2.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 15:12:43 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/25 16:46:21 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ int	parent_process(pid_t pid, t_ast *data)
 {
 	int	status;
 
-	g_child_pid = pid;
+	g_ctx->child_pid = pid;
 	waitpid(pid, &status, 0);
-	g_child_pid = 0;
+	g_ctx->child_pid = 0;
 	if (WIFEXITED(status))
 		data->exit_status = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))

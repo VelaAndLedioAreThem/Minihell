@@ -276,7 +276,16 @@ typedef struct s_quote_state
 	char		quote_char;
 }	t_quote_state;
 
-extern pid_t	g_child_pid;
+typedef struct s_ctx
+{
+	pid_t		child_pid;
+	int			last_exit_status;
+	int			argc;
+	char		**argv;
+}	t_ctx;
+
+extern t_ctx	*g_ctx;
+void		redisplay_prompt(void);
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
@@ -295,8 +304,8 @@ int			handle_line(int fd, char *line, char *delim);
 int			run_heredoc_loop(int fd, char *delim);
 int			fork_heredoc(int fd, char *delim);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
-void		update_last_exit_status(int status);
-int			get_last_exit_status(void);
+void		update_last_exit_status(t_ctx *ctx, int status);
+int			get_last_exit_status(t_ctx *ctx);
 char		*join_path(char *dir_part, char *name);
 char		**add_match(char **matches, int *count, char *path);
 int			match_pattern(const char *pat, const char *str);
@@ -549,12 +558,12 @@ void		cleanup_minishell(t_env *env_list, char *input, t_ast *ast_root,
 				t_token *token);
 int			ft_isspace(int num);
 void		clear_data(t_env **data, char **envp);
-void		handle_signal(void);
+void		handle_signal(t_ctx *ctx);
 void		free_2darray(char **array);
 int			execute_tree(t_ast *data, t_ast *tree);
 
 // Main functions
 char		*generate_prompt(void);
-void		handle_input(char *input, t_env *env_list, int argc, char **argv);
+void		handle_input(char *input, t_env *env_list, t_ctx *ctx);
 
 #endif

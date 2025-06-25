@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_parsing.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 20:04:17 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/25 16:47:15 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,17 +41,13 @@ static char	*handle_special_var(char *input, int *i, t_args *arg)
 	return (str);
 }
 
-static char	*get_env_name(char *input, int *i, t_args *arg)
+static char	*get_env_name(char *input, int *i)
 {
 	int		start;
 	int		len;
 	char	*name;
-	char	*special;
 
 	start = *i;
-	special = handle_special_var(input, i, arg);
-	if (special)
-		return (special);
 	len = 0;
 	while (input[start + len] && (ft_isalnum(input[start + len]) || input[start
 				+ len] == '_'))
@@ -86,7 +82,10 @@ char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 	char	*processed_value;
 
 	(*i)++;
-	name = get_env_name(input, i, arg);
+	if (input[*i] == '?' || input[*i] == '@' || input[*i] == '*'
+		|| input[*i] == '0')
+		return (handle_special_var(input, i, arg));
+	name = get_env_name(input, i);
 	if (!name)
 		return (ft_strdup(""));
 	if (!ft_strcmp(name, "SHLVL"))

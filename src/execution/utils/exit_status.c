@@ -6,20 +6,21 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 17:29:34 by vela              #+#    #+#             */
-/*   Updated: 2025/06/25 12:35:58 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/25 16:45:27 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static 	int	g_last_exit_status;
-
-void	update_last_exit_status(int status)
+void	update_last_exit_status(t_ctx *ctx, int status)
 {
-	g_last_exit_status = status;
+	if (ctx)
+		ctx->last_exit_status = status;
 }
 
-int	get_last_exit_status(void)
+int	get_last_exit_status(t_ctx *ctx)
 {
-	return (g_last_exit_status);
+	if (!ctx)
+		return (0);
+	return (ctx->last_exit_status);
 }
