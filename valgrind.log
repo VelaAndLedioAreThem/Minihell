@@ -1,68 +1,22 @@
-==3007588== Memcheck, a memory error detector
-==3007588== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==3007588== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==3007588== Command: ./minishell
-==3007588== Parent PID: 3007424
-==3007588== 
-==3007749== 
-==3007749== HEAP SUMMARY:
-==3007749==     in use at exit: 213,717 bytes in 492 blocks
-==3007749==   total heap usage: 1,329 allocs, 837 frees, 247,007 bytes allocated
-==3007749== 
-==3007749== LEAK SUMMARY:
-==3007749==    definitely lost: 0 bytes in 0 blocks
-==3007749==    indirectly lost: 0 bytes in 0 blocks
-==3007749==      possibly lost: 0 bytes in 0 blocks
-==3007749==    still reachable: 213,717 bytes in 492 blocks
-==3007749==         suppressed: 0 bytes in 0 blocks
-==3007749== Reachable blocks (those to which a pointer was found) are not shown.
-==3007749== To see them, rerun with: --leak-check=full --show-leak-kinds=all
-==3007749== 
-==3007749== For lists of detected and suppressed errors, rerun with: -s
-==3007749== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==3007856== 
-==3007856== Process terminating with default action of signal 2 (SIGINT)
-==3007856==    at 0x490B75B: kill (syscall-template.S:120)
-==3007856==    by 0x48A8F39: _rl_signal_handler (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.1)
-==3007856==    by 0x48A9BEC: rl_getc (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.1)
-==3007856==    by 0x48A9460: rl_read_key (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.1)
-==3007856==    by 0x488DC86: readline_internal_char (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.1)
-==3007856==    by 0x4896D14: readline (in /usr/lib/x86_64-linux-gnu/libreadline.so.8.1)
-==3007856==    by 0x40D029: run_heredoc_loop (redirection_utils.c:42)
-==3007856==    by 0x40D0BC: fork_heredoc (redirection_utils.c:63)
-==3007856==    by 0x40A192: create_heredoc_file (execute_word.c:42)
-==3007856==    by 0x40CCEC: handle_heredocs (redirection_utils_3.c:32)
-==3007856==    by 0x40CC70: setup_fds (redirection_utils_3.c:109)
-==3007856==    by 0x40A334: execute_word (execute_word.c:68)
-==3007856== 
-==3007856== HEAP SUMMARY:
-==3007856==     in use at exit: 219,998 bytes in 525 blocks
-==3007856==   total heap usage: 1,911 allocs, 1,386 frees, 258,681 bytes allocated
-==3007856== 
-==3007856== LEAK SUMMARY:
-==3007856==    definitely lost: 0 bytes in 0 blocks
-==3007856==    indirectly lost: 0 bytes in 0 blocks
-==3007856==      possibly lost: 0 bytes in 0 blocks
-==3007856==    still reachable: 219,998 bytes in 525 blocks
-==3007856==         suppressed: 0 bytes in 0 blocks
-==3007856== Reachable blocks (those to which a pointer was found) are not shown.
-==3007856== To see them, rerun with: --leak-check=full --show-leak-kinds=all
-==3007856== 
-==3007856== For lists of detected and suppressed errors, rerun with: -s
-==3007856== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==3007588== 
-==3007588== HEAP SUMMARY:
-==3007588==     in use at exit: 208,749 bytes in 240 blocks
-==3007588==   total heap usage: 2,222 allocs, 1,982 frees, 265,250 bytes allocated
-==3007588== 
-==3007588== LEAK SUMMARY:
-==3007588==    definitely lost: 0 bytes in 0 blocks
-==3007588==    indirectly lost: 0 bytes in 0 blocks
-==3007588==      possibly lost: 0 bytes in 0 blocks
-==3007588==    still reachable: 208,749 bytes in 240 blocks
-==3007588==         suppressed: 0 bytes in 0 blocks
-==3007588== Reachable blocks (those to which a pointer was found) are not shown.
-==3007588== To see them, rerun with: --leak-check=full --show-leak-kinds=all
-==3007588== 
-==3007588== For lists of detected and suppressed errors, rerun with: -s
-==3007588== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==3018711== Memcheck, a memory error detector
+==3018711== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3018711== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==3018711== Command: ./minishell
+==3018711== Parent PID: 3018517
+==3018711== 
+==3018711== 
+==3018711== HEAP SUMMARY:
+==3018711==     in use at exit: 204,265 bytes in 221 blocks
+==3018711==   total heap usage: 688 allocs, 467 frees, 230,278 bytes allocated
+==3018711== 
+==3018711== LEAK SUMMARY:
+==3018711==    definitely lost: 0 bytes in 0 blocks
+==3018711==    indirectly lost: 0 bytes in 0 blocks
+==3018711==      possibly lost: 0 bytes in 0 blocks
+==3018711==    still reachable: 204,265 bytes in 221 blocks
+==3018711==         suppressed: 0 bytes in 0 blocks
+==3018711== Reachable blocks (those to which a pointer was found) are not shown.
+==3018711== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3018711== 
+==3018711== For lists of detected and suppressed errors, rerun with: -s
+==3018711== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
