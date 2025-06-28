@@ -37,14 +37,27 @@ int	main(int argc, char **argv, char **envp)
 	env_list = init_env_list(envp);
 	handle_signal(&g_main_ctx);
 	incr_shell_lvl(env_list);
+
 	while (1)
 	{
-		prompt = generate_prompt();
-		input = readline(prompt);
-		free(prompt);
+		if (isatty(fileno(stdin)))
+		{
+			prompt = generate_prompt(); // assuming you have this
+			input = readline(prompt);
+			free(prompt);
+		}
+		else
+		{
+			char *line = get_next_line(fileno(stdin));
+			if (!line)
+				break;
+			input = ft_strtrim(line, "\n");
+			free(line);
+		}
+
 		if (!input)
 		{
-			printf("exit\n");
+			// no more input: exit gracefully without printing "exit"
 			cleanup_minishell(env_list, NULL, NULL, NULL);
 			signal(SIGQUIT, SIG_IGN);
 			exit(get_last_exit_status(&g_main_ctx));
@@ -54,3 +67,4 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (cleanup_minishell(env_list, NULL, NULL, NULL), 0);
 }
+

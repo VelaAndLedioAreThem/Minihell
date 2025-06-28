@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 16:45:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/28 13:22:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/include/libft.h"
+# include "../libft/gnl/include/get_next_line.h"
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
 # define HEREDOC_TEMPLATE "/tmp/minishell_heredocXXXXXX"
