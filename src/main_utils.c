@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 19:19:12 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 20:05:17 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,89 @@
 #define COL_BLUE "\033[0;34m"
 #define COL_GREEN "\033[0;32m"
 #define COL_RESET "\033[0m"
+
+static int	is_valid_arith_expr(const char *expr)
+{
+	int	i;
+	int	has_digit;
+
+	if (!expr)
+		return (0);
+	i = 0;
+	has_digit = 0;
+	while (expr[i])
+	{
+		if (ft_isdigit(expr[i]))
+			has_digit = 1;
+		else if (ft_isspace(expr[i]) || ft_strchr("+-*/%()&|^~<>", expr[i]))
+			;
+		else
+			return (0);
+		i++;
+	}
+	return (has_digit);
+}
+
+static int	eval_double_parenthesis(const char *expr)
+{
+	char	cmd[1024];
+	int		status;
+
+	ft_bzero(cmd, sizeof(cmd));
+	ft_strlcpy(cmd, "bash -c '(( ", sizeof(cmd));
+	ft_strlcat(cmd, expr, sizeof(cmd));
+	ft_strlcat(cmd, " ))' >/dev/null 2>&1", sizeof(cmd));
+	status = system(cmd);
+	if (status == -1)
+		return (1);
+	return (WEXITSTATUS(status));
+}
+
+static char	*preprocess_double_parenthesis(char *input)
+{
+	char		*start;
+	char		*end;
+	char		*expr;
+	int			exit_st;
+	const char	*replacement;
+	char		*result;
+	size_t		prefix_len;
+	size_t		new_len;
+
+	if (!input)
+		return (NULL);
+	start = ft_strnstr(input, "((", ft_strlen(input));
+	if (!start)
+		return (ft_strdup(input));
+	if (start != input && *(start - 1) != '(' && !ft_isspace(*(start - 1)))
+		return (ft_strdup(input));
+	while (start[0] == '(' && start[1] == '(' && start[2] == '(')
+		start++;
+	end = ft_strnstr(start + 2, "))", ft_strlen(start + 2));
+	if (!end)
+		return (ft_strdup(input));
+	expr = ft_substr(start + 2, 0, end - (start + 2));
+	if (!expr)
+		return (NULL);
+	if (!is_valid_arith_expr(expr))
+	{
+		ft_putendl_fd("minishell: syntax error in arithmetic expression", 2);
+		update_last_exit_status(g_ctx, 2);
+		return (free(expr), NULL);
+	}
+	exit_st = eval_double_parenthesis(expr);
+	free(expr);
+	replacement = (exit_st == 0) ? "true" : "false";
+	prefix_len = start - input;
+	new_len = prefix_len + ft_strlen(replacement) + ft_strlen(end + 2) + 1;
+	result = malloc(new_len);
+	if (!result)
+		return (NULL);
+	ft_strlcpy(result, input, prefix_len + 1);
+	ft_strlcat(result, replacement, new_len);
+	ft_strlcat(result, end + 2, new_len);
+	return (result);
+}
 
 static t_token	*tokenize_and_mark_expanded(char *input, char *expandable)
 {
@@ -91,14 +174,19 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
 	t_token	*tokens;
 	t_args	arg;
 	char	*expandable;
+	char	*processed;
 
 	arg.exit_status = gles(ctx);
 	if (*input)
 	{
 		add_history(input);
+		processed = preprocess_double_parenthesis(input);
+		if (!processed)
+			return ;
 		arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
 			.exit_status = gles(ctx)};
-		expandable = expand_and_tokenize(input, env_list, &arg, &tokens);
+		expandable = expand_and_tokenize(processed, env_list, &arg, &tokens);
+		free(processed);
 		if (!expandable)
 			return ;
 		if (!validation(tokens))

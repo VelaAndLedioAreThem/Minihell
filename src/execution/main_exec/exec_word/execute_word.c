@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_word.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/25 16:46:29 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 22:33:30 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,43 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	return (0);
 }
 
-int	create_heredoc_file(t_ast *data, t_redir_ls *redir)
+int	finalize_heredoc(t_ast *data, t_redir_ls *redir,
+		char *tmp_name, int status)
 {
-	char	tmp[sizeof(HEREDOC_TEMPLATE)];
-	int		fd;
-	int		status;
-
-	fd = open_unique_tmp(ft_strcpy(tmp, HEREDOC_TEMPLATE));
-	if (fd < 0)
-		return (perror("open_unique_tmp"), 0);
-	status = fork_heredoc(fd, redir->filename);
-	close(fd);
 	if (status != 0)
 	{
-		unlink(tmp);
+		unlink(tmp_name);
 		data->exit_status = status;
 		return (0);
 	}
-	if (add_heredoc(data, ft_strdup(tmp)))
+	if (add_heredoc(data, ft_strdup(tmp_name)))
 	{
-		unlink(tmp);
+		unlink(tmp_name);
 		data->exit_status = 1;
 		return (0);
 	}
 	free(redir->filename);
-	redir->filename = ft_strdup(tmp);
+	redir->filename = ft_strdup(tmp_name);
 	redir->type = TOKEN_REDIRECT_IN;
 	return (1);
+}
+
+int	create_heredoc_file(t_ast *data, t_redir_ls *redir)
+{
+	char		tmp[sizeof(HEREDOC_TEMPLATE)];
+	int			fd;
+	int			status;
+	t_hdinfo	info;
+
+	fd = open_unique_tmp(ft_strcpy(tmp, HEREDOC_TEMPLATE));
+	if (fd < 0)
+		return (perror("open_unique_tmp"), 0);
+	info.delim = redir->filename;
+	info.quoted = redir->quoted;
+	info.data = data;
+	status = fork_heredoc(fd, &info);
+	close(fd);
+	return (finalize_heredoc(data, redir, tmp, status));
 }
 
 int	execute_word(t_ast *data, t_ast *tree)

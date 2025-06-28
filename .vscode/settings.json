@@ -3,7 +3,10 @@
     "minishell.h": "c",
     "libft.h": "c",
     "types.h": "c",
-    "ioctl.h": "c"
+    "ioctl.h": "c",
+    "cstdlib": "c",
+    "stdlib.h": "c",
+    "dirent.h": "c"
   },
   "[c]": {
     "editor.defaultFormatter": "keyhr.42-c-format"

@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parse_redir.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
 /*   Updated: 2025/06/22 17:11:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
@@ -13,7 +16,7 @@
 #include "../../include/minishell.h"
 
 static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
-	t_token **filename_token)
+		t_token **filename_token)
 {
 	if (!tokens || !*tokens)
 		return (0);
@@ -22,13 +25,15 @@ static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
 		*tokens = (*redir_token)->next;
 	else
 	{
-		printf("bash: syntax error near unexpected token `newline'\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
 		return (0);
 	}
 	skip_tree_whitespaces(tokens);
 	if (!*tokens || (*tokens)->type != TOKEN_WORD)
 	{
-		printf("bash: syntax error near unexpected token\n");
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
 		return (0);
 	}
 	*filename_token = *tokens;
@@ -44,7 +49,7 @@ static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
 		return (0);
 	if (!validate_redirection_tokens(tokens, &redir_token, &filename_token))
 		return (0);
-	if (!add_redirection(cmd, redir_token->type, filename_token->value))
+	if (!add_redirection(cmd, redir_token->type, filename_token->value, (filename_token->quotes.in_single_quotes || filename_token->quotes.in_double_quotes)))
 		return (0);
 	*tokens = (*tokens)->next;
 	return (1);
@@ -91,7 +96,7 @@ int	add_command_arg(t_ast *cmd_node, char *arg)
 
 int	set_command_name(t_ast *cmd_node, char *name)
 {
-	int		i;
+	int	i;
 
 	if (!cmd_node || !cmd_node->cmd || !name)
 		return (0);

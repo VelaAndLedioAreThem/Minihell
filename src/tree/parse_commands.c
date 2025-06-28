@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/28 18:51:19 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 18:51:19 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/28 15:48:28 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 15:48:28 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_ast	*init_command_node(t_token *start, int word_count)
 	return (node);
 }
 
-t_redir_ls	*create_redir_node(int type, char *filename)
+t_redir_ls	*create_redir_node(int type, char *filename, int quoted)
 {
 	t_redir_ls	*redir;
 
@@ -44,6 +44,7 @@ t_redir_ls	*create_redir_node(int type, char *filename)
 		return (NULL);
 	redir->type = type;
 	redir->filename = ft_strdup(filename);
+	redir->quoted = quoted;
 	if (!redir->filename)
 	{
 		free(redir);
@@ -67,7 +68,9 @@ static char	*expand_redir_filename(const char *pattern)
 		return (ft_strdup(pattern));
 	if (matches[1])
 	{
-		printf("bash: %s: ambiguous redirect\n", pattern);
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd((char *)pattern, STDERR_FILENO);
+		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
 		free_matches_array(matches);
 		return (NULL);
 	}
@@ -76,7 +79,7 @@ static char	*expand_redir_filename(const char *pattern)
 	return (result);
 }
 
-int	add_redirection(t_commands *cmd, int type, char *filename)
+int	add_redirection(t_commands *cmd, int type, char *filename, int quoted)
 {
 	t_redir_ls	*new_redir;
 	t_redir_ls	*curr;
@@ -87,7 +90,7 @@ int	add_redirection(t_commands *cmd, int type, char *filename)
 	expanded = expand_redir_filename(filename);
 	if (!expanded)
 		return (0);
-	new_redir = create_redir_node(type, expanded);
+	new_redir = create_redir_node(type, expanded, quoted);
 	free(expanded);
 	if (!new_redir)
 		return (0);
