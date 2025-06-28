@@ -1,69 +1,113 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   env_export.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/28 17:33:31 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:33:31 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "minishell.h"
+#include "libft.h"
 
-static void	update_env_variable(t_env *env, char *name, char *eq)
+static int	handle_existing(t_ast *data, char *key, char *val)
 {
-	if (eq)
-	{
-		free(env->value);
-		env->value = ft_strdup(eq + 1);
-	}
-	free(name);
-}
-
-static int	handle_export_error(char *arg)
-{
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
-	return (1);
-}
-
-static int	process_export_arg(t_ast *data, char *arg)
-{
-	char	*eq;
-	char	*name;
-	t_env	*env;
-
-	eq = ft_strchr(arg, '=');
-	if (eq)
-		name = ft_substr(arg, 0, eq - arg);
-	else
-		name = ft_strdup(arg);
-	if (!name || !is_valid_identifier(name))
-		return (free(name), handle_export_error(arg));
-	env = get_env_node(data->env_list, name);
-	if (env)
-		update_env_variable(env, name, eq);
-	else if (create_new_env(data, name, eq))
-		return (1);
+	if (val && update_env_value(data->env_list, key, val))
+		return (perror("malloc"), 1);
 	return (0);
 }
 
-int	execute_export(t_ast *data, t_ast *tree, int fd_out)
+static int	add_new(t_ast *data, char *key, char *val)
 {
-	int		i;
-	int		status;
+	t_env	*new;
 
-	(void)fd_out;
-	i = 1;
-	status = 0;
-	while (tree->cmd->args[i])
+	new = NULL;
+	if (val == NULL)
+		new = new_node(key, NULL);
+	else
+		new = new_node(key, val);
+	if (new == NULL)
+		return (perror("malloc"), 1);
+	if (add_env_node(&data->env_list, new) != 0)
 	{
-		if (process_export_arg(data, tree->cmd->args[i]))
-			status = 1;
-		i++;
+		free(new->key);
+		free(new->value);
+		free(new);
+		return (perror("malloc"), 1);
 	}
-	return (status);
+	return (0);
+}
+
+int	export_one(t_ast *data, const char *arg)
+{
+	char	*key;
+	char	*val;
+	int		s;
+
+	key = NULL;
+	val = NULL;
+	s = split_key_value(arg, &key, &val);
+	if (s == 1
+		|| (s == -1 && !is_valid_identifier(arg))
+		|| (s != -1 && !is_valid_identifier(key)))
+		return (ft_putendl_fd("export: not a valid identifier", 2),
+			free(key), free(val), 1);
+	if (s == -1)
+	{
+		key = ft_strdup(arg);
+		if (!key)
+			return (perror("malloc"), 1);
+	}
+	if (find_env_node(data->env_list, key))
+		return (handle_existing(data, key, val), free(key), free(val), 0);
+	add_new(data, key, val);
+	return (free(key), free(val), 0);
+}
+
+static void	print_export_list(t_env *lst, int fd)
+{
+	while (lst)
+	{
+		ft_putstr_fd("declare -x ", fd);
+		ft_putstr_fd(lst->key, fd);
+		if (lst->value)
+		{
+			ft_putstr_fd("=\"", fd);
+			ft_putstr_fd(lst->value, fd);
+			ft_putstr_fd("\"", fd);
+		}
+		ft_putchar_fd('\n', fd);
+		lst = lst->next;
+	}
+}
+
+int	builtin_export(t_ast *data, t_ast *tree, int fd)
+{
+	char	**args;
+	int		i;
+	int		ret;
+
+	args = tree->cmd->args;
+	if (!args[1])
+	{
+		print_export_list(data->env_list, fd);
+		data->exit_status = 0;
+		return (1);
+	}
+	i = 1;
+	ret = 1;
+	while (args[i])
+	{
+		if (export_one(data, args[i]))
+			ret = 0;
+		++i;
+	}
+	if (ret == 1)
+		data->exit_status = 0;
+	else
+		data->exit_status = 1;
+	return (1);
 }

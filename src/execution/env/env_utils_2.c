@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils copy.c                                   :+:      :+:    :+:   */
+/*   env_utils_2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/17 12:34:56 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 21:18:25 by marvin           ###   ########.fr       */
+/*   Created: 2025/06/28 17:33:40 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:33:40 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-#include <stdlib.h>
-#include <unistd.h>
 
 void	incr_shell_lvl(t_env *data)
 {
@@ -36,7 +34,7 @@ void	incr_shell_lvl(t_env *data)
 		}
 		tmp = tmp->next;
 	}
-	create_new_shlvl(data, shlvl);
+	create_new_shlvl(&data, shlvl);
 }
 
 void	set_env_var(t_ast *data, char *var_name, const char *var_value)
@@ -83,11 +81,7 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 	t_env	*path_env;
 
 	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
+		return (ft_strdup(cmd));
 	path_env = find_envir_variable(data, "PATH", 4);
 	if (!path_env || !path_env->value)
 		return (NULL);
@@ -99,26 +93,26 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths = NULL;
+	char	**paths;
 	char	*full_path;
 	char	*result;
 	int		i;
 
+	paths = NULL;
+	i = 0;
 	result = checker(data, cmd, &paths);
-	if (result || !paths)
+	if (result != NULL || paths == NULL)
 		return (result);
-	i = -1;
-	while (paths[++i])
+	while (paths[i] != NULL)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);
-		if (!full_path)
-			continue ;
-		if (access(full_path, X_OK) == 0)
+		if (full_path != NULL && access(full_path, X_OK) == 0)
 		{
 			free_2darray(paths);
 			return (full_path);
 		}
 		free(full_path);
+		i++;
 	}
 	free_2darray(paths);
 	return (NULL);

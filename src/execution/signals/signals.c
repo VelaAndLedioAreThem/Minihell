@@ -1,80 +1,52 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins_utils.c                                   :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/03/25 13:17:20 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/28 18:02:16 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 18:02:17 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
 
-void	handle_sigint(int signo)
+static void	sigint_handler(int sig)
 {
-	int	i;
-
-	if (signo == SIGINT)
+	(void)sig;
+	if (g_ctx->child_pid == 0)
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			i = write(1, "\n", 1);
-			(void) i;
-			if (g_child_pid == 42)
-				g_child_pid = 44;
-			if (g_child_pid != 0 && g_child_pid != 44)
-			{
-				kill(g_child_pid, SIGINT);
-				g_child_pid++;
-			}
-			else
-			{
-				rl_on_new_line();
-				rl_redisplay();
-			}
-		}
-		else
-			exit(EXIT_SUCCESS);
-	}
-}
-
-void	handle_sigtstp_sigquit(int signo)
-{
-	if (signo == SIGTSTP || signo == SIGQUIT)
-	{
-		if (isatty(STDIN_FILENO))
-		{
-			if (g_child_pid == 0)
-				rl_redisplay();
-			else
-			{
-				kill(g_child_pid, signo);
-				g_child_pid += 2;
-			}
-		}
-	}
-}
-
-void	handle_c(int signo)
-{
-	handle_sigint(signo);
-	handle_sigtstp_sigquit(signo);
-}
-
-int	handle_d(t_ast *data, char *line)
-{
-	(void)data;
-	if (line == NULL)
-	{
+		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
+		rl_replace_line("", 0);
 		rl_redisplay();
 	}
-	if (ft_strlen(line) == 0)
+	else
 	{
-		ft_strdel(&line);
-		return (1);
+		ft_putstr_fd("\n", STDOUT_FILENO);
+		kill(g_ctx->child_pid, SIGINT);
 	}
-	return (0);
+}
+
+void	handle_signal(t_ctx *ctx)
+{
+	struct sigaction	sa_int;
+	struct sigaction	sa_quit;
+
+	g_ctx = ctx;
+	sa_int.sa_handler = sigint_handler;
+	sigemptyset(&sa_int.sa_mask);
+	sa_int.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa_int, NULL);
+	sa_quit.sa_handler = SIG_IGN;
+	sigemptyset(&sa_quit.sa_mask);
+	sa_quit.sa_flags = 0;
+	sigaction(SIGQUIT, &sa_quit, NULL);
+}
+
+void	redisplay_prompt(void)
+{
+	rl_on_new_line();
+	rl_redisplay();
 }

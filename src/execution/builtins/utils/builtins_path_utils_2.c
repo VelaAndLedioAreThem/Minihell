@@ -1,22 +1,50 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   builtins_path_utils_2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/25 12:58:36 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 14:26:36 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	handle_pwd_errors(char *old_pwd, int error_code)
+t_env	*get_env_node(t_env *env_list, const char *name)
 {
-	free(old_pwd);
-	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
-	return (error_code);
+	t_env	*current;
+
+	current = env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, name) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
+}
+
+void	update_env_var(t_ast *data, const char *key, const char *value)
+{
+	t_env	*env;
+	t_env	*new_env;
+
+	env = get_env_node(data->env_list, key);
+	if (env)
+	{
+		free(env->value);
+		env->value = ft_strdup(value);
+	}
+	else
+	{
+		new_env = malloc(sizeof(t_env));
+		new_env->key = ft_strdup(key);
+		new_env->value = ft_strdup(value);
+		new_env->next = data->env_list;
+		data->env_list = new_env;
+	}
 }
 
 int	update_directory(t_ast *data, char *path, char *old_pwd)
@@ -25,7 +53,9 @@ int	update_directory(t_ast *data, char *path, char *old_pwd)
 
 	if (chdir(path) != 0)
 	{
-		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+		ft_putstr_fd("bash: cd: ", STDERR_FILENO);
+		ft_putstr_fd(path, STDERR_FILENO);
+		ft_putstr_fd(": ", STDERR_FILENO);
 		ft_putendl_fd(strerror(errno), STDERR_FILENO);
 		free(old_pwd);
 		return (1);
@@ -53,7 +83,7 @@ int	execute_cd(t_ast *data, char *path)
 		home = get_env_node(data->env_list, "HOME");
 		if (!home || !home->value)
 		{
-			ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
+			ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
 			free(old_pwd);
 			return (1);
 		}
@@ -67,7 +97,7 @@ int	execute_home(t_ast *data, char *path, char *oldpwd)
 	path = get_env_value(data->env_list, "HOME");
 	if (!path)
 	{
-		ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
+		ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
 		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}

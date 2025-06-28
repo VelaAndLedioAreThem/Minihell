@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:54:56 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/08 14:45:33 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/28 12:05:06 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,6 @@ void	free_data(t_ast *data)
 		free_heredoc_files(data);
 	if (data)
 		free_ast(data);
-}
-
-void	free_temp_data(t_ast *data)
-{
-	if (!data)
-		return ;
-	if (data->token)
-		free_token(data->token);
-	free(data);
 }
 
 void	ft_strdel(char **as)

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 17:12:46 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 15:23:31 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/14 23:51:11 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool	ft_is_redirection(char c)
 
 bool	ft_is_redirection_op(char curr, char next)
 {
-	return ((curr == '>' && curr == '>') || (curr == '<' && next == '<'));
+	return ((curr == '>' && next == '>') || (curr == '<' && next == '<'));
 }
 
 bool	check_after_redirection(t_token **curr)
@@ -34,18 +34,22 @@ bool	check_after_redirection(t_token **curr)
 	return (true);
 }
 
-bool	validate_next_redirect(t_token **next, t_token **curr)
+bool	validate_next_redirect(t_token **next)
 {
 	while (*next && (*next)->type == TOKEN_WHITESPACE)
 		*next = (*next)->next;
-	if (!*next || ((*next)->type != TOKEN_WORD
-			&& (*next)->type != TOKEN_PROCESSED))
-	{
-		if (!*next)
-			report_error(ERR_UNEXPECTED_TOKEN, "newline");
-		else
-			report_error(ERR_UNEXPECTED_TOKEN, (*curr)->value);
-		return (false);
-	}
-	return (true);
+	if (!*next)
+		return (report_error(ERR_UNEXPECTED_TOKEN, "newline"), false);
+	if ((*next)->type == TOKEN_WORD)
+		return (true);
+	if ((*next)->type == TOKEN_REDIRECT_IN || (*next)->type == TOKEN_APPEND
+		|| (*next)->type == TOKEN_REDIRECT_OUT
+		|| (*next)->type == TOKEN_HEREDOC)
+		return (true);
+	if ((*next)->type == TOKEN_PIPE)
+		return (true);
+	if ((*next)->type == TOKEN_PAREN_OPEN || (*next)->type == TOKEN_PAREN_CLOSE)
+		return (true);
+	report_error(ERR_UNEXPECTED_TOKEN, (*next)->value);
+	return (false);
 }

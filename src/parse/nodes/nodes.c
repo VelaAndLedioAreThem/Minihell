@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 19:50:51 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/04/13 00:09:01 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:27:11 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,10 @@ t_token	*create_node(char *str, t_token_type type)
 	}
 	node->type = type;
 	node->expandable = 0;
+	node->quotes.in_double_quotes = false;
+	node->quotes.in_single_quotes = false;
+	node->from_expansion = 0;
+	node->top = NULL;
 	node->next = NULL;
 	return (node);
 }

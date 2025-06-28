@@ -3,103 +3,90 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/23 13:54:17 by vela              #+#    #+#             */
-/*   Updated: 2025/05/23 13:54:17 by vela             ###   ########.fr       */
+/*   Created: 2025/06/28 17:35:33 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:35:36 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <fcntl.h>
-#include <unistd.h>
-#include <readline/readline.h>
 
-/* Return the filename that follows a redirection, or NULL */
-static char	*redir_path(t_ast *n)
+int	handle_line(int fd, char *line, char *delim)
+{
+	if (!line)
+	{
+		ft_putstr_fd("bash: warning: here-document delimited by ",
+			STDERR_FILENO);
+		ft_putstr_fd("end-of-file (wanted `", STDERR_FILENO);
+		ft_putstr_fd(delim, STDERR_FILENO);
+		ft_putendl_fd("')", STDERR_FILENO);
+		return (2);
+	}
+	if (ft_strcmp(line, delim) == 0)
+		return (1);
+	ft_putendl_fd(line, fd);
+	free(line);
+	return (0);
+}
+
+int	run_heredoc_loop(int fd, char *delim)
+{
+	char	*line;
+	int		status;
+
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	while (1)
+	{
+		line = readline("> ");
+		status = handle_line(fd, line, delim);
+		if (status == 1)
+		{
+			free(line);
+			break ;
+		}
+		else if (status == 2)
+			return (2);
+	}
+	return (0);
+}
+
+int	fork_heredoc(int fd, char *delim)
+{
+	pid_t	pid;
+	int		status;
+	int		ret;
+
+	pid = fork();
+	if (pid == 0)
+		exit(run_heredoc_loop(fd, delim));
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+	{
+		ret = write(STDOUT_FILENO, "\n", 1);
+		(void)ret;
+		return (130);
+	}
+	else if (WEXITSTATUS(status) != 0)
+		return (1);
+	return (0);
+}
+
+int	setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp)
+{
+	free(node->right->cmd->args[0]);
+	node->right->cmd->args[0] = ft_strdup(tmp);
+	if (!node->right->cmd->args[0] || add_heredoc(data, ft_strdup(tmp)))
+		return (1);
+	return (0);
+}
+
+char	*redir_path(t_ast *n)
 {
 	if (!n)
 		return (NULL);
 	if (n->cmd && n->cmd->args && n->cmd->args[0])
 		return (n->cmd->args[0]);
 	return (NULL);
-}
-
-int	setup_input_fd(t_ast *data, t_ast *node)
-{
-	int		save;
-	int		fd;
-	char	*path;
-
-	path = redir_path(node->right);
-	if (!path)
-		return (data->exit_status = 1);
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-		return (perror(path), data->exit_status = 1);
-	save = dup(STDIN_FILENO);
-	if (dup2(fd, STDIN_FILENO) < 0)
-		return (close(fd), data->exit_status = 1);
-	close(fd);
-	data->exit_status = execute_tree(data, node->left);
-	dup2(save, STDIN_FILENO);
-	close(save);
-	return (data->exit_status);
-}
-
-int	setup_output_fd(t_ast *data, t_ast *node)
-{
-	int		save;
-	int		fd;
-	int		flags;
-	char	*path;
-
-	path = redir_path(node->right);
-	if (!path)
-		return (data->exit_status = 1);
-	flags = O_WRONLY | O_CREAT;
-	if (node->type == AST_REDIR_APPEND)
-		flags |= O_APPEND;
-	else
-		flags |= O_TRUNC;
-	fd = open(path, flags, 0644);
-	if (fd < 0)
-		return (perror(path), data->exit_status = 1);
-	save = dup(STDOUT_FILENO);
-	if (dup2(fd, STDOUT_FILENO) < 0)
-		return (close(fd), data->exit_status = 1);
-	close(fd);
-	data->exit_status = execute_tree(data, node->left);
-	dup2(save, STDOUT_FILENO);
-	close(save);
-	return (data->exit_status);
-}
-
-int	create_heredoc_temp_file(t_ast *data, t_ast *node)
-{
-	char	tmp[sizeof("/tmp/minishell_heredocXXXXXX")];
-	char	*line;
-	int		fd;
-
-	fd = mkstemp(strcpy(tmp, "/tmp/minishell_heredocXXXXXX"));
-	if (fd < 0)
-		return (perror("mkstemp"), data->exit_status = 1);
-	while (1)
-	{
-		line = readline("> ");
-		if (!line || !ft_strcmp(line, node->right->cmd->args[0]))
-			break ;
-		ft_putendl_fd(line, fd);
-		free(line);
-	}
-	free(line);
-	close(fd);
-	if (node->right->cmd && node->right->cmd->args)
-	{
-		free(node->right->cmd->args[0]);
-		node->right->cmd->args[0] = ft_strdup(tmp);
-		if (!node->right->cmd->args[0] || add_heredoc(data, ft_strdup(tmp)))
-			return (data->exit_status = 1);
-	}
-	return (0);
 }

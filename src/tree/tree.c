@@ -6,24 +6,20 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:32:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 20:06:32 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/21 15:04:51 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-t_ast	*parse_command(t_token **tokens)
+void	*skip_node(t_token **tokens, t_token *curr)
 {
-	t_token		*current;
-
 	if (!tokens || !*tokens)
 		return (NULL);
-	current = *tokens;
-	skip_tree_whitespaces(&current);
-	*tokens = current;
-	if (current->type == TOKEN_PAREN_OPEN)
-		return (parse_subshell(tokens));
-	return (parse_simple_commands(tokens));
+	curr = *tokens;
+	skip_tree_whitespaces(&curr);
+	*tokens = curr;
+	return (curr);
 }
 
 t_ast	*parse_pipeline(t_token **tokens)
@@ -74,12 +70,12 @@ t_ast	*init_logic_node(t_ast *left, t_token **tokens)
 	if (curr->next)
 		curr = curr->next;
 	else
-		return (NULL);
+		return (free_ast(node), NULL);
 	skip_tree_whitespaces(&curr);
 	*tokens = curr;
 	node->right = parse_pipeline(tokens);
 	if (!node->right)
-		return (free_ast(left), NULL);
+		return (free_ast(node), NULL);
 	return (node);
 }
 
