@@ -39,7 +39,7 @@ int	create_heredoc_file(t_ast *data, t_redir_ls *redir)
 	fd = open_unique_tmp(ft_strcpy(tmp, HEREDOC_TEMPLATE));
 	if (fd < 0)
 		return (perror("open_unique_tmp"), 0);
-	status = fork_heredoc(fd, redir->filename);
+	status = fork_heredoc(fd, redir->filename, redir->quoted, data);
 	close(fd);
 	if (status != 0)
 	{

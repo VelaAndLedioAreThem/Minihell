@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	handle_line(int fd, char *line, char *delim)
+int	handle_line(int fd, char *line, char *delim, int quoted, t_ast *data)
 {
 	if (!line)
 	{
@@ -23,14 +23,27 @@ int	handle_line(int fd, char *line, char *delim)
 		ft_putendl_fd("')", STDERR_FILENO);
 		return (2);
 	}
-	if (ft_strcmp(line, delim) == 0)
-		return (1);
-	ft_putendl_fd(line, fd);
-	free(line);
+        if (ft_strcmp(line, delim) == 0)
+                return (1);
+        if (!quoted)
+        {
+                t_args arg = {.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1, .exit_status = gles(g_ctx)};
+                char *expanded = parse_env(line, data->env_list, &arg);
+                if (expanded)
+                {
+                        ft_putendl_fd(expanded, fd);
+                        free(expanded);
+                }
+                else
+                        ft_putendl_fd(line, fd);
+        }
+        else
+                ft_putendl_fd(line, fd);
+        free(line);
 	return (0);
 }
 
-int	run_heredoc_loop(int fd, char *delim)
+int	run_heredoc_loop(int fd, char *delim, int quoted, t_ast *data)
 {
 	char	*line;
 	int		status;
@@ -40,7 +53,7 @@ int	run_heredoc_loop(int fd, char *delim)
 	while (1)
 	{
 		line = readline("> ");
-		status = handle_line(fd, line, delim);
+		status = handle_line(fd, line, delim, quoted, data);
 		if (status == 1)
 		{
 			free(line);
@@ -52,7 +65,7 @@ int	run_heredoc_loop(int fd, char *delim)
 	return (0);
 }
 
-int	fork_heredoc(int fd, char *delim)
+int	fork_heredoc(int fd, char *delim, int quoted, t_ast *data)
 {
 	pid_t	pid;
 	int		status;
@@ -60,7 +73,7 @@ int	fork_heredoc(int fd, char *delim)
 
 	pid = fork();
 	if (pid == 0)
-		exit(run_heredoc_loop(fd, delim));
+		exit(run_heredoc_loop(fd, delim, quoted, data));
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 	{
