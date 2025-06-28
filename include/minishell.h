@@ -276,7 +276,16 @@ typedef struct s_quote_state
 	char		quote_char;
 }	t_quote_state;
 
-extern pid_t	g_child_pid;
+typedef struct s_ctx
+{
+	pid_t		child_pid;
+	int			last_exit_status;
+	int			argc;
+	char		**argv;
+}	t_ctx;
+
+extern t_ctx	*g_ctx;
+void		redisplay_prompt(void);
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
@@ -295,8 +304,8 @@ int			handle_line(int fd, char *line, char *delim);
 int			run_heredoc_loop(int fd, char *delim);
 int			fork_heredoc(int fd, char *delim);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
-void		update_last_exit_status(int status);
-int			get_last_exit_status(void);
+void		update_last_exit_status(t_ctx *ctx, int status);
+int			get_last_exit_status(t_ctx *ctx);
 char		*join_path(char *dir_part, char *name);
 char		**add_match(char **matches, int *count, char *path);
 int			match_pattern(const char *pat, const char *str);
@@ -305,9 +314,6 @@ int			update_env_value(t_env *lst, const char *key, const char *val);
 int			add_env_node(t_env **lst, t_env *new_node);
 int			add_heredoc(t_ast *data, char *path);
 void		free_heredoc_list(t_ast *data);
-int			setup_output_fd(t_ast *data, t_ast *node);
-int			create_heredoc_temp_file(t_ast *data, t_ast *node);
-int			execute_redirections(t_ast *data, t_ast *node);
 void		reset_heredoc_list(t_ast *data);
 void		free_heredoc_list(t_ast *data);
 int			split_key_value(const char *arg, char **key, char **val);
@@ -326,8 +332,6 @@ int			builtin_cd(t_ast *data, t_ast *tree, int fd);
 void		update_env_var(t_ast *data, const char *key, const char *value);
 int			execute_home(t_ast *data, char *path, char *oldpwd);
 void		print_error(char *filename, char *error_msg);
-void		child_process_handler(t_ast *data,
-				t_ast *tree, int fd_inp, int fd_out);
 void		close_pipe(int fd[2]);
 int			setup_pipe(int fd[2]);
 void		execute_command(t_ast *data, t_ast *tree, int fd_in, int fd_out);
@@ -356,13 +360,6 @@ int			handle_pwd_errors(char *old_pwd, int error_code);
 int			update_directory(t_ast *data, char *path, char *old_pwd);
 void		incr_shell_lvl(t_env *data);
 int			validate_assignment_value(char *assignment);
-void		print_export_error(char *arg);
-void		print_unset_error(char *name);
-char		*get_export_name(char *arg, char *eq);
-void		update_existing_env(t_env *env, char *eq, char *name);
-int			create_new_env(t_ast *d, char *n, char *eq);
-int			handle_cd_home(t_ast *data, char **path, char *old_pwd);
-void		handle_cd_error(char *path, char *old_pwd);
 void		free_data(t_ast *data);
 void		ft_strdel(char **as);
 char		*find_executable_path(t_ast *data, char *cmd);
@@ -549,12 +546,12 @@ void		cleanup_minishell(t_env *env_list, char *input, t_ast *ast_root,
 				t_token *token);
 int			ft_isspace(int num);
 void		clear_data(t_env **data, char **envp);
-void		handle_signal(void);
+void		handle_signal(t_ctx *ctx);
 void		free_2darray(char **array);
 int			execute_tree(t_ast *data, t_ast *tree);
 
 // Main functions
 char		*generate_prompt(void);
-void		handle_input(char *input, t_env *env_list, int argc, char **argv);
+void		handle_input(char *input, t_env *env_list, t_ctx *ctx);
 
 #endif

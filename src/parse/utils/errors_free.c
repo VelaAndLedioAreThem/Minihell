@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   errors_free.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/02/14 13:21:04 by ldurmish          #+#    #+#             */
 /*   Updated: 2025/06/22 16:44:55 by ldurmish         ###   ########.fr       */
 /*                                                                            */
@@ -14,7 +17,7 @@
 
 void	free_env_list(t_env *env_list)
 {
-	t_env		*temp;
+	t_env	*temp;
 
 	while (env_list)
 	{
@@ -28,7 +31,7 @@ void	free_env_list(t_env *env_list)
 
 t_token	*free_tokens(t_token *token)
 {
-	t_token		*temp;
+	t_token	*temp;
 
 	while (token)
 	{
@@ -38,6 +41,8 @@ t_token	*free_tokens(t_token *token)
 			free(token->value);
 			token->value = NULL;
 		}
+		if (token->top)
+			free_stack(token);
 		free(token);
 		token = temp;
 	}
@@ -45,7 +50,7 @@ t_token	*free_tokens(t_token *token)
 }
 
 void	cleanup_minishell(t_env *env_list, char *input, t_ast *ast_root,
-	t_token *token)
+		t_token *token)
 {
 	if (env_list)
 		free_env_list(env_list);

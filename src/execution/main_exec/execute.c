@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 15:04:02 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:03:53 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,6 @@ int	execute_group(t_ast *data, t_ast *tree)
 	else
 		data->exit_status = 1;
 	return (data->exit_status);
-}
-
-int	execute_sequence(t_ast *data, t_ast *tree)
-{
-	execute_tree(data, tree->left);
-	return (execute_tree(data, tree->right));
 }
 
 int	execute_tree(t_ast *data, t_ast *tree)

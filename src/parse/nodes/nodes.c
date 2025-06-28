@@ -50,6 +50,7 @@ t_token	*create_node(char *str, t_token_type type)
 	node->quotes.in_double_quotes = false;
 	node->quotes.in_single_quotes = false;
 	node->from_expansion = 0;
+	node->top = NULL;
 	node->next = NULL;
 	return (node);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_external_utils.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/12 15:12:30 by marvin           ###   ########.fr       */
+/*   Updated: 2025/06/28 12:07:16 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,4 @@ void	execute_child_process(t_ast *data, t_ast *tree)
 	free(cmd_path);
 	free_2darray(envp);
 	exit(1);
-}
-
-void	child_process_handler(t_ast *data, t_ast *tree, int fd_inp, int fd_out)
-{
-	setup_child_signals();
-	handle_redirection(fd_inp, fd_out);
-	execute_child_process(data, tree);
 }
