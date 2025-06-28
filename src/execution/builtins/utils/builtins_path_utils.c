@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:33:04 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/21 15:42:22 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:26:09 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 int	handle_pwd_errors(char *old_pwd, int error_code)
 {
-	free(old_pwd);
-	ft_putendl_fd(" error retrieving current directory", STDERR_FILENO);
-	return (error_code);
+	ft_putstr_fd("minishell: cd: error retrieving current directory: getcwd: ", STDERR_FILENO);
+    ft_putendl_fd(strerror(errno), STDERR_FILENO);
+    free(old_pwd);
+    return (error_code);
 }
 
 int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)

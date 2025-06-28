@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/25 16:52:33 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:29:48 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ static void	execute_input(t_token *t, t_env *env_list, char *exp, t_ctx *ctx)
 	if (!ast)
 	{
 		free(exp);
+		update_last_exit_status(ctx, 2);
 		return ;
 	}
 	ast->heredoc_files = NULL;
@@ -103,6 +104,7 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
 		if (!validation(tokens))
 		{
 			free(expandable);
+			update_last_exit_status(ctx, 2);
 			return ;
 		}
 		execute_input(tokens, env_list, expandable, ctx);
