@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/22 17:53:52 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 16:22:49 by ldurmish         ###   ########.fr       */
+/*   Created: 2025/06/28 15:48:28 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 15:48:28 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_ast	*init_command_node(t_token *start, int word_count)
 {
-	t_ast		*node;
+	t_ast	*node;
 
 	node = create_ast_node(AST_COMMAND, start);
 	if (!node)
@@ -53,14 +53,44 @@ t_redir_ls	*create_redir_node(int type, char *filename)
 	return (redir);
 }
 
+static char	*expand_redir_filename(const char *pattern)
+{
+	char	**matches;
+	char	*result;
+
+	if (!pattern)
+		return (NULL);
+	if (!has_wildcard(pattern))
+		return (ft_strdup(pattern));
+	matches = expand_wildcard((char *)pattern);
+	if (!matches)
+		return (ft_strdup(pattern));
+	if (matches[1])
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd((char *)pattern, STDERR_FILENO);
+		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		free_matches_array(matches);
+		return (NULL);
+	}
+	result = ft_strdup(matches[0]);
+	free_matches_array(matches);
+	return (result);
+}
+
 int	add_redirection(t_commands *cmd, int type, char *filename)
 {
 	t_redir_ls	*new_redir;
 	t_redir_ls	*curr;
+	char		*expanded;
 
 	if (!filename || !*filename)
 		return (0);
-	new_redir = create_redir_node(type, filename);
+	expanded = expand_redir_filename(filename);
+	if (!expanded)
+		return (0);
+	new_redir = create_redir_node(type, expanded);
+	free(expanded);
 	if (!new_redir)
 		return (0);
 	if (!cmd->redirections)

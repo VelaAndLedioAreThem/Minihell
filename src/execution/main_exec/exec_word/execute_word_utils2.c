@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/25 16:46:21 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:34:52 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*get_command_path(t_ast *data, char *cmd)
 	cmd_path = find_executable_path(data, cmd);
 	if (!cmd_path)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd("bash: ", STDERR_FILENO);
 		ft_putstr_fd(cmd, STDERR_FILENO);
 		ft_putendl_fd(": command not found", STDERR_FILENO);
 		exit(127);
@@ -39,8 +39,7 @@ void	execute_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	cmd_path = get_command_path(data, tree->cmd->args[0]);
 	envp = env(&(data->env_list));
 	execve(cmd_path, tree->cmd->args, envp);
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putendl_fd(strerror(errno), STDERR_FILENO);
+	print_error(tree->cmd->args[0], strerror(errno));
 	free(cmd_path);
 	free_2darray(envp);
 	exit(126);
