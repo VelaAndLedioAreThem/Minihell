@@ -12,25 +12,51 @@
 
 #include "minishell.h"
 
-int	handle_line(int fd, char *line, char *delim)
+static char     *expand_heredoc_line(char *line, t_ast *data)
 {
-	if (!line)
-	{
-		ft_putstr_fd("bash: warning: here-document delimited by ",
-			STDERR_FILENO);
+        t_env   *copy;
+        t_args  arg;
+
+        if (!data)
+                return (ft_strdup(line));
+        arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv,
+                        .exit_status = gles(g_ctx)};
+        copy = deep_copy_env_list(data->env_list);
+        if (!copy)
+                return (ft_strdup(line));
+        line = parse_env(line, copy, &arg);
+        free_env_list(copy);
+        return (line);
+}
+
+int     handle_line(int fd, char *line, char *delim, int expand, t_ast *data)
+{
+        if (!line)
+        {
+                ft_putstr_fd("bash: warning: here-document delimited by ",
+                        STDERR_FILENO);
 		ft_putstr_fd("end-of-file (wanted `", STDERR_FILENO);
 		ft_putstr_fd(delim, STDERR_FILENO);
 		ft_putendl_fd("')", STDERR_FILENO);
 		return (2);
 	}
-	if (ft_strcmp(line, delim) == 0)
-		return (1);
-	ft_putendl_fd(line, fd);
-	free(line);
-	return (0);
+        if (ft_strcmp(line, delim) == 0)
+                return (1);
+        if (expand)
+        {
+                char    *tmp;
+
+                tmp = expand_heredoc_line(line, data);
+                ft_putendl_fd(tmp ? tmp : line, fd);
+                free(tmp);
+        }
+        else
+                ft_putendl_fd(line, fd);
+        free(line);
+        return (0);
 }
 
-int	run_heredoc_loop(int fd, char *delim)
+int     run_heredoc_loop(int fd, char *delim, int expand, t_ast *data)
 {
 	char	*line;
 	int		status;
@@ -40,7 +66,7 @@ int	run_heredoc_loop(int fd, char *delim)
 	while (1)
 	{
 		line = readline("> ");
-		status = handle_line(fd, line, delim);
+		status = handle_line(fd, line, delim, expand, data);
 		if (status == 1)
 		{
 			free(line);
@@ -52,7 +78,7 @@ int	run_heredoc_loop(int fd, char *delim)
 	return (0);
 }
 
-int	fork_heredoc(int fd, char *delim)
+int     fork_heredoc(int fd, char *delim, int expand, t_ast *data)
 {
 	pid_t	pid;
 	int		status;
@@ -60,7 +86,7 @@ int	fork_heredoc(int fd, char *delim)
 
 	pid = fork();
 	if (pid == 0)
-		exit(run_heredoc_loop(fd, delim));
+		exit(run_heredoc_loop(fd, delim, expand, data));
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 	{
