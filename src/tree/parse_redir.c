@@ -49,7 +49,7 @@ static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
 		return (0);
 	if (!validate_redirection_tokens(tokens, &redir_token, &filename_token))
 		return (0);
-	if (!add_redirection(cmd, redir_token->type, filename_token->value))
+        if (!add_redirection(cmd, redir_token->type, filename_token->value, (filename_token->quotes.in_single_quotes || filename_token->quotes.in_double_quotes)))
 		return (0);
 	*tokens = (*tokens)->next;
 	return (1);
