@@ -554,6 +554,7 @@ int			ft_isspace(int num);
 void		clear_data(t_env **data, char **envp);
 void		handle_signal(t_ctx *ctx);
 void		free_2darray(char **array);
+void            merge_adjacent_words(t_token *tokens);
 int			execute_tree(t_ast *data, t_ast *tree);
 
 // Main functions

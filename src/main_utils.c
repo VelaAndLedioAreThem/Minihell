@@ -185,15 +185,16 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
 			return ;
 		arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
 			.exit_status = gles(ctx)};
-		expandable = expand_and_tokenize(processed, env_list, &arg, &tokens);
-		free(processed);
-		if (!expandable)
-			return ;
-		if (!validation(tokens))
-		{
-			free(expandable);
-			update_last_exit_status(ctx, 2);
-			return ;
+                expandable = expand_and_tokenize(processed, env_list, &arg, &tokens);
+                free(processed);
+                if (!expandable)
+                        return ;
+                merge_adjacent_words(tokens);
+                if (!validation(tokens))
+                {
+                        free(expandable);
+                        update_last_exit_status(ctx, 2);
+                        return ;
 		}
 		execute_input(tokens, env_list, expandable, ctx);
 	}
