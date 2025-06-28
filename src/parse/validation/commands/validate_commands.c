@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate_commands.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/25 01:08:32 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/06 03:21:00 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 00:40:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,30 +49,24 @@ static bool	check_commands_in_str(char *str, bool *in_cmd, bool *is_cmd_pos,
 	return (true);
 }
 
-bool	check_commands(char *str)
+bool	check_commands(char *str, t_token **tokenize)
 {
 	int			i;
-	t_quotes	quote;
 	bool		in_commands;
 	bool		is_cmd_pos;
+	t_token		*curr;
 
 	i = 0;
-	quote = (t_quotes){false, false};
 	in_commands = false;
+	curr = *tokenize;
+	if (curr && (curr->quotes.in_double_quotes
+			|| curr->quotes.in_single_quotes))
+		return (true);
 	while (str && str[i])
 	{
-		process_quotes(str[i], &quote);
-		if (!quote.in_single_quotes && !quote.in_double_quotes)
-		{
-			if (!check_commands_in_str(str, &in_commands, &is_cmd_pos, i))
-				return (false);
-		}
+		if (!check_commands_in_str(str, &in_commands, &is_cmd_pos, i))
+			return (false);
 		i++;
-	}
-	if (quote.in_double_quotes || quote.in_single_quotes)
-	{
-		report_error(ERR_SYNTAX, "Unmatched quotes");
-		return (false);
 	}
 	return (true);
 }
@@ -86,7 +80,7 @@ bool	validate_commands(t_token *tokenize)
 	current = tokenize;
 	while (current)
 	{
-		if (!check_commands(current->value))
+		if (!check_commands(current->value, &tokenize))
 			return (false);
 		current = current->next;
 	}

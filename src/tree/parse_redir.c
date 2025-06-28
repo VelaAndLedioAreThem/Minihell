@@ -2,104 +2,121 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parse_redir.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/23 22:15:23 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 17:11:35 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-t_ast_type	get_redir_type(t_token *tokens)
+static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
+		t_token **filename_token)
 {
-	if (!tokens)
+	if (!tokens || !*tokens)
 		return (0);
-	if (tokens->type == TOKEN_APPEND)
-		return (AST_REDIR_APPEND);
-	else if (tokens->type == TOKEN_HEREDOC)
-		return (AST_REDIR_HERDOC);
-	else if (tokens->type == TOKEN_REDIRECT_IN)
-		return (AST_REDIR_IN);
-	else if (tokens->type == TOKEN_REDIRECT_OUT)
-		return (AST_REDIR_OUT);
-	return (0);
-}
-
-t_ast	*create_redir(t_token **token, t_ast *cmd_node)
-{
-	t_token		*curr;
-	t_ast		*node;
-
-	curr = *token;
-	if (!curr)
-		return (NULL);
-	node = create_ast_node(get_redir_type(curr), curr);
-	if (!node)
-		return (NULL);
-	node->operator_type = curr->type;
-	node->left = cmd_node;
-	if (curr->next)
-		curr = curr->next;
+	*redir_token = *tokens;
+	if ((*redir_token)->next)
+		*tokens = (*redir_token)->next;
 	else
-		return (node);
-	skip_tree_whitespaces(&curr);
-	*token = curr;
-	return (node);
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
+		return (0);
+	}
+	skip_tree_whitespaces(tokens);
+	if (!*tokens || (*tokens)->type != TOKEN_WORD)
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
+		return (0);
+	}
+	*filename_token = *tokens;
+	return (1);
 }
 
-t_ast	*create_right_node(t_token **token)
+static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
 {
-	t_ast		*right_node;
-	t_token		*curr;
+	t_token	*redir_token;
+	t_token	*filename_token;
 
-	curr = *token;
-	right_node = create_ast_node(AST_COMMAND, curr);
-	if (!right_node)
-		return (NULL);
-	right_node->cmd = create_command_struct();
-	if (!right_node)
-	{
-		free(right_node);
-		return (NULL);
-	}
-	right_node->cmd->args = malloc(sizeof(char *) * 2);
-	if (!right_node->cmd->args)
-	{
-		free(right_node);
-		return (NULL);
-	}
-	right_node->cmd->args[0] = ft_strdup(curr->value);
-	right_node->cmd->args[1] = NULL;
-	*token = curr->next;
-	return (right_node);
+	if (!tokens || !*tokens || !cmd)
+		return (0);
+	if (!validate_redirection_tokens(tokens, &redir_token, &filename_token))
+		return (0);
+	if (!add_redirection(cmd, redir_token->type, filename_token->value))
+		return (0);
+	*tokens = (*tokens)->next;
+	return (1);
 }
 
-t_ast	*parse_redirection(t_token **tokens, t_ast *cmd_node)
+int	parse_redirection(t_token **tokens, t_ast *cmd_node)
 {
-	t_ast		*node;
-	t_token		*curr;
+	t_token	*curr;
 
-	if (!tokens || !*tokens || !cmd_node)
-		return (NULL);
+	if (!tokens || !*tokens || !cmd_node || !cmd_node->cmd)
+		return (0);
 	curr = *tokens;
-	skip_tree_whitespaces(&curr);
-	if (get_redir_type(curr) == 0)
-		return (NULL);
-	node = create_redir(&curr, cmd_node);
-	if (!node || !curr || curr->type != TOKEN_WORD)
+	while (curr && is_redirection_token(curr->type))
 	{
-		free(node);
-		return (NULL);
+		if (!handle_single_redirection(&curr, cmd_node->cmd))
+			return (0);
+		skip_tree_whitespaces(&curr);
 	}
-	node->right = create_right_node(&curr);
-	if (!node->right)
-	{
-		free(node);
-		return (NULL);
-	}
-	skip_tree_whitespaces(&curr);
 	*tokens = curr;
-	return (node);
+	return (1);
+}
+
+int	add_command_arg(t_ast *cmd_node, char *arg)
+{
+	int		argc;
+	char	**new_args;
+
+	argc = 0;
+	if (!cmd_node || !cmd_node->cmd || !cmd_node->cmd->args || !arg)
+		return (0);
+	while (cmd_node->cmd->args[argc])
+		argc++;
+	new_args = ft_realloc(cmd_node->cmd->args, sizeof(char *) * (argc + 1),
+			sizeof(char *) * (argc + 2));
+	if (!new_args)
+		return (0);
+	cmd_node->cmd->args = new_args;
+	cmd_node->cmd->args[argc] = ft_strdup(arg);
+	cmd_node->cmd->args[argc + 1] = NULL;
+	if (!cmd_node->cmd->args[argc])
+		return (0);
+	return (1);
+}
+
+int	set_command_name(t_ast *cmd_node, char *name)
+{
+	int	i;
+
+	if (!cmd_node || !cmd_node->cmd || !name)
+		return (0);
+	if (cmd_node->cmd->args)
+	{
+		i = -1;
+		while (cmd_node->cmd->args[++i])
+			free(cmd_node->cmd->args[i]);
+		free(cmd_node->cmd->args);
+	}
+	cmd_node->cmd->args = malloc(sizeof(char *) * 2);
+	if (!cmd_node->cmd->args)
+		return (0);
+	cmd_node->cmd->args[0] = ft_strdup(name);
+	cmd_node->cmd->args[1] = NULL;
+	if (!cmd_node->cmd->args[0])
+	{
+		free(cmd_node->cmd->args);
+		cmd_node->cmd->args = NULL;
+		return (0);
+	}
+	return (1);
 }

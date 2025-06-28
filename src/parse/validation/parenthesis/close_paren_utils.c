@@ -6,11 +6,21 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:49:59 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/12 16:27:11 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/08 23:32:59 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+
+char	peek(t_token *stack)
+{
+	char		current;
+
+	current = stack->top->name;
+	if (is_empty(stack))
+		return ('\0');
+	return (current);
+}
 
 bool	if_there_is_filename(char *input, int *j, t_token *token)
 {
@@ -48,11 +58,6 @@ bool	it_is_redirect(char *input, int *i, int *j, t_token *token)
 			(*j)++;
 		if (!if_there_is_filename(input, j, token))
 			return (false);
-		else
-		{
-			report_error(ERR_SYNTAX, "redirection without filename");
-			return (free_stack(token), false);
-		}
 	}
 	return (true);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 17:21:58 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/02/24 20:25:41 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 18:15:48 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ int	ft_isspace(int num)
 int	is_operator(char c)
 {
 	if (c == '&' || c == '|' || c == '(' || c == ')'
-		|| c == '>' || c == '<' || c == '*')
+		|| c == '>' || c == '<')
 		return (1);
 	return (0);
 }
 
-int	ft_strcmp(char *s1, char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
 	int			i;
 
@@ -38,48 +38,46 @@ int	ft_strcmp(char *s1, char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-int	count_parenthesise_util(char *input)
-{
-	t_quotes	quotes;
-	int			i;
-	int			open_paren;
-	int			close_paren;
-
-	i = 0;
-	open_paren = 0;
-	close_paren = 0;
-	quotes = (t_quotes){false, false};
-	while (input[i] != '\0')
-	{
-		process_quotes(input[i], &quotes);
-		if (!quotes.in_double_quotes && !quotes.in_single_quotes)
-		{
-			if (input[i] == '(')
-				open_paren++;
-			else if (input[i] == ')')
-				close_paren++;
-		}
-		i++;
-	}
-	return (open_paren - close_paren);
-}
-
-int	count_parenthesis(t_token *tokens)
+int	count_parenthesis_in_string(const char *str)
 {
 	int		count;
-	int		total_count;
+	int		i;
 
-	if (!tokens)
-		return (0);
-	total_count = 0;
-	while (tokens)
+	count = 0;
+	i = 0;
+	while (str[i])
 	{
-		if (tokens->value)
-		{
-			count = count_parenthesise_util(tokens->value);
-			total_count += count;
-		}
-		tokens = tokens->next;
+		if (str[i] == '(')
+			count++;
+		else if (str[i] == ')')
+			count--;
+		i++;
 	}
-	return (total_count);
+	return (count);
+}
+
+int	count_parenthesis(t_token *tokenize)
+{
+	int		count;
+	t_token	*current;
+
+	count = 0;
+	current = tokenize;
+	while (current)
+	{
+		if (current->quotes.in_single_quotes
+			|| current->quotes.in_double_quotes)
+		{
+			current = current->next;
+			continue ;
+		}
+		if (current->type == TOKEN_PAREN_OPEN)
+			count++;
+		else if (current->type == TOKEN_PAREN_CLOSE)
+			count--;
+		else if (current->type == TOKEN_WORD && current->value)
+			count += count_parenthesis_in_string(current->value);
+		current = current->next;
+	}
+	return (count);
 }

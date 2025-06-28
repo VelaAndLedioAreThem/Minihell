@@ -2,21 +2,24 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils_2.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/02/14 13:12:02 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/18 23:17:53 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:53:03 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
 
-static int	get_quote_content(char *input, int *i,
-	char quote_type, char **content)
+static int	get_quote_content(char *input, int *i, char quote_type,
+		char **content)
 {
-	int		start;
-	int		len;
+	int	start;
+	int	len;
 
 	start = *i + 1;
 	*i = start;
@@ -36,36 +39,36 @@ static int	get_quote_content(char *input, int *i,
 
 int	handle_quotes(t_token **token, char *input, int *i)
 {
-	t_token	*current;
-	char	*content;
-	char	quote_type;
+	t_token		*current;
+	char		*content;
+	char		quote_type;
 
 	quote_type = input[*i];
 	if (get_quote_content(input, i, quote_type, &content) == -1)
 		return (-1);
 	current = create_node(content, TOKEN_WORD);
 	if (!current)
-	{
-		free(content);
-		return (-1);
-	}
+		return (free(content), -1);
+	free(content);
 	if (quote_type == '"')
 	{
 		current->expandable = 1;
-		current->double_quotes = 1;
+		current->quotes.in_double_quotes = true;
 	}
 	else if (quote_type == '\'')
-		current->single_quotes = 1;
-	printf("Token: %s\n", current->value);
+	{
+		current->expandable = 0;
+		current->quotes.in_single_quotes = true;
+	}
 	append_node(token, current);
 	return (1);
 }
 
 int	handle_word(t_token **token, char *input, int *i)
 {
-	int		start;
-	char	*word;
-	t_token	*current;
+	int			start;
+	char		*word;
+	t_token		*current;
 
 	start = *i;
 	while (input[*i] && !ft_isspace(input[*i]) && !is_operator(input[*i])
@@ -79,7 +82,6 @@ int	handle_word(t_token **token, char *input, int *i)
 	if (!current)
 		return (-1);
 	current->expandable = 1;
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	(*i)--;
 	return (1);
@@ -101,7 +103,6 @@ int	handle_whitespace(t_token **token, char *input, int *i)
 	free(whitespace);
 	if (!curr)
 		return (-1);
-	printf("TOKEN: Whitespace\n");
 	append_node(token, curr);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/14 20:22:50 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 00:01:46 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,15 @@ int	handle_single_operator(t_token **token, char c)
 		current = create_node("<", TOKEN_REDIRECT_IN);
 	else if (c == '>')
 		current = create_node(">", TOKEN_REDIRECT_OUT);
-	else if (c == '*')
-		current = create_node("*", TOKEN_WILDCARD);
+	else if (c == '&')
+	{
+		report_error(ERR_SYNTAX, "background processes (&) are not supported");
+		return (-1);
+	}
 	else
 		return (0);
 	if (!current)
 		return (-1);
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
 }
@@ -73,7 +75,6 @@ int	handle_double_operator(t_token **head, char *input, int *i)
 	if (result == 1)
 	{
 		append_node(head, current);
-		printf("%s\n", current->value);
 	}
 	return (result);
 }
@@ -88,7 +89,22 @@ int	return_parenthesis(t_token **token, char c)
 		current = create_node(")", TOKEN_PAREN_CLOSE);
 	if (!current)
 		return (-1);
-	printf("Token: %s\n", current->value);
 	append_node(token, current);
 	return (1);
+}
+
+int	validate_assignment_value(char *assignment)
+{
+	char	*equal_sign;
+	char	*value;
+	int		result;
+
+	equal_sign = ft_strchr(assignment, '=');
+	if (!equal_sign)
+		return (1);
+	value = equal_sign + 1;
+	if (!value || *value == '\0')
+		return (1);
+	result = validate_parentheses(assignment);
+	return (result);
 }

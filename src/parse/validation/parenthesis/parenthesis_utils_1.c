@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/03 23:59:21 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/10 16:19:47 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/13 15:08:53 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,16 @@ bool	validate_redirect_or_command(char *input, t_open_paren *paren,
 		return (false);
 	}
 	return (true);
+}
+
+void	process_quotes_enhanced(char c, char prev_char, t_quotes *quote)
+{
+	if (prev_char == '\\')
+		return ;
+	if (c == '\"' && !quote->in_single_quotes)
+		quote->in_double_quotes = !quote->in_double_quotes;
+	else if (c == '\'' && !quote->in_double_quotes)
+		quote->in_single_quotes = !quote->in_single_quotes;
 }
 
 bool	seq_paren(char *input, t_open_paren *paren, t_token *token)
