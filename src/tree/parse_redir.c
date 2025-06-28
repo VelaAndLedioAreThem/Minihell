@@ -13,46 +13,79 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "../../include/minishell.h"
 
-static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
-		t_token **filename_token)
+static int      collect_delimiter(t_token **tokens, char **value, int *quoted)
 {
-	if (!tokens || !*tokens)
-		return (0);
-	*redir_token = *tokens;
-	if ((*redir_token)->next)
-		*tokens = (*redir_token)->next;
-	else
-	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
-			STDERR_FILENO);
-		return (0);
-	}
-	skip_tree_whitespaces(tokens);
-	if (!*tokens || (*tokens)->type != TOKEN_WORD)
-	{
-		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
-			STDERR_FILENO);
-		return (0);
-	}
-	*filename_token = *tokens;
-	return (1);
+        t_token *curr;
+        char    *res;
+        char    *tmp;
+
+        curr = *tokens;
+        res = ft_strdup("");
+        if (!res)
+                return (0);
+        *quoted = 0;
+        while (curr && curr->type == TOKEN_WORD)
+        {
+                tmp = ft_strjoin(res, curr->value);
+                free(res);
+                if (!tmp)
+                        return (0);
+                res = tmp;
+                if (curr->quotes.in_single_quotes || curr->quotes.in_double_quotes)
+                        *quoted = 1;
+                curr = curr->next;
+        }
+        *tokens = curr;
+        *value = res;
+        return (1);
 }
 
-static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
+static int      validate_redirection_tokens(t_token **tokens, t_token **redir_token,
+                char **filename, int *quoted)
 {
-	t_token	*redir_token;
-	t_token	*filename_token;
+        if (!tokens || !*tokens)
+                return (0);
+        *redir_token = *tokens;
+        if ((*redir_token)->next)
+                *tokens = (*redir_token)->next;
+        else
+        {
+                ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+                        STDERR_FILENO);
+                return (0);
+        }
+        skip_tree_whitespaces(tokens);
+        if (!*tokens || (*tokens)->type != TOKEN_WORD)
+        {
+                ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+                        STDERR_FILENO);
+                return (0);
+        }
+        if (!collect_delimiter(tokens, filename, quoted))
+                return (0);
+        return (1);
+}
 
-	if (!tokens || !*tokens || !cmd)
-		return (0);
-	if (!validate_redirection_tokens(tokens, &redir_token, &filename_token))
-		return (0);
-	if (!add_redirection(cmd, redir_token->type, filename_token->value, (filename_token->quotes.in_single_quotes || filename_token->quotes.in_double_quotes)))
-		return (0);
-	*tokens = (*tokens)->next;
-	return (1);
+static int      handle_single_redirection(t_token **tokens, t_commands *cmd)
+{
+        t_token *redir_token;
+        char    *filename;
+        int             quoted;
+
+        if (!tokens || !*tokens || !cmd)
+                return (0);
+        if (!validate_redirection_tokens(tokens, &redir_token, &filename, &quoted))
+                return (0);
+        if (!add_redirection(cmd, redir_token->type, filename, quoted))
+        {
+                free(filename);
+                return (0);
+        }
+        free(filename);
+        return (1);
 }
 
 int	parse_redirection(t_token **tokens, t_ast *cmd_node)

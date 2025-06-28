@@ -1,0 +1,122 @@
+----------------------------
+🌀 Tilde Expansion Issues
+----------------------------
+/bin/echo ~42         # Invalid: ~42 is not a valid tilde expansion
+echo ~42              # Same issue
+cd ~                  # Valid tilde usage
+cd ../../             # Relative path navigation
+cd --                 # Using end-of-options marker
+
+----------------------------
+🧾 Heredoc Edge Cases
+----------------------------
+cat << $USER
+why
+not
+$USER
+
+cat << "$USER"
+why
+not
+$USER
+
+cat << "$US"E"R"
+because
+we
+love
+bash
+$USER
+
+ls | cat << stop | ls -la | cat << stop1
+12
+32232
+23
+stop
+awdaw
+daswd
+stop1
+
+ls | cat << stop | ls -la | cat << stop1 | ls | cat << stop2 | ls -la | cat << stop3
+$USER
+ad
+as $HOME
+stop
+awd
+wf$PWDdqwdwqd
+stop1
+das
+das
+stop2
+dsq
+wd
+wf$PWDdqwdwqd
+stop3
+
+----------------------------
+📦 Export & Command Substitution
+----------------------------
+export T="echo segfault | grep segfault"
+$T                          # Running command from exported variable
+
+----------------------------
+🧩 Quoting Hell
+----------------------------
+echo
+p""''''w''''''''''''''''''''''''''''''''''''''d
+'''''''''''''''' echo ok
+''echo ok
+""echo ok
+""echo"" ok
+""'echo'"" ok
+'e'cho 42
+"./"ls
+"./""ls"
+"./"''"ls"
+
+----------------------------
+🧨 Redirection Edge Case
+----------------------------
+>| echo sure               # Bash supports this as 'clobber', but not POSIX
+
+----------------------------
+🚪 Exit Statement with Quoted Value
+----------------------------
+exit 123"123"              # Should become: exit 123123
+
+----------------------------
+❓ Ambiguous/Nonexistent Commands
+----------------------------
+env what                   # 'what' is likely not a command
+./ls                       # Only works if `ls` is in current directory
+"./"ls
+"./""ls"
+"./"''"ls"
+
+----------------------------
+🔗 Pipelines and Subshells
+----------------------------
+((echo 1) | (echo 2) | (echo 3 | (echo 4)))
+
+echo 1 | (echo 2 || echo 3 && echo 4) || echo 5 | echo 6
+
+echo 1 | (grep 1) | cat | (wc -l)
+
+(/bin/echo 1 | /bin/echo 2 && ((/bin/echo 3 | /bin/echo 3) | (/bin/echo 4 | /bin/echo 4)))
+
+----------------------------
+🧮 Heavyweight AWK Use
+----------------------------
+awk 'BEGIN{for(i=1;i<=10;i++){for(j=1;j<=10;j++){printf("%4d ",i*j)} printf("\n")}}' /dev/null | tail -n 10
+
+awk 'BEGIN{for(i=1;i<=1000000;i++)print int(i)}' | awk '{sum+=$1} END {print sum/NR}'
+
+----------------------------
+❌ PATH Unset Scenarios
+----------------------------
+unset PATH
+cd /bin
+ls
+
+unset PATH
+cd /bin/../bin/
+ls

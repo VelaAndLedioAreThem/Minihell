@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_path_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:33:04 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 19:00:11 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/29 00:45:34 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ int	handle_pwd_errors(char *old_pwd, int error_code)
 
 int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 {
+	(void)oldpwd;
 	path = get_env_value(data->env_list, "OLDPWD");
 	if (!path)
 	{
 		ft_putendl_fd("bash: cd: OLDPWD not set", STDERR_FILENO);
-		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}
 	ft_putendl_fd(path, STDOUT_FILENO);

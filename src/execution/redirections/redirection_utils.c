@@ -6,12 +6,34 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/28 22:36:46 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/28 23:49:27 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+static char     *read_line_fd(int fd)
+{
+        char    *line;
+        char    buf[1];
+        size_t  len;
+        ssize_t rd;
 
+        line = NULL;
+        len = 0;
+        while ((rd = read(fd, buf, 1)) > 0)
+        {
+                line = ft_realloc(line, len + 1, len + 2);
+                if (!line)
+                        return (NULL);
+                line[len++] = buf[0];
+                if (buf[0] == '\n')
+                        break ;
+        }
+        if (rd <= 0 && len == 0)
+                return (NULL);
+        line[len] = '\0';
+        return (line);
+}
 static void	write_expanded(int fd, char *line, t_ast *data)
 {
 	t_args	arg;
@@ -61,7 +83,12 @@ int	run_heredoc_loop(int fd, t_hdinfo *info)
 	signal(SIGQUIT, SIG_DFL);
 	while (1)
 	{
-		line = readline("> ");
+		if (isatty(STDIN_FILENO))
+			line = readline("> ");
+		else
+			line = read_line_fd(STDIN_FILENO);
+		if (!isatty(STDIN_FILENO) && line && line[ft_strlen(line) - 1] == '\n')
+			line[ft_strlen(line) - 1] = '\0';
 		status = handle_line(fd, line, info);
 		if (status == 1)
 		{

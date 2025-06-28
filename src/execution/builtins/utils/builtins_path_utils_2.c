@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_path_utils_2.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 12:58:36 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 14:26:36 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/29 00:46:22 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,11 +94,11 @@ int	execute_cd(t_ast *data, char *path)
 
 int	execute_home(t_ast *data, char *path, char *oldpwd)
 {
+	(void)oldpwd;
 	path = get_env_value(data->env_list, "HOME");
 	if (!path)
 	{
 		ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
-		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}
 	return (0);

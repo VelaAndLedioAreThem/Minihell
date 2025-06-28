@@ -13,7 +13,27 @@
 #include "../include/minishell.h"
 
 t_ctx	*g_ctx;
+static char *simple_gnl(int fd)
+{
+    char *line = NULL;
+    char buf[1];
+    size_t len = 0;
+    ssize_t rd;
+    while ((rd = read(fd, buf, 1)) > 0)
+    {
 
+        line = ft_realloc(line, len + 1, len + 2);
+        if (!line)
+            return NULL;
+        line[len++] = buf[0];
+        if (buf[0] == '\n')
+            break;
+    }
+    if (rd <= 0 && len == 0)
+        return NULL;
+    line[len] = '\0';
+    return line;
+}
 static void	init_main_context(t_ctx *main_ctx, int argc, char **argv)
 {
 	g_ctx = main_ctx;
@@ -45,7 +65,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		else
 		{
-			line = get_next_line(fileno(stdin));
+			line = simple_gnl(fileno(stdin));
 			if (!line)
 				break ;
 			input = ft_strtrim(line, "\n");
