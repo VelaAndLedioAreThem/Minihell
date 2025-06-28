@@ -1,22 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils_2.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/28 15:47:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 15:47:20 by vszpiech         ###   ########.fr       */
+/*   env_utils copy.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
+/*   Created: 2023/05/17 12:34:56 by user              #+#    #+#             */
+/*   Updated: 2025/04/10 21:18:25 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+#include <stdlib.h>
+#include <unistd.h>
+
 
 void	incr_shell_lvl(t_env *data)
 {
-	char	*shlvl_str;
-	int		shlvl;
-	t_env	*tmp;
+	char *shlvl_str;
+	int shlvl;
+	t_env *tmp;
 
 	shlvl_str = get_env_value(data, "SHLVL");
 	shlvl = 0;
@@ -39,8 +45,8 @@ void	incr_shell_lvl(t_env *data)
 
 void	set_env_var(t_ast *data, char *var_name, const char *var_value)
 {
-	t_env	*env;
-	t_env	*new_env;
+	t_env *env;
+	t_env *new_env;
 
 	env = data->env_list;
 	while (env)
@@ -64,7 +70,7 @@ void	set_env_var(t_ast *data, char *var_name, const char *var_value)
 
 t_env	*find_envir_variable(t_ast *data, char *var_name, int len)
 {
-	t_env	*current;
+	t_env *current;
 
 	current = data->env_list;
 	while (current)
@@ -78,7 +84,7 @@ t_env	*find_envir_variable(t_ast *data, char *var_name, int len)
 
 static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 {
-	t_env	*path_env;
+	t_env *path_env;
 
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
@@ -93,10 +99,10 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths;
-	char	*full_path;
-	char	*result;
-	int		i;
+	char **paths;
+	char *full_path;
+	char *result;
+	int i;
 
 	paths = NULL;
 	i = 0;

@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 15:46:30 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:57:50 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	execute_child_process(t_ast *data, t_ast *tree)
 	}
 	envp = env(&(data->env_list));
 	execve(cmd_path, tree->cmd->args, envp);
-	print_error(tree->cmd->args[0], strerror(errno));
+	perror("bash: execve");
 	free(cmd_path);
 	free_2darray(envp);
 	exit(126);

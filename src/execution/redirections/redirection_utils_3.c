@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/28 15:38:42 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 14:54:55 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ static int	open_infiles(t_ast *data, t_redir_ls *curr, int *fd_in)
 	fd = open(curr->filename, O_RDONLY);
 	if (fd < 0)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
 		if (data)
 			data->exit_status = 1;
@@ -72,7 +71,6 @@ static int	open_outfiles(t_ast *data, t_redir_ls *curr, int *fd_out)
 	fd = open(curr->filename, flags, 0644);
 	if (fd < 0)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
 		if (data)
 			data->exit_status = 1;
@@ -84,7 +82,7 @@ static int	open_outfiles(t_ast *data, t_redir_ls *curr, int *fd_out)
 
 /* ---------- 2nd pass : apply redirections -------------------------------- */
 
-static int	apply_redirs(t_ast *data, t_redir_ls *list, int *fd_in, int *fd_out)
+static int apply_redirs(t_ast *data, t_redir_ls *list, int *fd_in, int *fd_out)
 {
 	t_redir_ls	*curr;
 
