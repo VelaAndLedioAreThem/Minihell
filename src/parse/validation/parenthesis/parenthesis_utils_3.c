@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parenthesis_utils_3.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/13 15:12:26 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 17:38:39 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:45:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,27 +34,26 @@ bool	check_command_before(char *input, int i, t_token *token)
 				|| input[j] == '&'))
 			found_operator = true;
 		if (!found_operator && !found_space)
-			return (report_error(ERR_SYNTAX,
-					"missing operator or space before '('"), free_stack(token),
-				false);
+			return (report_error
+				(ERR_SYNTAX, "missing operator or space before '('"),
+				free_stack(token), false);
 	}
 	return (true);
 }
 
 bool	check_command_paren_sequence(t_token *curr, t_token *prev,
-		t_assign_context *ctx)
+	t_assign_context *ctx)
 {
-	if (curr->type == TOKEN_PAREN_OPEN && prev && prev->type == TOKEN_WORD
-		&& !ctx->in_assignment)
+	if (curr->type == TOKEN_PAREN_OPEN && prev
+		&& prev->type == TOKEN_WORD && !ctx->in_assignment)
 	{
+		if (curr->from_expansion)
+			return (true);
 		if (ctx->in_assignment)
 			return (true);
 		if (!is_assignment_command(prev->value))
 		{
-			if (curr->next && curr->next->value)
-				report_error(ERR_UNEXPECTED_TOKEN, curr->value);
-			else
-				report_error(ERR_UNEXPECTED_TOKEN, "(");
+			report_error(ERR_SYNTAX, "unexpected '(' after command");
 			return (false);
 		}
 	}
@@ -81,10 +80,10 @@ bool	find_command_before_paren(char *input, int i, t_paren *command)
 
 bool	check_operator_before_command(char *input, t_paren *command)
 {
-	int	operator_command;
+	int		operator_command;
 
 	operator_command = command->j;
-	while (operator_command >= 0 && ft_isspace(input[operator_command]))
+	while (operator_command >= 0 && ft_isspace(operator_command))
 		operator_command--;
 	if (operator_command >= 0)
 	{

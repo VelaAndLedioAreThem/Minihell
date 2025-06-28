@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/28 17:35:07 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 17:35:29 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/28 18:53:59 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 18:57:03 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ static int	open_infiles(t_ast *data, t_redir_ls *curr, int *fd_in)
 	fd = open(curr->filename, O_RDONLY);
 	if (fd < 0)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
 		if (data)
 			data->exit_status = 1;
@@ -64,7 +63,6 @@ static int	open_outfiles(t_ast *data, t_redir_ls *curr, int *fd_out)
 	fd = open(curr->filename, flags, 0644);
 	if (fd < 0)
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
 		if (data)
 			data->exit_status = 1;
