@@ -6,13 +6,13 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 16:02:11 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 19:05:10 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
 
-int	print_empty(int n_flag, int fd_out)
+int	printnull(int fd_out, int n_flag)
 {
 	if (n_flag)
 		ft_putendl_fd("", fd_out);
@@ -46,7 +46,7 @@ int	execute_echo(char *args[], int fd_out)
 			ft_putstr_fd(" ", fd_out);
 		i++;
 	}
-	return (print_empty(n_flag, fd_out));
+	return (printnull(fd_out, n_flag));
 }
 
 static int	too_many_args(t_ast *data)

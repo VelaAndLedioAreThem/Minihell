@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 15:37:20 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/25 13:06:01 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,8 @@ int	add_heredoc(t_ast *data, char *path)
 		i = 0;
 		while (data->heredoc_files[i])
 			i++;
-		new_files = ft_realloc(data->heredoc_files, sizeof(char *) * (i + 1),
-				sizeof(char *) * (i + 2));
+		new_files = ft_realloc(data->heredoc_files,
+				sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 		if (!new_files)
 			return (1);
 		new_files[i] = path;
@@ -71,10 +71,7 @@ int	open_infile(char *path)
 
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(path);
-	}
 	return (fd);
 }
 
@@ -90,9 +87,6 @@ int	open_outfile(char *path, int type)
 		flags |= O_TRUNC;
 	fd = open(path, flags, 0644);
 	if (fd < 0)
-	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(path);
-	}
 	return (fd);
 }

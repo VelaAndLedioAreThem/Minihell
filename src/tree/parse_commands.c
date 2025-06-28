@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/28 15:48:28 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 15:48:28 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/28 18:51:19 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 18:51:19 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,7 @@ static char	*expand_redir_filename(const char *pattern)
 		return (ft_strdup(pattern));
 	if (matches[1])
 	{
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd((char *)pattern, STDERR_FILENO);
-		ft_putendl_fd(": ambiguous redirect", STDERR_FILENO);
+		printf("bash: %s: ambiguous redirect\n", pattern);
 		free_matches_array(matches);
 		return (NULL);
 	}
