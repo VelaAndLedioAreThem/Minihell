@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/13 00:01:46 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/28 19:20:37 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,18 +93,57 @@ int	return_parenthesis(t_token **token, char c)
 	return (1);
 }
 
+static int	is_arithmetic_expr_valid(const char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i])
+			&& str[i] != ' '
+			&& str[i] != '+'
+			&& str[i] != '-'
+			&& str[i] != '*'
+			&& str[i] != '/'
+			&& str[i] != '%'
+			&& str[i] != '('
+			&& str[i] != ')')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	validate_assignment_value(char *assignment)
 {
-	char	*equal_sign;
-	char	*value;
-	int		result;
+	const char	*eq;
+	const char	*value;
+	const char	*end;
+	char		*inner;
+	size_t		len;
 
-	equal_sign = ft_strchr(assignment, '=');
-	if (!equal_sign)
+	eq = ft_strchr(assignment, '=');
+	if (!eq || !*(eq + 1))
 		return (1);
-	value = equal_sign + 1;
-	if (!value || *value == '\0')
+	value = eq + 1;
+	if (ft_strncmp(value, "((", 2) != 0)
 		return (1);
-	result = validate_parentheses(assignment);
-	return (result);
+	len = ft_strlen(value);
+	if (len < 4)
+		return (0);
+	end = value + len - 1;
+	if (*(end) != ')' || *(end - 1) != ')')
+		return (0);
+	inner = ft_substr(value + 2, 0, len - 4);
+	if (!inner)
+		return (0);
+	if (!is_arithmetic_expr_valid(inner))
+	{
+		free(inner);
+		return (0);
+	}
+	free(inner);
+	return (1);
 }
+

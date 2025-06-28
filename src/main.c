@@ -55,11 +55,11 @@ int	main(int argc, char **argv, char **envp)
 		{
 			cleanup_minishell(env_list, NULL, NULL, NULL);
 			signal(SIGQUIT, SIG_IGN);
-			exit(get_last_exit_status(&g_main_ctx));
+			exit(gles(&g_main_ctx));
 		}
 		handle_input(input, env_list, &g_main_ctx);
 		free(input);
 	}
 	return (cleanup_minishell(env_list, NULL, NULL, NULL),
-		get_last_exit_status(&g_main_ctx));
+		gles(&g_main_ctx));
 }

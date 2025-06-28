@@ -306,7 +306,7 @@ int			run_heredoc_loop(int fd, char *delim);
 int			fork_heredoc(int fd, char *delim);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(t_ctx *ctx, int status);
-int			get_last_exit_status(t_ctx *ctx);
+int			gles(t_ctx *ctx);
 char		*join_path(char *dir_part, char *name);
 char		**add_match(char **matches, int *count, char *path);
 int			match_pattern(const char *pat, const char *str);
