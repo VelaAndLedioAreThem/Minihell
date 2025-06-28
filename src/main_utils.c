@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 15:54:43 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 19:53:35 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,29 @@
 #define COL_BLUE "\033[0;34m"
 #define COL_GREEN "\033[0;32m"
 #define COL_RESET "\033[0m"
+
+static int      is_valid_arith_expr(const char *expr)
+{
+        int     i;
+        int     has_digit;
+
+        if (!expr)
+                return (0);
+        i = 0;
+        has_digit = 0;
+        while (expr[i])
+        {
+                if (ft_isdigit(expr[i]))
+                        has_digit = 1;
+                else if (ft_isspace(expr[i])
+                        || ft_strchr("+-*/%()&|^~<>", expr[i]))
+                        ;
+                else
+                        return (0);
+                i++;
+        }
+        return (has_digit);
+}
 
 static int      eval_double_parenthesis(const char *expr)
 {
@@ -42,17 +65,27 @@ static char     *preprocess_double_parenthesis(char *input)
         size_t  prefix_len;
         size_t  new_len;
 
-        start = input;
-        while (*start && ft_isspace(*start))
-                start++;
-        if (ft_strncmp(start, "((", 2) != 0)
+        if (!input)
+                return (NULL);
+        start = ft_strnstr(input, "((", ft_strlen(input));
+        if (!start)
                 return (ft_strdup(input));
-        end = ft_strnstr(start + 2, "))", ft_strlen(start + 2));
-        if (!end)
+        if (start != input && *(start - 1) != '(' && !ft_isspace(*(start - 1)))
                 return (ft_strdup(input));
+        while (start[0] == '(' && start[1] == '(' && start[2] == '(')
+			start++;
+		end = ft_strnstr(start + 2, "))", ft_strlen(start + 2));
+		if (!end)
+			return (ft_strdup(input));
         expr = ft_substr(start + 2, 0, end - (start + 2));
         if (!expr)
                 return (NULL);
+	if (!is_valid_arith_expr(expr))
+        {
+                ft_putendl_fd("minishell: syntax error in arithmetic expression", 2);
+                update_last_exit_status(g_ctx, 2);
+                return (free(expr), NULL);
+        }
         exit_st = eval_double_parenthesis(expr);
         free(expr);
         replacement = (exit_st == 0) ? "true" : "false";
@@ -145,7 +178,7 @@ void    handle_input(char *input, t_env *env_list, t_ctx *ctx)
         char    *expandable;
         char    *processed;
 
-        arg.exit_status = get_last_exit_status(ctx);
+        arg.exit_status = gles(ctx);
         if (*input)
         {
                 add_history(input);
@@ -153,7 +186,7 @@ void    handle_input(char *input, t_env *env_list, t_ctx *ctx)
                 if (!processed)
                         return ;
                 arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
-                        .exit_status = get_last_exit_status(ctx)};
+                        .exit_status = gles(ctx)};
                 expandable = expand_and_tokenize(processed, env_list, &arg, &tokens);
                 free(processed);
                 if (!expandable)

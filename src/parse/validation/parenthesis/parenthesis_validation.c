@@ -6,11 +6,47 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/14 19:43:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/28 19:26:18 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
+
+static bool     is_arithmetic_expression(t_token *token)
+{
+    t_token *curr;
+    int             i;
+    bool    found_digit;
+
+    if (!token || !token->next || !token->next->next)
+            return (false);
+    curr = token->next->next;
+    found_digit = false;
+    while (curr && !(curr->type == TOKEN_PAREN_CLOSE
+                    && curr->next && curr->next->type == TOKEN_PAREN_CLOSE))
+    {
+            if (curr->type == TOKEN_WORD)
+            {
+                    i = 0;
+                    while (curr->value[i])
+                    {
+                            if (ft_isalpha(curr->value[i]))
+                                    return (false);
+                            if (ft_isdigit(curr->value[i]))
+                                    found_digit = true;
+                            i++;
+                    }
+            }
+            else if (curr->type != TOKEN_WHITESPACE
+                            && curr->type != TOKEN_PAREN_OPEN
+                            && curr->type != TOKEN_PAREN_CLOSE)
+                    return (false);
+            curr = curr->next;
+    }
+    if (!curr || !curr->next)
+            return (false);
+    return (found_digit);
+}
 
 bool	parenthesis(t_token *token, char *input, t_paren *commands,
 	t_assign_context *ctx)
@@ -115,11 +151,15 @@ bool	validation_parenthesis(t_token *tokenize)
 	current = tokenize;
 	prev = NULL;
 	ctx = (t_assign_context){false, false, -1, NULL};
-	if (current && current->value[0] == '('
-		&& current->next->value[0] == '(')
-	{
-		report_error(ERR_SYNTAX, "double parenthesis '((' not supported");
-		return (false);
+	if (current && current->value[0] == '(' && current->next
+            && current->next->value[0] == '(')
+    {
+            if (!is_arithmetic_expression(current))
+            {
+                    report_error(ERR_SYNTAX,
+                            "double parenthesis '((' not supported");
+                    return (false);
+		}
 	}
 	while (current)
 	{
