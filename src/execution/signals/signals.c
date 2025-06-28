@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/25 17:07:27 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:04:55 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,26 +51,4 @@ void	handle_sigtstp_sigquit(int signo)
 			}
 		}
 	}
-}
-
-void	handle_c(int signo)
-{
-	handle_sigint(signo);
-	handle_sigtstp_sigquit(signo);
-}
-
-int	handle_d(t_ast *data, char *line)
-{
-	(void)data;
-	if (line == NULL)
-	{
-		rl_on_new_line();
-		rl_redisplay();
-	}
-	if (ft_strlen(line) == 0)
-	{
-		ft_strdel(&line);
-		return (1);
-	}
-	return (0);
 }
