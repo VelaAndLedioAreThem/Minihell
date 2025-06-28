@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:33:04 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 14:26:09 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:52:23 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 int	handle_pwd_errors(char *old_pwd, int error_code)
 {
-	ft_putstr_fd("minishell: cd: error retrieving current directory: getcwd: ", STDERR_FILENO);
-    ft_putendl_fd(strerror(errno), STDERR_FILENO);
-    free(old_pwd);
-    return (error_code);
+	ft_putstr_fd("bash: cd: error retrieving current directory: getcwd: ",
+		STDERR_FILENO);
+	ft_putendl_fd(strerror(errno), STDERR_FILENO);
+	free(old_pwd);
+	return (error_code);
 }
 
 int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
@@ -25,7 +26,7 @@ int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
 	path = get_env_value(data->env_list, "OLDPWD");
 	if (!path)
 	{
-		ft_putendl_fd("minishell: cd: OLDPWD not set", STDERR_FILENO);
+		ft_putendl_fd("bash: cd: OLDPWD not set", STDERR_FILENO);
 		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}
@@ -81,6 +82,6 @@ int	execute_pwd(t_ast *data, int fd_out)
 		ft_putendl_fd(pwd, fd_out);
 		return (0);
 	}
-	ft_putendl_fd("minishell: pwd: PWD not set", STDERR_FILENO);
+	ft_putendl_fd("bash: pwd: PWD not set", STDERR_FILENO);
 	return (1);
 }

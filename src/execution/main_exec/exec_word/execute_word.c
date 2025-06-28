@@ -19,7 +19,7 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	pid = fork();
 	if (pid < 0)
 	{
-		ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
+		ft_putendl_fd("bash: fork failed", STDERR_FILENO);
 		data->exit_status = 1;
 		return (1);
 	}

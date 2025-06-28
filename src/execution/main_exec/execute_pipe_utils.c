@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_pipe copy.c                                :+:      :+:    :+:   */
+/*   execute_pipe_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:44:37 by marvin           ###   ########.fr       */
+/*   Created: 2025/06/28 17:34:24 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:34:26 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	setup_pipe(int fd[2])
 {
 	if (pipe(fd) == -1)
 	{
-		perror("minishell: pipe");
+		perror("bash: pipe");
 		return (1);
 	}
 	return (0);

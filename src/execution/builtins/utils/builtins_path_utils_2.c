@@ -53,7 +53,7 @@ int	update_directory(t_ast *data, char *path, char *old_pwd)
 
 	if (chdir(path) != 0)
 	{
-		ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
+		ft_putstr_fd("bash: cd: ", STDERR_FILENO);
 		ft_putstr_fd(path, STDERR_FILENO);
 		ft_putstr_fd(": ", STDERR_FILENO);
 		ft_putendl_fd(strerror(errno), STDERR_FILENO);
@@ -83,7 +83,7 @@ int	execute_cd(t_ast *data, char *path)
 		home = get_env_node(data->env_list, "HOME");
 		if (!home || !home->value)
 		{
-			ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
+			ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
 			free(old_pwd);
 			return (1);
 		}
@@ -97,7 +97,7 @@ int	execute_home(t_ast *data, char *path, char *oldpwd)
 	path = get_env_value(data->env_list, "HOME");
 	if (!path)
 	{
-		ft_putendl_fd("minishell: cd: HOME not set", STDERR_FILENO);
+		ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
 		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtins.c                                         :+:      :+:    :+:   */
+/*   env_unset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user <user@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/00/00 00:00:00 by user              #+#    #+#             */
-/*   Updated: 2023/00/00 00:00:00 by user             ###   ########.fr       */
+/*   Created: 2025/06/28 17:33:36 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:33:36 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
 
 static int	handle_unset_error(char *name)
 {
-	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
+	ft_putstr_fd("bash: unset: `", STDERR_FILENO);
 	ft_putstr_fd(name, STDERR_FILENO);
 	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 	return (1);

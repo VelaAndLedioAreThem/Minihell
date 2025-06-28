@@ -1,18 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils copy.c                                   :+:      :+:    :+:   */
+/*   env_utils_2.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/17 12:34:56 by user              #+#    #+#             */
-/*   Updated: 2025/04/10 21:18:25 by marvin           ###   ########.fr       */
+/*   Created: 2025/06/28 17:33:40 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:33:40 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-#include <stdlib.h>
-#include <unistd.h>
 
 void	incr_shell_lvl(t_env *data)
 {
@@ -83,11 +81,7 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 	t_env	*path_env;
 
 	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0)
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
+		return (ft_strdup(cmd));
 	path_env = find_envir_variable(data, "PATH", 4);
 	if (!path_env || !path_env->value)
 		return (NULL);

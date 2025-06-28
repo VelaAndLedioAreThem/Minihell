@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils.c                                        :+:      :+:    :+:   */
+/*   builtins_env_utils_2.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: you <you@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/05 12:05:00 by you               #+#    #+#             */
-/*   Updated: 2025/06/05 12:05:00 by you              ###   ########.fr       */
+/*   Created: 2025/06/28 17:33:20 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:33:20 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "libft.h" /* your usual libft */
 
-/* --- basic linked-list helpers ------------------------------------------ */
 
 t_env	*find_env_node(t_env *lst, const char *key)
 {

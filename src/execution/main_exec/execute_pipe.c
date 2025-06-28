@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/04/10 21:44:45 by marvin           ###   ########.fr       */
+/*   Created: 2025/06/28 17:34:31 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:34:32 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ pid_t	fork_left_process(t_ast *data, t_ast *tree, int fd[2])
 	}
 	else if (left_pid < 0)
 	{
-		perror("minishell: fork");
+		perror("bash: fork");
 		return (-1);
 	}
 	return (left_pid);
@@ -46,7 +46,7 @@ pid_t	fork_right_process(t_ast *data, t_ast *tree, int fd[2])
 	}
 	else if (right_pid < 0)
 	{
-		perror("minishell: fork");
+		perror("bash: fork");
 		return (-1);
 	}
 	return (right_pid);

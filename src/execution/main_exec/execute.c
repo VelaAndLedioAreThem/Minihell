@@ -26,7 +26,7 @@ int	execute_group(t_ast *data, t_ast *tree)
 	}
 	else if (pid < 0)
 	{
-		ft_putendl_fd("minishell: fork failed", STDERR_FILENO);
+		ft_putendl_fd("bash: fork failed", STDERR_FILENO);
 		return (data->exit_status = 1);
 	}
 	waitpid(pid, &status, 0);

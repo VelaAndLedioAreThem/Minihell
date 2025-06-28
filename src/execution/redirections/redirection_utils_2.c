@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/21 16:37:03 by vszpiech         ###   ########.fr       */
+/*   Created: 2025/06/28 17:35:02 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 17:35:04 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 void	print_error(char *filename, char *error_msg)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd("bash: ", STDERR_FILENO);
 	ft_putstr_fd(filename, STDERR_FILENO);
 	ft_putstr_fd(": ", STDERR_FILENO);
 	ft_putendl_fd(error_msg, STDERR_FILENO);
@@ -88,5 +88,8 @@ void	create_intermediate_outfile(char *path, int type)
 	if (fd >= 0)
 		close(fd);
 	else
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(path);
+	}
 }
