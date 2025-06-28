@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 18:54:46 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 19:19:12 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,12 +92,12 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
 	t_args	arg;
 	char	*expandable;
 
-	arg.exit_status = get_last_exit_status(ctx);
+	arg.exit_status = gles(ctx);
 	if (*input)
 	{
 		add_history(input);
 		arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
-			.exit_status = get_last_exit_status(ctx)};
+			.exit_status = gles(ctx)};
 		expandable = expand_and_tokenize(input, env_list, &arg, &tokens);
 		if (!expandable)
 			return ;
