@@ -206,6 +206,7 @@ typedef struct s_args
 	int				i;
 	char			*old_result;
 	char			*temp;
+        int                             in_heredoc;
 }	t_args;
 
 typedef struct s_expand_wild

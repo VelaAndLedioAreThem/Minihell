@@ -128,8 +128,8 @@ char	*parse_env(char *input, t_env *env_list, t_args *arg)
 {
 	t_args		parse;
 
-	parse = (t_args){arg->argc, arg->argv, arg->exit_status, input, 0,
-		ft_strdup(""), 0, 0, 0, 0, NULL, NULL};
+       parse = (t_args){arg->argc, arg->argv, arg->exit_status, input, 0,
+               ft_strdup(""), 0, 0, 0, 0, NULL, NULL, 0};
 	if (!parse.result)
 		return (NULL);
 	while (input[parse.i] && parse.i < ft_strlen(input))

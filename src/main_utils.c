@@ -195,6 +195,7 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
                         free(expandable);
                         update_last_exit_status(ctx, 2);
                         return ;
+
 		}
 		execute_input(tokens, env_list, expandable, ctx);
 	}

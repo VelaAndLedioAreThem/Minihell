@@ -17,8 +17,8 @@ static void	write_expanded(int fd, char *line, t_ast *data)
 	t_args	arg;
 	char	*expanded;
 
-	arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
-		.exit_status = gles(g_ctx)};
+       arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
+                       .exit_status = gles(g_ctx), .in_heredoc = 0};
 	expanded = parse_env(line, data->env_list, &arg);
 	if (expanded)
 	{
