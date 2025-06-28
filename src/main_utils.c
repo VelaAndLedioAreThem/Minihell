@@ -183,8 +183,8 @@ void	handle_input(char *input, t_env *env_list, t_ctx *ctx)
 		processed = preprocess_double_parenthesis(input);
 		if (!processed)
 			return ;
-		arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
-			.exit_status = gles(ctx)};
+               arg = (t_args){.argc = ctx->argc - 1, .argv = ctx->argv,
+                               .exit_status = gles(ctx), .in_heredoc = 0};
 		expandable = expand_and_tokenize(processed, env_list, &arg, &tokens);
 		free(processed);
 		if (!expandable)
