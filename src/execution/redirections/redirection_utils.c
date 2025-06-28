@@ -3,48 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/21 15:37:29 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 22:36:46 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int     handle_line(int fd, char *line, char *delim, int expand, t_env *env_list)
+static void	write_expanded(int fd, char *line, t_ast *data)
+{
+	t_args	arg;
+	char	*expanded;
+
+	arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
+		.exit_status = gles(g_ctx)};
+	expanded = parse_env(line, data->env_list, &arg);
+	if (expanded)
+	{
+		ft_putendl_fd(expanded, fd);
+		free(expanded);
+	}
+	else
+		ft_putendl_fd(line, fd);
+}
+
+int	handle_line(int fd, char *line, t_hdinfo *info)
 {
 	if (!line)
 	{
 		ft_putstr_fd("bash: warning: here-document delimited by ",
 			STDERR_FILENO);
 		ft_putstr_fd("end-of-file (wanted `", STDERR_FILENO);
-		ft_putstr_fd(delim, STDERR_FILENO);
+		ft_putstr_fd(info->delim, STDERR_FILENO);
 		ft_putendl_fd("')", STDERR_FILENO);
 		return (2);
 	}
-        if (ft_strcmp(line, delim) == 0)
-                return (1);
-        if (expand)
-        {
-                t_args  arg = {.argc = 0, .argv = NULL,
-                                .exit_status = gles(g_ctx)};
-                char    *expanded = parse_env(line, env_list, &arg);
-                if (expanded)
-                {
-                        ft_putendl_fd(expanded, fd);
-                        free(expanded);
-                }
-                else
-                        ft_putendl_fd(line, fd);
-        }
-        else
-                ft_putendl_fd(line, fd);
-        free(line);
-        return (0);
+	if (ft_strcmp(line, info->delim) == 0)
+		return (1);
+	if (!info->quoted)
+	{
+		write_expanded(fd, line, info->data);
+	}
+	else
+		ft_putendl_fd(line, fd);
+	free(line);
+	return (0);
 }
 
-int     run_heredoc_loop(int fd, char *delim, int expand, t_env *env_list)
+int	run_heredoc_loop(int fd, t_hdinfo *info)
 {
 	char	*line;
 	int		status;
@@ -54,7 +62,7 @@ int     run_heredoc_loop(int fd, char *delim, int expand, t_env *env_list)
 	while (1)
 	{
 		line = readline("> ");
-		status = handle_line(fd, line, delim, expand, env_list);
+		status = handle_line(fd, line, info);
 		if (status == 1)
 		{
 			free(line);
@@ -66,7 +74,7 @@ int     run_heredoc_loop(int fd, char *delim, int expand, t_env *env_list)
 	return (0);
 }
 
-int     fork_heredoc(int fd, char *delim, int expand, t_env *env_list)
+int	fork_heredoc(int fd, t_hdinfo *info)
 {
 	pid_t	pid;
 	int		status;
@@ -74,7 +82,7 @@ int     fork_heredoc(int fd, char *delim, int expand, t_env *env_list)
 
 	pid = fork();
 	if (pid == 0)
-		exit(run_heredoc_loop(fd, delim, expand, env_list));
+		exit(run_heredoc_loop(fd, info));
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 	{
@@ -94,13 +102,4 @@ int	setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp)
 	if (!node->right->cmd->args[0] || add_heredoc(data, ft_strdup(tmp)))
 		return (1);
 	return (0);
-}
-
-char	*redir_path(t_ast *n)
-{
-	if (!n)
-		return (NULL);
-	if (n->cmd && n->cmd->args && n->cmd->args[0])
-		return (n->cmd->args[0]);
-	return (NULL);
 }

@@ -177,7 +177,7 @@ typedef struct s_redir_ls
 {
 	int					type;
 	char				*filename;
-	int	expand;
+	int					quoted;
 	struct s_redir_ls	*next;
 }	t_redir_ls;
 
@@ -284,6 +284,12 @@ typedef struct s_ctx
 	int			argc;
 	char		**argv;
 }	t_ctx;
+typedef struct s_hdinfo
+{
+	char			*delim;
+	int			quoted;
+	t_ast		*data;
+}		t_hdinfo;
 
 extern t_ctx	*g_ctx;
 int			open_unique_tmp(char *path);
@@ -299,10 +305,10 @@ int			cd_too_many_args(t_ast *data);
 int			open_infile(char *path);
 int			open_outfile(char *path, int type);
 void		create_intermediate_outfile(char *path, int type);
-void		cleanup_heredoc_files(t_ast *data);
-int			handle_line(int fd, char *line, char *delim, int expand, t_env *env_list);
-int			run_heredoc_loop(int fd, char *delim, int expand, t_env *env_list);
-int			fork_heredoc(int fd, char *delim, int expand, t_env *env_list);
+void	cleanup_heredoc_files(t_ast *data);
+int				handle_line(int fd, char *line, t_hdinfo *info);
+int				run_heredoc_loop(int fd, t_hdinfo *info);
+int				fork_heredoc(int fd, t_hdinfo *info);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(t_ctx *ctx, int status);
 int			gles(t_ctx *ctx);
@@ -522,14 +528,14 @@ int			is_redirection_token(t_token_type type);
 int			set_command_name(t_ast *cmd_node, char *name);
 int			add_command_arg(t_ast *cmd_node, char *arg);
 int			looks_like_subshell(t_token *curr);
-t_redir_ls	*create_redir_node(int type, char *filename, int expand);
+t_redir_ls	*create_redir_node(int type, char *filename, int quoted);
 t_ast		*parse_command(t_token **tokens);
 t_ast		*parse_logic_sequence(t_token **tokens);
 t_ast		*create_ast_node(t_ast_type type, t_token *token);
 void		free_ast(t_ast *node);
 t_ast		*parse_simple_commands(t_token **tokens);
 t_commands	*create_command_struct(void);
-int			add_redirection(t_commands *cmd, int type, char *filename, int expand);
+int			add_redirection(t_commands *cmd, int type, char *filename, int quoted);
 char		**expand_command_args(char **temp_args, int temp_count);
 t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
