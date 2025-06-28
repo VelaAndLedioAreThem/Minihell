@@ -2,14 +2,11 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2025/06/25 17:03:54 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/25 17:03:54 by vszpiech         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/28 19:10:55 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/28 19:10:55 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,34 +34,20 @@ int	main(int argc, char **argv, char **envp)
 	env_list = init_env_list(envp);
 	handle_signal(&g_main_ctx);
 	incr_shell_lvl(env_list);
-
 	while (1)
 	{
-		if (isatty(fileno(stdin)))
-		{
-			prompt = generate_prompt(); // assuming you have this
-			input = readline(prompt);
-			free(prompt);
-		}
-		else
-		{
-			char *line = get_next_line(fileno(stdin));
-			if (!line)
-				break;
-			input = ft_strtrim(line, "\n");
-			free(line);
-		}
-
+		prompt = generate_prompt();
+		input = readline(prompt);
+		free(prompt);
 		if (!input)
 		{
-			// no more input: exit gracefully without printing "exit"
+			printf("exit\n");
 			cleanup_minishell(env_list, NULL, NULL, NULL);
 			signal(SIGQUIT, SIG_IGN);
-			exit(get_last_exit_status(&g_main_ctx));
+			exit(gles(&g_main_ctx));
 		}
 		handle_input(input, env_list, &g_main_ctx);
 		free(input);
 	}
-	return (cleanup_minishell(env_list, NULL, NULL, NULL), get_last_exit_status(&g_main_ctx));
+	return (cleanup_minishell(env_list, NULL, NULL, NULL), gles(&g_main_ctx));
 }
-

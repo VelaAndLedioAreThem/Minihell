@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 13:22:05 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/22 16:45:16 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/include/libft.h"
-# include "../libft/gnl/include/get_next_line.h"
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
 # define HEREDOC_TEMPLATE "/tmp/minishell_heredocXXXXXX"
@@ -286,7 +285,6 @@ typedef struct s_ctx
 }	t_ctx;
 
 extern t_ctx	*g_ctx;
-void		redisplay_prompt(void);
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
@@ -306,7 +304,7 @@ int			run_heredoc_loop(int fd, char *delim);
 int			fork_heredoc(int fd, char *delim);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(t_ctx *ctx, int status);
-int			get_last_exit_status(t_ctx *ctx);
+int			gles(t_ctx *ctx);
 char		*join_path(char *dir_part, char *name);
 char		**add_match(char **matches, int *count, char *path);
 int			match_pattern(const char *pat, const char *str);
