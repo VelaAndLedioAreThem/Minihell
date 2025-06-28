@@ -46,20 +46,37 @@ int	builtin_cd(t_ast *data, t_ast *tree, int fd)
 		count++;
 	if (count > 2)
 		return (cd_too_many_args(data));
-	path = tree->cmd->args[1];
-	oldpwd = getcwd(NULL, 0);
-	if (!path || !ft_strcmp(path, "~"))
-		execute_home(data, path, oldpwd);
-	else if (!ft_strcmp(path, "-"))
-		execute_oldpwd(data, path, oldpwd);
+        path = tree->cmd->args[1];
+        if (path && !ft_strcmp(path, "--"))
+                path = NULL;
+        oldpwd = getcwd(NULL, 0);
+        char    *tmp_path = NULL;
+        if (path && path[0] == '~' && (path[1] == '/' || path[1] == '\0'))
+        {
+                char *home = get_env_value(data->env_list, "HOME");
+
+                if (!home)
+                {
+                        ft_putendl_fd("bash: cd: HOME not set", STDERR_FILENO);
+                        free(oldpwd);
+                        return (data->exit_status = 1, 1);
+                }
+                tmp_path = ft_strjoin(home, path + 1);
+                path = tmp_path;
+        }
+        if (!path)
+                execute_home(data, path, oldpwd);
+        else if (!ft_strcmp(path, "-"))
+                execute_oldpwd(data, path, oldpwd);
 	if (execute_cd(data, path))
 	{
 		free(oldpwd);
 		return (data->exit_status = 1, 1);
 	}
 	set_env_var(data, "OLDPWD", oldpwd);
-	free(oldpwd);
-	data->exit_status = 0;
+        free(oldpwd);
+        free(tmp_path);
+        data->exit_status = 0;
 	return (1);
 }
 
