@@ -38,5 +38,5 @@ int	main(int argc, char **argv, char **envp)
 		handle_input(input, env_list, &g_main_ctx);
 		free(input);
 	}
-	return (cleanup_minishell(env_list, NULL, NULL, NULL), 0);
+	return (cleanup_minishell(env_list, NULL, NULL, NULL), get_last_exit_status(&g_main_ctx));
 }
