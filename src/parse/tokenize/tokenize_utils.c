@@ -146,4 +146,3 @@ int	validate_assignment_value(char *assignment)
 	free(inner);
 	return (1);
 }
-

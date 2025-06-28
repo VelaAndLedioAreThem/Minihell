@@ -36,8 +36,8 @@ int	add_heredoc(t_ast *data, char *path)
 		i = 0;
 		while (data->heredoc_files[i])
 			i++;
-		new_files = ft_realloc(data->heredoc_files,
-				sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
+		new_files = ft_realloc(data->heredoc_files, sizeof(char *) * (i + 1),
+				sizeof(char *) * (i + 2));
 		if (!new_files)
 			return (1);
 		new_files[i] = path;
