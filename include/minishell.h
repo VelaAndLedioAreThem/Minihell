@@ -285,7 +285,6 @@ typedef struct s_ctx
 }	t_ctx;
 
 extern t_ctx	*g_ctx;
-void		redisplay_prompt(void);
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);

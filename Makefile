@@ -62,7 +62,7 @@ SRCS = $(SRC)main.c $(SRC)main_utils.c $(TREE)tree.c $(TOKENIZE)tokenize.c \
 	   $(PARENTHESIS)parenthesis_utils_2.c $(PARENTHESIS)parenthesis_content.c $(PARENTHESIS)close_paren.c \
 	   $(PARENTHESIS)close_paren_utils.c $(PARENTHESIS)close_paren_utils_1.c $(PARENTHESIS)find_match_paren.c \
 	   $(PIPES)validation_pipes.c $(PIPES)pipes_utils.c $(REDIRECTION)validate_redirection.c \
-	   $(PIPES)check_redirection_before_pipes.c $(SIGNALS)signals.c $(SIGNALS)signals_utils.c \
+	   $(PIPES)check_redirection_before_pipes.c $(SIGNALS)signals.c \
 	   $(EXECUTION)exec_handling.c $(EXECUTION)execute_external.c $(EXECUTION)execute_external_utils.c \
 	   $(EXECUTION)execute_pipe.c $(EXECUTION)execute_pipe_utils.c $(EXECUTION)exec_word/execute_word.c \
 	   $(EXECUTION)exec_word/execute_word_utils.c $(EXECUTION)exec_word/execute_word_utils2.c $(EXECUTION)execute.c \
