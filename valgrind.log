@@ -1,3 +1,283 @@
+==2930232== Memcheck, a memory error detector
+==2930232== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2930232== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2930232== Command: ./minishell
+==2930232== Parent PID: 2930047
+==2930232== 
+==2930288== 
+==2930288== HEAP SUMMARY:
+==2930288==     in use at exit: 213,613 bytes in 494 blocks
+==2930288==   total heap usage: 1,023 allocs, 529 frees, 240,678 bytes allocated
+==2930288== 
+==2930288== LEAK SUMMARY:
+==2930288==    definitely lost: 0 bytes in 0 blocks
+==2930288==    indirectly lost: 0 bytes in 0 blocks
+==2930288==      possibly lost: 0 bytes in 0 blocks
+==2930288==    still reachable: 213,613 bytes in 494 blocks
+==2930288==         suppressed: 0 bytes in 0 blocks
+==2930288== Reachable blocks (those to which a pointer was found) are not shown.
+==2930288== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==2930288== 
+==2930288== For lists of detected and suppressed errors, rerun with: -s
+==2930288== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==2930232== 
+==2930232== HEAP SUMMARY:
+==2930232==     in use at exit: 208,328 bytes in 225 blocks
+==2930232==   total heap usage: 1,056 allocs, 831 frees, 438,432 bytes allocated
+==2930232== 
+==2930232== LEAK SUMMARY:
+==2930232==    definitely lost: 0 bytes in 0 blocks
+==2930232==    indirectly lost: 0 bytes in 0 blocks
+==2930232==      possibly lost: 0 bytes in 0 blocks
+==2930232==    still reachable: 208,328 bytes in 225 blocks
+==2930232==         suppressed: 0 bytes in 0 blocks
+==2930232== Reachable blocks (those to which a pointer was found) are not shown.
+==2930232== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==2930232== 
+==2930232== For lists of detected and suppressed errors, rerun with: -s
+==2930232== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==497390== Memcheck, a memory error detector
+==497390== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==497390== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==497390== Command: ./minishell
+==497390== Parent PID: 497195
+==497390== 
+==497404== 
+==497404== HEAP SUMMARY:
+==497404==     in use at exit: 223,067 bytes in 491 blocks
+==497404==   total heap usage: 1,029 allocs, 538 frees, 251,852 bytes allocated
+==497404== 
+==497404== 2 bytes in 1 blocks are still reachable in loss record 1 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x41213C: ft_allocate_length (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x412005: ft_itoa (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x40E970: incr_shell_lvl (env_utils_2.c:34)
+==497404==    by 0x4013D4: main (main.c:25)
+==497404== 
+==497404== 2 bytes in 2 blocks are still reachable in loss record 2 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x4127A9: ft_strdup (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x40FFF8: remove_quotes_and_paren (env_utils_1.c:104)
+==497404==    by 0x40FD18: create_env_value (env_utils.c:74)
+==497404==    by 0x40FEA1: create_env_node (env_utils.c:121)
+==497404==    by 0x4033DE: init_env_list (convert_env.c:119)
+==497404==    by 0x4013C2: main (main.c:23)
+==497404== 
+==497404== 3 bytes in 1 blocks are still reachable in loss record 3 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x4127A9: ft_strdup (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x40A872: add_arg_to_args (expand_wildcard.c:48)
+==497404==    by 0x40B214: process_argument (expand_wildcard_utils3.c:31)
+==497404==    by 0x40B286: process_all_arguments (expand_wildcard_utils3.c:45)
+==497404==    by 0x40A92B: expand_wildcards_in_args (expand_wildcard.c:72)
+==497404==    by 0x40A1DD: execute_word (execute_word.c:70)
+==497404==    by 0x40A6CE: execute_tree (execute.c:65)
+==497404==    by 0x40A562: execute_group (execute.c:24)
+==497404==    by 0x40A6AC: execute_tree (execute.c:61)
+==497404==    by 0x409875: execute_and (exec_handling.c:26)
+==497404==    by 0x40A653: execute_tree (execute.c:51)
+==497404== 
+==497404== 16 bytes in 1 blocks are still reachable in loss record 12 of 90
+==497404==    at 0x484DCD3: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40B2C4: finalize_args_array (expand_wildcard_utils3.c:52)
+==497404==    by 0x40A937: expand_wildcards_in_args (expand_wildcard.c:73)
+==497404==    by 0x40A1DD: execute_word (execute_word.c:70)
+==497404==    by 0x40A6CE: execute_tree (execute.c:65)
+==497404==    by 0x40A562: execute_group (execute.c:24)
+==497404==    by 0x40A6AC: execute_tree (execute.c:61)
+==497404==    by 0x409875: execute_and (exec_handling.c:26)
+==497404==    by 0x40A653: execute_tree (execute.c:51)
+==497404==    by 0x4016A2: execute_input (main_utils.c:81)
+==497404==    by 0x40153A: handle_input (main_utils.c:108)
+==497404==    by 0x401442: main (main.c:37)
+==497404== 
+==497404== 16 bytes in 1 blocks are definitely lost in loss record 13 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x403FDB: push (stack.c:61)
+==497404==    by 0x404A11: process_open_paren (parenthesis.c:105)
+==497404==    by 0x404893: check_parenthesis (parenthesis.c:127)
+==497404==    by 0x40419F: parenthesis (parenthesis_validation.c:28)
+==497404==    by 0x4042A7: parenthesis_utils (parenthesis_validation.c:49)
+==497404==    by 0x404512: check_count_paren (parenthesis_validation.c:77)
+==497404==    by 0x404655: validation_parenthesis (parenthesis_validation.c:135)
+==497404==    by 0x4040EA: validation (validation.c:42)
+==497404==    by 0x401513: handle_input (main_utils.c:103)
+==497404==    by 0x401442: main (main.c:37)
+==497404== 
+==497404== 17 bytes in 3 blocks are still reachable in loss record 14 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x4127A9: ft_strdup (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x40A872: add_arg_to_args (expand_wildcard.c:48)
+==497404==    by 0x40B214: process_argument (expand_wildcard_utils3.c:31)
+==497404==    by 0x40B286: process_all_arguments (expand_wildcard_utils3.c:45)
+==497404==    by 0x40A92B: expand_wildcards_in_args (expand_wildcard.c:72)
+==497404==    by 0x40A1DD: execute_word (execute_word.c:70)
+==497404==    by 0x40A6CE: execute_tree (execute.c:65)
+==497404==    by 0x409840: execute_and (exec_handling.c:20)
+==497404==    by 0x40A653: execute_tree (execute.c:51)
+==497404==    by 0x4016A2: execute_input (main_utils.c:81)
+==497404==    by 0x40153A: handle_input (main_utils.c:108)
+==497404== 
+==497404== 25 bytes in 1 blocks are still reachable in loss record 20 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x412894: ft_strjoin (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x403E04: handle_remaining (env_parsing_utils.c:114)
+==497404==    by 0x403D5F: parse_env (env_parsing_utils.c:137)
+==497404==    by 0x40159D: expand_and_tokenize (main_utils.c:50)
+==497404==    by 0x4014F6: handle_input (main_utils.c:100)
+==497404==    by 0x401442: main (main.c:37)
+==497404== 
+==497404== 32 bytes in 1 blocks are still reachable in loss record 22 of 90
+==497404==    at 0x484DCD3: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40B2C4: finalize_args_array (expand_wildcard_utils3.c:52)
+==497404==    by 0x40A937: expand_wildcards_in_args (expand_wildcard.c:73)
+==497404==    by 0x40A1DD: execute_word (execute_word.c:70)
+==497404==    by 0x40A6CE: execute_tree (execute.c:65)
+==497404==    by 0x409840: execute_and (exec_handling.c:20)
+==497404==    by 0x40A653: execute_tree (execute.c:51)
+==497404==    by 0x4016A2: execute_input (main_utils.c:81)
+==497404==    by 0x40153A: handle_input (main_utils.c:108)
+==497404==    by 0x401442: main (main.c:37)
+==497404== 
+==497404== 48 bytes in 1 blocks are still reachable in loss record 26 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x411A51: create_command_struct (tree_utils_2.c:65)
+==497404==    by 0x40E2E7: parse_init_command_node (tree_utils_1.c:22)
+==497404==    by 0x40E472: parse_process_word_token (tree_utils_1.c:65)
+==497404==    by 0x40E602: parse_command_loop (tree_utils_1.c:98)
+==497404==    by 0x40E6A0: parse_simple_commands (tree_utils_1.c:120)
+==497404==    by 0x4106ED: parse_command (parse_wildcards_utils.c:116)
+==497404==    by 0x4018E9: parse_pipeline (tree.c:35)
+==497404==    by 0x401B33: parse_logic_sequence (tree.c:91)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x401C5D: parse_tokens (tree.c:119)
+==497404==    by 0x40164C: execute_input (main_utils.c:71)
+==497404== 
+==497404== 48 bytes in 1 blocks are still reachable in loss record 27 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x411A51: create_command_struct (tree_utils_2.c:65)
+==497404==    by 0x40E2E7: parse_init_command_node (tree_utils_1.c:22)
+==497404==    by 0x40E472: parse_process_word_token (tree_utils_1.c:65)
+==497404==    by 0x40E602: parse_command_loop (tree_utils_1.c:98)
+==497404==    by 0x40E6A0: parse_simple_commands (tree_utils_1.c:120)
+==497404==    by 0x4106ED: parse_command (parse_wildcards_utils.c:116)
+==497404==    by 0x4018E9: parse_pipeline (tree.c:35)
+==497404==    by 0x401B33: parse_logic_sequence (tree.c:91)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x411BD9: parse_subshell (tree_utils_2.c:106)
+==497404==    by 0x4106C9: parse_command (parse_wildcards_utils.c:112)
+==497404== 
+==497404== 80 bytes in 1 blocks are still reachable in loss record 31 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40E1B8: create_ast_node (tree_utils.c:54)
+==497404==    by 0x40E2C6: parse_init_command_node (tree_utils_1.c:19)
+==497404==    by 0x40E472: parse_process_word_token (tree_utils_1.c:65)
+==497404==    by 0x40E602: parse_command_loop (tree_utils_1.c:98)
+==497404==    by 0x40E6A0: parse_simple_commands (tree_utils_1.c:120)
+==497404==    by 0x4106ED: parse_command (parse_wildcards_utils.c:116)
+==497404==    by 0x4018E9: parse_pipeline (tree.c:35)
+==497404==    by 0x401B33: parse_logic_sequence (tree.c:91)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x401C5D: parse_tokens (tree.c:119)
+==497404==    by 0x40164C: execute_input (main_utils.c:71)
+==497404== 
+==497404== 80 bytes in 1 blocks are still reachable in loss record 32 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40E1B8: create_ast_node (tree_utils.c:54)
+==497404==    by 0x401A2C: init_logic_node (tree.c:66)
+==497404==    by 0x401BC2: parse_logic_sequence (tree.c:99)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x401C5D: parse_tokens (tree.c:119)
+==497404==    by 0x40164C: execute_input (main_utils.c:71)
+==497404==    by 0x40153A: handle_input (main_utils.c:108)
+==497404==    by 0x401442: main (main.c:37)
+==497404== 
+==497404== 80 bytes in 1 blocks are still reachable in loss record 33 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40E1B8: create_ast_node (tree_utils.c:54)
+==497404==    by 0x411B59: init_subshell_node (tree_utils_2.c:90)
+==497404==    by 0x411BB4: parse_subshell (tree_utils_2.c:103)
+==497404==    by 0x4106C9: parse_command (parse_wildcards_utils.c:112)
+==497404==    by 0x4018E9: parse_pipeline (tree.c:35)
+==497404==    by 0x401AB0: init_logic_node (tree.c:76)
+==497404==    by 0x401BC2: parse_logic_sequence (tree.c:99)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x401C5D: parse_tokens (tree.c:119)
+==497404==    by 0x40164C: execute_input (main_utils.c:71)
+==497404==    by 0x40153A: handle_input (main_utils.c:108)
+==497404== 
+==497404== 80 bytes in 1 blocks are still reachable in loss record 34 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40E1B8: create_ast_node (tree_utils.c:54)
+==497404==    by 0x40E2C6: parse_init_command_node (tree_utils_1.c:19)
+==497404==    by 0x40E472: parse_process_word_token (tree_utils_1.c:65)
+==497404==    by 0x40E602: parse_command_loop (tree_utils_1.c:98)
+==497404==    by 0x40E6A0: parse_simple_commands (tree_utils_1.c:120)
+==497404==    by 0x4106ED: parse_command (parse_wildcards_utils.c:116)
+==497404==    by 0x4018E9: parse_pipeline (tree.c:35)
+==497404==    by 0x401B33: parse_logic_sequence (tree.c:91)
+==497404==    by 0x40E2A4: parse_command_line (tree_utils.c:68)
+==497404==    by 0x411BD9: parse_subshell (tree_utils_2.c:106)
+==497404==    by 0x4106C9: parse_command (parse_wildcards_utils.c:112)
+==497404== 
+==497404== 1,073 bytes in 83 blocks are still reachable in loss record 53 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x412CB1: ft_substr (in /home/ldurmish/Desktop/Minihell/minishell)
+==497404==    by 0x40FE5A: create_env_node (env_utils.c:114)
+==497404==    by 0x4033DE: init_env_list (convert_env.c:119)
+==497404==    by 0x4013C2: main (main.c:23)
+==497404== 
+==497404== 1,992 bytes in 83 blocks are still reachable in loss record 56 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x40FDF5: create_env_node (env_utils.c:105)
+==497404==    by 0x4033DE: init_env_list (convert_env.c:119)
+==497404==    by 0x4013C2: main (main.c:23)
+==497404== 
+==497404== 3,673 bytes in 80 blocks are still reachable in loss record 59 of 90
+==497404==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497404==    by 0x4101B2: strip_quotes (env_utils_1.c:70)
+==497404==    by 0x410075: remove_quotes_and_paren (env_utils_1.c:114)
+==497404==    by 0x40FD18: create_env_value (env_utils.c:74)
+==497404==    by 0x40FEA1: create_env_node (env_utils.c:121)
+==497404==    by 0x4033DE: init_env_list (convert_env.c:119)
+==497404==    by 0x4013C2: main (main.c:23)
+==497404== 
+==497404== LEAK SUMMARY:
+==497404==    definitely lost: 16 bytes in 1 blocks
+==497404==    indirectly lost: 0 bytes in 0 blocks
+==497404==      possibly lost: 0 bytes in 0 blocks
+==497404==    still reachable: 7,251 bytes in 262 blocks
+==497404==         suppressed: 215,800 bytes in 228 blocks
+==497404== 
+==497404== For lists of detected and suppressed errors, rerun with: -s
+==497404== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==497390== 
+==497390== HEAP SUMMARY:
+==497390==     in use at exit: 215,791 bytes in 228 blocks
+==497390==   total heap usage: 1,027 allocs, 799 frees, 252,051 bytes allocated
+==497390== 
+==497390== 16 bytes in 1 blocks are definitely lost in loss record 9 of 73
+==497390==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==497390==    by 0x403FDB: push (stack.c:61)
+==497390==    by 0x404A11: process_open_paren (parenthesis.c:105)
+==497390==    by 0x404893: check_parenthesis (parenthesis.c:127)
+==497390==    by 0x40419F: parenthesis (parenthesis_validation.c:28)
+==497390==    by 0x4042A7: parenthesis_utils (parenthesis_validation.c:49)
+==497390==    by 0x404512: check_count_paren (parenthesis_validation.c:77)
+==497390==    by 0x404655: validation_parenthesis (parenthesis_validation.c:135)
+==497390==    by 0x4040EA: validation (validation.c:42)
+==497390==    by 0x401513: handle_input (main_utils.c:103)
+==497390==    by 0x401442: main (main.c:37)
+==497390== 
+==497390== LEAK SUMMARY:
+==497390==    definitely lost: 16 bytes in 1 blocks
+==497390==    indirectly lost: 0 bytes in 0 blocks
+==497390==      possibly lost: 0 bytes in 0 blocks
+==497390==    still reachable: 0 bytes in 0 blocks
+==497390==         suppressed: 215,775 bytes in 227 blocks
+==497390== 
+==497390== For lists of detected and suppressed errors, rerun with: -s
+==497390== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 ==1163528== Memcheck, a memory error detector
 ==1163528== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==1163528== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
