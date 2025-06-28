@@ -35,7 +35,7 @@ t_ast	*init_command_node(t_token *start, int word_count)
 	return (node);
 }
 
-t_redir_ls	*create_redir_node(int type, char *filename)
+t_redir_ls *create_redir_node(int type, char *filename, int expand)
 {
 	t_redir_ls	*redir;
 
@@ -43,8 +43,9 @@ t_redir_ls	*create_redir_node(int type, char *filename)
 	if (!redir)
 		return (NULL);
 	redir->type = type;
-	redir->filename = ft_strdup(filename);
-	if (!redir->filename)
+       redir->filename = ft_strdup(filename);
+       redir->expand = expand;
+       if (!redir->filename)
 	{
 		free(redir);
 		return (NULL);
@@ -78,7 +79,7 @@ static char	*expand_redir_filename(const char *pattern)
 	return (result);
 }
 
-int	add_redirection(t_commands *cmd, int type, char *filename)
+int add_redirection(t_commands *cmd, int type, char *filename, int expand)
 {
 	t_redir_ls	*new_redir;
 	t_redir_ls	*curr;
@@ -89,7 +90,7 @@ int	add_redirection(t_commands *cmd, int type, char *filename)
 	expanded = expand_redir_filename(filename);
 	if (!expanded)
 		return (0);
-	new_redir = create_redir_node(type, expanded);
+	new_redir = create_redir_node(type, expanded, expand);
 	free(expanded);
 	if (!new_redir)
 		return (0);
