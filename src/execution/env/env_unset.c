@@ -25,7 +25,7 @@ static void	remove_env_node(t_ast *data, t_env *prev, t_env *curr)
 
 static int	handle_unset_error(char *name)
 {
-	ft_putstr_fd("minishell: unset: `", STDERR_FILENO);
+	ft_putstr_fd("bash: unset: `", STDERR_FILENO);
 	ft_putstr_fd(name, STDERR_FILENO);
 	ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 	return (1);

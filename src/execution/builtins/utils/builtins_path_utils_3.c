@@ -14,7 +14,7 @@
 
 int	cd_too_many_args(t_ast *data)
 {
-	ft_putendl_fd("minishell: cd: too many arguments", STDERR_FILENO);
+	ft_putendl_fd("bash: cd: too many arguments", STDERR_FILENO);
 	data->exit_status = 1;
 	return (1);
 }

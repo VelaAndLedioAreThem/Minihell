@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 12:07:16 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:46:30 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	handle_redirection(int fd_inp, int fd_out)
 	{
 		if (dup2(fd_inp, STDIN_FILENO) == -1)
 		{
-			perror("minishell: dup2 input redirection");
+			perror("bash: dup2 input redirection");
 			exit(1);
 		}
 		close(fd_inp);
@@ -37,7 +37,7 @@ void	handle_redirection(int fd_inp, int fd_out)
 	{
 		if (dup2(fd_out, STDOUT_FILENO) == -1)
 		{
-			perror("minishell: dup2 output redirection");
+			perror("bash: dup2 output redirection");
 			exit(1);
 		}
 		close(fd_out);
@@ -46,7 +46,7 @@ void	handle_redirection(int fd_inp, int fd_out)
 
 void	display_command_not_found(char *cmd)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd("bash: ", STDERR_FILENO);
 	ft_putstr_fd(cmd, STDERR_FILENO);
 	ft_putendl_fd(": command not found", STDERR_FILENO);
 }
@@ -64,8 +64,8 @@ void	execute_child_process(t_ast *data, t_ast *tree)
 	}
 	envp = env(&(data->env_list));
 	execve(cmd_path, tree->cmd->args, envp);
-	perror("minishell: execve");
+	print_error(tree->cmd->args[0], strerror(errno));
 	free(cmd_path);
 	free_2darray(envp);
-	exit(1);
+	exit(126);
 }

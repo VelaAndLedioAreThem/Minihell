@@ -16,7 +16,7 @@ int	setup_pipe(int fd[2])
 {
 	if (pipe(fd) == -1)
 	{
-		perror("minishell: pipe");
+		perror("bash: pipe");
 		return (1);
 	}
 	return (0);

@@ -26,7 +26,7 @@ pid_t	fork_left_process(t_ast *data, t_ast *tree, int fd[2])
 	}
 	else if (left_pid < 0)
 	{
-		perror("minishell: fork");
+		perror("bash: fork");
 		return (-1);
 	}
 	return (left_pid);
@@ -46,7 +46,7 @@ pid_t	fork_right_process(t_ast *data, t_ast *tree, int fd[2])
 	}
 	else if (right_pid < 0)
 	{
-		perror("minishell: fork");
+		perror("bash: fork");
 		return (-1);
 	}
 	return (right_pid);

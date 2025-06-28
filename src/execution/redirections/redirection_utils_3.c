@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/21 16:33:58 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:38:42 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	handle_heredocs(t_ast *data, t_redir_ls *list)
 
 /* ---------- helpers to open files ---------------------------------------- */
 
-static int	open_infiles(t_redir_ls *curr, int *fd_in)
+static int	open_infiles(t_ast *data, t_redir_ls *curr, int *fd_in)
 {
 	int	fd;
 
@@ -47,14 +47,17 @@ static int	open_infiles(t_redir_ls *curr, int *fd_in)
 	fd = open(curr->filename, O_RDONLY);
 	if (fd < 0)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
+		if (data)
+			data->exit_status = 1;
 		return (0);
 	}
 	*fd_in = fd;
 	return (1);
 }
 
-static int	open_outfiles(t_redir_ls *curr, int *fd_out)
+static int	open_outfiles(t_ast *data, t_redir_ls *curr, int *fd_out)
 {
 	int	fd;
 	int	flags;
@@ -69,7 +72,10 @@ static int	open_outfiles(t_redir_ls *curr, int *fd_out)
 	fd = open(curr->filename, flags, 0644);
 	if (fd < 0)
 	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(curr->filename);
+		if (data)
+			data->exit_status = 1;
 		return (0);
 	}
 	*fd_out = fd;
@@ -78,7 +84,7 @@ static int	open_outfiles(t_redir_ls *curr, int *fd_out)
 
 /* ---------- 2nd pass : apply redirections -------------------------------- */
 
-static int	apply_redirs(t_redir_ls *list, int *fd_in, int *fd_out)
+static int	apply_redirs(t_ast *data, t_redir_ls *list, int *fd_in, int *fd_out)
 {
 	t_redir_ls	*curr;
 
@@ -87,12 +93,12 @@ static int	apply_redirs(t_redir_ls *list, int *fd_in, int *fd_out)
 	{
 		if (curr->type == TOKEN_REDIRECT_IN)
 		{
-			if (!open_infiles(curr, fd_in))
+			if (!open_infiles(data, curr, fd_in))
 				return (0);
 		}
 		else if (curr->type == TOKEN_REDIRECT_OUT || curr->type == TOKEN_APPEND)
 		{
-			if (!open_outfiles(curr, fd_out))
+			if (!open_outfiles(data, curr, fd_out))
 				return (0);
 		}
 		curr = curr->next;
@@ -108,5 +114,5 @@ int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
 	*fd_out = STDOUT_FILENO;
 	if (!handle_heredocs(data, tree->cmd->redirections))
 		return (0);
-	return (apply_redirs(tree->cmd->redirections, fd_in, fd_out));
+	return (apply_redirs(data, tree->cmd->redirections, fd_in, fd_out));
 }
