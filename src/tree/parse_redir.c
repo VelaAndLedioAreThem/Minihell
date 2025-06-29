@@ -26,7 +26,7 @@ static int      collect_delimiter(t_token **tokens, char **value, int *quoted)
         res = ft_strdup("");
         if (!res)
                 return (0);
-         *quoted = 0;
+        *quoted = 0;
         while (curr && curr->type == TOKEN_WORD)
         {
                 tmp = ft_strjoin(res, curr->value);
@@ -43,7 +43,8 @@ static int      collect_delimiter(t_token **tokens, char **value, int *quoted)
                 }
                 curr = curr->next;
         }
-		*tokens = curr;
+        *tokens = curr;
+
         *value = res;
         return (1);
 }
