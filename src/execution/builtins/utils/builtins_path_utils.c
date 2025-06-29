@@ -46,21 +46,34 @@ int	builtin_cd(t_ast *data, t_ast *tree, int fd)
 		count++;
 	if (count > 2)
 		return (cd_too_many_args(data));
-	path = tree->cmd->args[1];
-	oldpwd = getcwd(NULL, 0);
+       path = tree->cmd->args[1];
+       char    *expanded = NULL;
+       if (path && path[0] == '~')
+       {
+               expanded = expand_tilde(path, data->env_list);
+               if (!expanded && path[1] && path[1] != '/' && path[1] != '+' && path[1] != '-')
+                       return (data->exit_status = 1, 1);
+               if (expanded)
+                       path = expanded;
+       }
+       oldpwd = getcwd(NULL, 0);
 	if (!path || !ft_strcmp(path, "~"))
 		execute_home(data, path, oldpwd);
 	else if (!ft_strcmp(path, "-"))
 		execute_oldpwd(data, path, oldpwd);
-	if (execute_cd(data, path))
-	{
-		free(oldpwd);
-		return (data->exit_status = 1, 1);
-	}
-	set_env_var(data, "OLDPWD", oldpwd);
-	free(oldpwd);
-	data->exit_status = 0;
-	return (1);
+       if (execute_cd(data, path))
+       {
+               free(oldpwd);
+               if (expanded)
+                       free(expanded);
+               return (data->exit_status = 1, 1);
+       }
+       set_env_var(data, "OLDPWD", oldpwd);
+       free(oldpwd);
+       if (expanded)
+               free(expanded);
+       data->exit_status = 0;
+       return (1);
 }
 
 int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)

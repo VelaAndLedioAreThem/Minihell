@@ -136,15 +136,16 @@ static char	*expand_and_tokenize(char *input, t_env *env_list, t_args *arg,
 		free_env_list(copy);
 		return (NULL);
 	}
-	*tokens = tokenize_and_mark_expanded(input, expandable);
-	if (!*tokens)
-	{
-		free(expandable);
-		free_env_list(copy);
-		return (NULL);
-	}
-	free_env_list(copy);
-	return (expandable);
+       *tokens = tokenize_and_mark_expanded(input, expandable);
+       if (!*tokens)
+       {
+               free(expandable);
+               free_env_list(copy);
+               return (NULL);
+       }
+       expand_tilde_tokens(*tokens, env_list);
+       free_env_list(copy);
+       return (expandable);
 }
 
 static void	execute_input(t_token *t, t_env *env_list, char *exp, t_ctx *ctx)
