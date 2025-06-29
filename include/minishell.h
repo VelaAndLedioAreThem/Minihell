@@ -35,6 +35,7 @@
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
 # define HEREDOC_TEMPLATE "/tmp/minishell_heredocXXXXXX"
+# define MAX_OPEN_PIPES 256
 
 // Parsing struct
 typedef enum e_token_type
@@ -289,6 +290,7 @@ typedef struct s_ctx
 	int			last_exit_status;
 	int			argc;
 	char		**argv;
+        int                     pipe_count;
 }	t_ctx;
 typedef struct s_hdinfo
 {

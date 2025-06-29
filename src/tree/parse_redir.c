@@ -44,6 +44,7 @@ static int      collect_delimiter(t_token **tokens, char **value, int *quoted)
                 curr = curr->next;
         }
         *tokens = curr;
+
         *value = res;
         return (1);
 }

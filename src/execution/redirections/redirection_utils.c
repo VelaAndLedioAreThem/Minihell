@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/28 23:49:27 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/29 13:01:07 by vela             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static void     write_expanded(int fd, char *line, t_ast *data)
         char    *expanded;
 
         arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
+
                 .exit_status = gles(g_ctx)};
         tmp = expand_tilde(line, data->env_list);
         if (!tmp)
