@@ -36,11 +36,12 @@ static char *simple_gnl(int fd)
 }
 static void	init_main_context(t_ctx *main_ctx, int argc, char **argv)
 {
-	g_ctx = main_ctx;
-	main_ctx->child_pid = 0;
-	main_ctx->last_exit_status = 0;
-	main_ctx->argc = argc;
-	main_ctx->argv = argv;
+       g_ctx = main_ctx;
+       main_ctx->child_pid = 0;
+       main_ctx->last_exit_status = 0;
+       main_ctx->argc = argc;
+       main_ctx->argv = argv;
+       main_ctx->pipe_count = 0;
 }
 
 int	main(int argc, char **argv, char **envp)
