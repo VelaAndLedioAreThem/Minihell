@@ -417,7 +417,9 @@ char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
 char		*strip_quotes_and_parens_tokens(t_token *tokens);
-char		*remove_quotes_and_paren(char *str);
+char            *remove_quotes_and_paren(char *str);
+char            *expand_tilde(const char *path, t_env *env);
+void            expand_tilde_tokens(t_token *tokens, t_env *env);
 
 // Validation
 bool		validation(t_token *tokens);
