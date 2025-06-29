@@ -176,11 +176,16 @@ typedef struct s_state
 
 typedef struct s_redir_ls
 {
-	int					type;
-	char				*filename;
-	int					quoted;
-	struct s_redir_ls	*next;
-}	t_redir_ls;
+        int                                     type;
+        char                            *filename;
+        /* quoted values:
+        ** 0 - not quoted
+        ** 1 - single quoted
+        ** 2 - double quoted
+        */
+        int                                     quoted;
+        struct s_redir_ls       *next;
+}       t_redir_ls;
 
 typedef struct s_command
 {
