@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:33:04 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 12:43:03 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:12:35 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,82 +21,29 @@ int	handle_pwd_errors(char *old_pwd, int error_code)
 	return (error_code);
 }
 
-int	execute_oldpwd(t_ast *data, char *path, char *oldpwd)
-{
-	(void)oldpwd;
-	path = get_env_value(data->env_list, "OLDPWD");
-	if (!path)
-	{
-		ft_putendl_fd("bash: cd: OLDPWD not set", STDERR_FILENO);
-		return (data->exit_status = 1, 1);
-	}
-	ft_putendl_fd(path, STDOUT_FILENO);
-	return (0);
-}
-
 int	builtin_cd(t_ast *data, t_ast *tree, int fd)
 {
-	int		count;
 	char	*path;
 	char	*oldpwd;
 	char	*expanded;
+	int		count;
 
 	(void)fd;
-	count = 0;
-	while (tree->cmd->args && tree->cmd->args[count])
-		count++;
-	if (count > 2)
+	path = cd_get_path(tree, &count);
+	if (!path && count > 2)
 		return (cd_too_many_args(data));
-	path = tree->cmd->args[1];
 	expanded = NULL;
-	if (path && !ft_strcmp(path, "--"))
-	{
-		path = tree->cmd->args[2];
-		count--;
-	}
-	if (count > 2)
-		return (cd_too_many_args(data));
-	if (path && path[0] == '~')
-	{
-		expanded = expand_tilde(path, data->env_list);
-		if (!expanded && path[1] && path[1] != '/' && path[1] != '+'
-			&& path[1] != '-')
-			return (data->exit_status = 1, 1);
-		if (expanded)
-			path = expanded;
-	}
+	if (cd_expand_tilde(&path, &expanded, data->env_list))
+		return (cd_cleanup(data, NULL, expanded, 1));
 	oldpwd = getcwd(NULL, 0);
 	if (!path || !ft_strcmp(path, "~"))
 		execute_home(data, path, oldpwd);
-	else if (!ft_strcmp(path, "-"))
-	{
-		execute_oldpwd(data, path, oldpwd);
-		path = get_env_value(data->env_list, "OLDPWD");
-		if (!path)
-		{
-			free(oldpwd);
-			if (expanded)
-				free(expanded);
-			return (data->exit_status = 1, 1);
-		}
-	}
-	if (!path || !ft_strcmp(path, "~"))
-		execute_home(data, path, oldpwd);
-	else if (!ft_strcmp(path, "-"))
-		execute_oldpwd(data, path, oldpwd);
+	if (path && cd_handle_dash(data, &path, oldpwd, expanded))
+		return (1);
 	if (execute_cd(data, path))
-	{
-		free(oldpwd);
-		if (expanded)
-			free(expanded);
-		return (data->exit_status = 1, 1);
-	}
+		return (cd_cleanup(data, oldpwd, expanded, 1));
 	set_env_var(data, "OLDPWD", oldpwd);
-	free(oldpwd);
-	if (expanded)
-		free(expanded);
-	data->exit_status = 0;
-	return (1);
+	return (cd_cleanup(data, oldpwd, expanded, 0));
 }
 
 int	builtin_pwd(t_ast *data, t_ast *tree, int fd_out)

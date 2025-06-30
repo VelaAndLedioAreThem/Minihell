@@ -293,6 +293,11 @@ typedef struct s_hdinfo
 }		t_hdinfo;
 
 extern t_ctx	*g_ctx;
+int			cd_cleanup(t_ast *data, char *oldpwd, char *expanded, int err);
+int			cd_handle_dash(t_ast *data, char **path, char *oldpwd,
+				char *expanded);
+int			cd_expand_tilde(char **path, char **expanded, t_env *env);
+char		*cd_get_path(t_ast *tree, int *count);
 int			handle_heredocs(t_ast *data, t_redir_ls *list);
 char		*read_line_fd(int fd);
 void		merge_word_tokens(t_token *tokens);
