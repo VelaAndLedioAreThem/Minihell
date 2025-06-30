@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/20 12:42:00 by user              #+#    #+#             */
-/*   Updated: 2025/06/29 13:01:07 by vela             ###   ########.fr       */
+/*   Updated: 2025/06/30 16:14:52 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static char	*read_line_fd(int fd)
 	line[len] = '\0';
 	return (line);
 }
+
 static void	write_expanded(int fd, char *line, t_ast *data)
 {
 	t_args	arg;

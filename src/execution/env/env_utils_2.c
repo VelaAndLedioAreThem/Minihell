@@ -6,10 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:57:08 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 16:06:22 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:14:26 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../../include/minishell.h"
 
 void	incr_shell_lvl(t_env *data)
 {
@@ -119,13 +120,9 @@ char	*find_executable_path(t_ast *data, char *cmd)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);
 		if (full_path != NULL && access(full_path, X_OK) == 0)
-		{
-			free_2darray(paths);
-			return (full_path);
-		}
+			return (free_2darray(paths), full_path);
 		free(full_path);
 		i++;
 	}
-	free_2darray(paths);
-	return (NULL);
+	return (free_2darray(paths), NULL);
 }
