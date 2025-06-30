@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 13:45:17 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 14:17:19 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,66 @@ void    process_env_var(t_args *parse, t_env *env_list, char *input)
         char    *tmp;
 
         j = parse->i;
-        bslash_count = 0;
-        while (input[j] == '\\')
-        {
-                j++;
-                bslash_count++;
-        }
+	       bslash_count = 0;
+       while (input[j] == '\\')
+       {
+               j++;
+               bslash_count++;
+       }
+       if (input[parse->i] == '\'' && !parse->double_quotes)
+       {
+               int     start_q;
+
+               if (parse->i > parse->start)
+               {
+                       parse->temp = ft_substr(input, parse->start,
+                                       parse->i - parse->start);
+                       parse->old_result = parse->result;
+                       parse->result = ft_strjoin(parse->result, parse->temp);
+                       free(parse->old_result);
+                       free(parse->temp);
+               }
+               parse->i++;
+               start_q = parse->i;
+               while (input[parse->i] && input[parse->i] != '\'')
+                       parse->i++;
+               parse->temp = ft_substr(input, start_q, parse->i - start_q);
+               parse->old_result = parse->result;
+               parse->result = ft_strjoin(parse->result, parse->temp);
+               free(parse->old_result);
+               free(parse->temp);
+               if (input[parse->i] == '\'')
+                       parse->i++;
+               parse->start = parse->i;
+               return ;
+       }
+       if (input[parse->i] == '$' && input[parse->i + 1] == '\'')
+       {
+               int     start_q;
+
+               if (parse->i > parse->start)
+               {
+                       parse->temp = ft_substr(input, parse->start,
+                                       parse->i - parse->start);
+                       parse->old_result = parse->result;
+                       parse->result = ft_strjoin(parse->result, parse->temp);
+                       free(parse->old_result);
+                       free(parse->temp);
+               }
+               parse->i += 2;
+               start_q = parse->i;
+               while (input[parse->i] && input[parse->i] != '\'')
+                       parse->i++;
+               parse->temp = ft_substr(input, start_q, parse->i - start_q);
+               parse->old_result = parse->result;
+               parse->result = ft_strjoin(parse->result, parse->temp);
+               free(parse->old_result);
+               free(parse->temp);
+               if (input[parse->i] == '\'')
+                       parse->i++;
+               parse->start = parse->i;
+               return ;
+       }
         if (bslash_count && input[j] == '$')
         {
                 if (parse->i > parse->start)
