@@ -293,6 +293,8 @@ typedef struct s_hdinfo
 }		t_hdinfo;
 
 extern t_ctx	*g_ctx;
+void    merge_word_tokens(t_token *tokens);
+
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);

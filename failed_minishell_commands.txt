@@ -1,11 +1,4 @@
-----------------------------
-🌀 Tilde Expansion Issues
-----------------------------
-/bin/echo ~42         
-echo ~42             
-cd ~                 
-cd ../../            
-cd --                
+----------------------------            
 
 ----------------------------
 🧾 Heredoc Edge Cases
@@ -46,7 +39,6 @@ $T                          # Running command from exported variable
 ----------------------------
 🧩 Quoting Hell
 ----------------------------
-echo
 p""''''w''''''''''''''''''''''''''''''''''''''d
 '''''''''''''''' echo ok
 ''echo ok
@@ -138,7 +130,7 @@ rm -f "tmp_out*"
 /usr/bin/printf "%s\n" '*' | sort
 
 
-ls *
+
 ls 'test'*
 ls "test"*
 
@@ -149,19 +141,6 @@ touch "*1"
 rm "*1"
 
 
-env -i ./minishell
-cd /bin/
-ls
-
-
-export USER="@?/"
-env | grep USER
-
-export NEW="4 2"
-env | grep NEW
-
-export NEW="4=2"
-env | grep NEW
 
 
 echo '$='
@@ -325,19 +304,6 @@ stop3
 /bin/env | grep "_="
 
 
-pwd
-cd -
-pwd
-
-
-cd ../../
-cd -
-cd -
-
-pwd
-cd ~
-cd -
-pwd
 
 echo ''totally logical''
 
@@ -380,9 +346,3 @@ export T=ech
 
 
 echo $T'o '
-
-cat << "$USER"
-why
-not
-$USER
-

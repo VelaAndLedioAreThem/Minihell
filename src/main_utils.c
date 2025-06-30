@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 12:05:28 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:04:10 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static t_token	*tokenize_and_mark_expanded(char *input, char *expandable)
 	tokens = tokenize(expandable);
 	if (!tokens)
 		return (NULL);
+	merge_word_tokens(tokens);
 	was_expanded = (ft_strcmp(input, expandable) != 0);
 	if (was_expanded)
 	{
