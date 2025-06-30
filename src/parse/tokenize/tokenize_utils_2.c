@@ -64,6 +64,34 @@ int	handle_quotes(t_token **token, char *input, int *i)
 	return (1);
 }
 
+int     handle_dollar_single_quotes(t_token **token, char *input, int *i)
+{
+        int             start;
+        char            *content;
+        t_token         *current;
+
+        start = *i + 2;
+        *i = start;
+        while (input[*i] && input[*i] != '\'')
+                (*i)++;
+        if (!input[*i])
+        {
+                report_error(ERR_SYNTAX, "Unmatched parenthesis");
+                return (-1);
+        }
+        content = ft_substr(input, start, *i - start);
+        if (!content)
+                return (-1);
+        current = create_node(content, TOKEN_WORD);
+        free(content);
+        if (!current)
+                return (-1);
+        current->expandable = 0;
+        current->quotes.in_single_quotes = true;
+        append_node(token, current);
+        return (1);
+}
+
 int	handle_word(t_token **token, char *input, int *i)
 {
 	int			start;

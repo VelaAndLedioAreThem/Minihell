@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 16:45:16 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 14:09:20 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,7 +287,7 @@ typedef struct s_ctx
 }	t_ctx;
 typedef struct s_hdinfo
 {
-	char			*delim;
+	char		*delim;
 	int			quoted;
 	t_ast		*data;
 }		t_hdinfo;
@@ -403,6 +403,8 @@ int			handle_double_operator(t_token **head, char *input, int *i);
 int			handle_single_operator(t_token **token, char c);
 int			handle_word(t_token **token, char *input, int *i);
 int			handle_quotes(t_token **token, char *input, int *i);
+int         handle_dollar_single_quotes(t_token **token, char *input, int *i);
+
 int			handle_whitespace(t_token **token, char *input, int *i);
 
 // Environmental variables
