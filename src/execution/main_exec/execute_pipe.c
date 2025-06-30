@@ -76,23 +76,18 @@ int	wait_for_processes(t_ast *data, pid_t left_pid, pid_t right_pid)
 
 int	execute_pipe(t_ast *data, t_ast *tree)
 {
-        int             fd[2];
-        pid_t   left_pid;
-        pid_t   right_pid;
+	int		fd[2];
+	pid_t	left_pid;
+	pid_t	right_pid;
 
-        if (setup_pipe(fd) != 0)
-                return (data->exit_status = 1);
-        left_pid = fork_left_process(data, tree, fd);
-        if (left_pid < 0)
-                return (handle_fork_error(data, fd, 0));
-        close(fd[1]);
-        fd[1] = -1;
-        right_pid = fork_right_process(data, tree, fd);
-        if (right_pid < 0)
-                return (handle_fork_error(data, fd, left_pid));
-        close(fd[0]);
-        fd[0] = -1;
-        close_pipe(fd);
-        return (wait_for_processes(data, left_pid, right_pid));
+	if (setup_pipe(fd) != 0)
+		return (data->exit_status = 1);
+	left_pid = fork_left_process(data, tree, fd);
+	if (left_pid < 0)
+		return (handle_fork_error(data, fd, 0));
+	right_pid = fork_right_process(data, tree, fd);
+	if (right_pid < 0)
+		return (handle_fork_error(data, fd, left_pid));
+	close_pipe(fd);
+	return (wait_for_processes(data, left_pid, right_pid));
 }
-

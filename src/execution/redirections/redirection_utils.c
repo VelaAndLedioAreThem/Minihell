@@ -34,14 +34,13 @@ static char     *read_line_fd(int fd)
         line[len] = '\0';
         return (line);
 }
-static void     write_expanded(int fd, char *line, t_ast *data)
+static void	write_expanded(int fd, char *line, t_ast *data)
 {
-        t_args  arg;
+	  t_args  arg;
         char    *tmp;
         char    *expanded;
 
-        arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
-
+	arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
                 .exit_status = gles(g_ctx)};
         tmp = expand_tilde(line, data->env_list);
         if (!tmp)
@@ -56,7 +55,6 @@ static void     write_expanded(int fd, char *line, t_ast *data)
                 ft_putendl_fd(tmp, fd);
         free(tmp);
 }
-
 
 int	handle_line(int fd, char *line, t_hdinfo *info)
 {
