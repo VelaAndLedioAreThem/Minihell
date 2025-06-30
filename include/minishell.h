@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 14:09:20 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:06:30 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,9 +293,8 @@ typedef struct s_hdinfo
 }		t_hdinfo;
 
 extern t_ctx	*g_ctx;
-void    merge_word_tokens(t_token *tokens);
-int				prepare_heredoc_tree(t_ast *data, t_ast *tree);
-
+void		merge_word_tokens(t_token *tokens);
+int			prepare_heredoc_tree(t_ast *data, t_ast *tree);
 int			open_unique_tmp(char *path);
 int			handle_file_error(char *filename);
 int			redirect_input(char *file, int *save);
@@ -309,10 +308,10 @@ int			cd_too_many_args(t_ast *data);
 int			open_infile(char *path);
 int			open_outfile(char *path, int type);
 void		create_intermediate_outfile(char *path, int type);
-void	cleanup_heredoc_files(t_ast *data);
-int				handle_line(int fd, char *line, t_hdinfo *info);
-int				run_heredoc_loop(int fd, t_hdinfo *info);
-int				fork_heredoc(int fd, t_hdinfo *info);
+void		cleanup_heredoc_files(t_ast *data);
+int			handle_line(int fd, char *line, t_hdinfo *info);
+int			run_heredoc_loop(int fd, t_hdinfo *info);
+int			fork_heredoc(int fd, t_hdinfo *info);
 int			setup_heredoc_filename(t_ast *data, t_ast *node, char *tmp);
 void		update_last_exit_status(t_ctx *ctx, int status);
 int			gles(t_ctx *ctx);
@@ -403,8 +402,7 @@ int			handle_double_operator(t_token **head, char *input, int *i);
 int			handle_single_operator(t_token **token, char c);
 int			handle_word(t_token **token, char *input, int *i);
 int			handle_quotes(t_token **token, char *input, int *i);
-int         handle_dollar_single_quotes(t_token **token, char *input, int *i);
-
+int			handle_dollar_single_quotes(t_token **token, char *input, int *i);
 int			handle_whitespace(t_token **token, char *input, int *i);
 
 // Environmental variables
@@ -422,9 +420,9 @@ char		*join_arguments(t_args *arg);
 char		*env_expansion(char *input, int *i, t_env *env_list, t_args *arg);
 t_env		*deep_copy_env_list(t_env *env_list);
 char		*strip_quotes_and_parens_tokens(t_token *tokens);
-char            *remove_quotes_and_paren(char *str);
-char            *expand_tilde(const char *path, t_env *env);
-void            expand_tilde_tokens(t_token *tokens, t_env *env);
+char		*remove_quotes_and_paren(char *str);
+char		*expand_tilde(const char *path, t_env *env);
+void		expand_tilde_tokens(t_token *tokens, t_env *env);
 
 // Validation
 bool		validation(t_token *tokens);
@@ -543,7 +541,8 @@ t_ast		*create_ast_node(t_ast_type type, t_token *token);
 void		free_ast(t_ast *node);
 t_ast		*parse_simple_commands(t_token **tokens);
 t_commands	*create_command_struct(void);
-int			add_redirection(t_commands *cmd, int type, char *filename, int quoted);
+int			add_redirection(t_commands *cmd,
+				int type, char *filename, int quoted);
 char		**expand_command_args(char **temp_args, int temp_count);
 t_ast		*create_command_node(t_token *start, int word_count);
 void		skip_tree_whitespaces(t_token **tokens);
