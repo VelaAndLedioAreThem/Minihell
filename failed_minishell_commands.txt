@@ -185,60 +185,6 @@ export X="  A  B  "
 
 
 
-ls | cat << stop | ls -la | cat << stop1 | ls | cat << stop2 | ls -la > > out | cat << stop3
-fe
-wf
-fwe
-f
-stop
-dw
-stop1
-dwasd
-stop2
-cat Makefile | ls > out
-cat out
-/bin/rm -f out
-
-ls | cat << stop | grep "asd"
-is this good
-stop
-
-ls | cat << stop | ls -la | cat << stop1
-12
-32232
-23
-stop
-awdaw
-daswd
-stop1
-
-ls | cat << stop | ls -la | cat << stop1 | ls | cat << stop2 | ls -la | cat << stop3
-$USER
-ad
-as $HOME
-stop
-awd
-wf$PWDdqwdwqd
-stop1
-das
-das
-stop2
-dsq
-wd
-wf$PWDdqwdwqd
-stop3
-
-ls | cat << stop | ls -la | cat << stop1 | ls | cat << stop2 | ls -la > out | cat << 'stop3'
-$USER
-ad
-stop
-dsa
-stop1
-sad
-stop2
-as $HOME
-stop3
-/bin/rm -f out
 
 
 /bin/env | grep "_="
@@ -262,7 +208,26 @@ stop3
 
 
 
+export pipe_var=1 | echo $pipe_var
+echo $pipe_var
 
-export T=ech
+/bin/echo '\1$42' > tmp_redir_out
+ls -la | grep tmp_redir_out | awk '{print $1 $2}'
+cat -e tmp_redir_out
+rm tmp_redir_out
 
+export test="arg1	arg2"
+echo 'echo $1' > tmp_test_sh
+bash tmp_test_sh $test
+echo 'echo $2' > tmp_test_sh
+bash tmp_test_sh $test
+rm -f tmp_test_sh
 
+echo "env | /usr/bin/wc -l" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?
+
+echo "ls" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?
+
+echo "unset PATH" | env -i $MINISHELL_PATH"/"$EXECUTABLE
+echo $?

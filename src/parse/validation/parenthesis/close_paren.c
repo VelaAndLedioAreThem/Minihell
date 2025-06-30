@@ -81,6 +81,7 @@ bool	check_op_after_paren(char *input, t_token *token, int *j)
 	return (true);
 }
 
+
 bool	logical_op_after_paren(char *input, t_token *token, int *j)
 {
 	if (!input[*j])
@@ -93,16 +94,12 @@ bool	logical_op_after_paren(char *input, t_token *token, int *j)
 			return (check_op_after_paren(input, token, j));
 		else
 		{
-			(*j)++;
-			while (input[*j] && ft_isspace(input[*j]))
-				(*j)++;
-			if (!input[*j] || !is_valid_command_char(input[*j]))
-			{
-				report_error(ERR_SYNTAX, "pipe without command");
-				free_stack(token);
-				return (false);
-			}
-		}
+               (*j)++;
+               while (input[*j] && ft_isspace(input[*j]))
+                       (*j)++;
+               if (!input[*j])
+                       return (true);
+        }
 	}
 	return (true);
 }

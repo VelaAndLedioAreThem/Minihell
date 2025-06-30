@@ -109,6 +109,7 @@ void	update_assignment_context(t_assign_context *ctx, t_token *current)
 		reset_assign(ctx);
 }
 
+
 bool	validation_parenthesis(t_token *tokenize)
 {
 	t_token				*current;
@@ -117,15 +118,15 @@ bool	validation_parenthesis(t_token *tokenize)
 
 	current = tokenize;
 	prev = NULL;
-	ctx = (t_assign_context){false, false, -1, NULL};
-	if (current && current->value[0] == '(' && current->next
-		&& current->next->value[0] == '(')
-	{
-		report_error(ERR_SYNTAX, "double parenthesis '((' not supported");
-		return (false);
-	}
-	while (current)
-	{
+       ctx = (t_assign_context){false, false, -1, NULL};
+       if (current && current->value[0] == '('
+               && current->next->value[0] == '(')
+       {
+               report_error(ERR_SYNTAX, "double parenthesis '((' not supported");
+               return (false);
+       }
+       while (current)
+       {
 		update_assignment_context(&ctx, current);
 		if (!check_command_paren_sequence(current, prev, &ctx))
 			return (false);
