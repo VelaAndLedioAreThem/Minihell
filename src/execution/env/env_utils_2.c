@@ -6,10 +6,10 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:57:08 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 18:57:08 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:06:22 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../../include/minishell.h"
+
 
 void	incr_shell_lvl(t_env *data)
 {
@@ -99,10 +99,10 @@ static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char **paths;
-	char *full_path;
-	char *result;
-	int i;
+	char	**paths;
+	char	*full_path;
+	char	*result;
+	int		i;
 
 	paths = NULL;
 	i = 0;
