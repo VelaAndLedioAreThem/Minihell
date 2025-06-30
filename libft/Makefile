@@ -6,69 +6,57 @@
 #    By: ledio <ledio@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/19 12:20:49 by ldurmish          #+#    #+#              #
-#    Updated: 2025/06/28 13:12:09 by ldurmish         ###   ########.fr        #
+#    Updated: 2024/12/01 22:17:01 by ledio            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# ╔══════════════════════════════════════════════════════════════════════╗
-# ║                               LIBFT                                  ║
-# ╚══════════════════════════════════════════════════════════════════════╝
+NAME = libft.a
 
-# ────────────────────────────────────────────────────────────────────────
-# 1.  Basic settings
-# ────────────────────────────────────────────────────────────────────────
-NAME        := libft.a
+CC = cc
 
-CC          := cc
-CFLAGS      := -Wall -Wextra -Werror -Iinclude
+CFLAGS = -Wall -Wextra -Werror -I include
 
-AR          := ar rcs
-RM          := rm -f
+SRCS = src/ft_bzero.c src/ft_calloc.c src/ft_isalnum.c \
+		src/ft_isalpha.c src/ft_isascii.c src/ft_isdigit.c src/ft_isprint.c \
+		src/ft_itoa.c src/ft_memchr.c src/ft_memcmp.c \
+		src/ft_memcpy.c src/ft_memmove.c src/ft_memset.c src/ft_putchar_fd.c \
+		src/ft_putendl_fd.c src/ft_putnbr_fd.c src/ft_putstr_fd.c src/ft_split.c \
+		src/ft_strchr.c src/ft_strdup.c src/ft_striteri.c src/ft_strjoin.c \
+		src/ft_strlcat.c src/ft_strlcpy.c src/ft_strlen.c src/ft_strmapi.c \
+		src/ft_strncmp.c src/ft_strnstr.c src/ft_strrchr.c src/ft_strtrim.c \
+		src/ft_substr.c src/ft_tolower.c src/ft_toupper.c src/ft_atoi.c\
 
-# ────────────────────────────────────────────────────────────────────────
-# 2.  Directories & source lists
-# ────────────────────────────────────────────────────────────────────────
-SRC_DIR     := src
-GNL_DIR     := gnl
-BONUS_DIR   := bonus
+BONUS_SRCS = bonus/ft_lstnew_bonus.c bonus/ft_lstadd_front_bonus.c bonus/ft_lstsize_bonus.c \
+             bonus/ft_lstlast_bonus.c bonus/ft_lstadd_back_bonus.c bonus/ft_lstdelone_bonus.c \
+             bonus/ft_lstclear_bonus.c bonus/ft_lstiter_bonus.c bonus/ft_lstmap_bonus.c \
 
-# Core functions
-SRCS        := $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(SRCS:.c=.o)
+BONUS_OBJS = $(BONUS_SRCS:.c=.o)
 
-# get_next_line (non-bonus version – swap to *_bonus.c if you prefer)
-SRCS        += $(GNL_DIR)/get_next_line.c \
-               $(GNL_DIR)/get_next_line_utils.c
+HEADERS = include/libft.h
 
-# Objects build alongside the sources (simplest layout)
-OBJS        := $(SRCS:.c=.o)
 
-# ────────────────────────────────────────────────────────────────────────
-# 3.  Bonus (list & objects)
-# ────────────────────────────────────────────────────────────────────────
-BONUS_SRCS  := $(wildcard $(BONUS_DIR)/*.c)
-BONUS_OBJS  := $(BONUS_SRCS:.c=.o)
-
-# ────────────────────────────────────────────────────────────────────────
-# 4.  Targets
-# ────────────────────────────────────────────────────────────────────────
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(AR) $@ $^
+	ar rcs $(NAME) $(OBJS)
 
-bonus: $(NAME) $(BONUS_OBJS)   # add bonus objects to the archive
-	$(AR) $@ $(BONUS_OBJS)
+bonus: $(BONUS_OBJS)
+	ar rcs $(NAME) $(BONUS_OBJS)
 
-%.o: %.c
+%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+
 clean:
-	$(RM) $(OBJS) $(BONUS_OBJS)
+	rm -f $(OBJS) $(BONUS_OBJS)
+
 
 fclean: clean
-	$(RM) $(NAME)
+	rm -f $(NAME) $(BONUS_NAME)
 
-re: fclean all
 
-.PHONY: all clean fclean re bonus
+re: fclean all clean
 
+
+.PHONY: all clean fclean re

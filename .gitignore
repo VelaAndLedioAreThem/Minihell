@@ -1,6 +1,0 @@
-# Ignore build artifacts
-*.o
-minishell
-libft/libft.a
-valgrind.log
-

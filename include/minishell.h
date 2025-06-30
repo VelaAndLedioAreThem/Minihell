@@ -31,7 +31,6 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "../libft/include/libft.h"
-# include "../libft/gnl/include/get_next_line.h"
 # define TOKEN_PROCESSED 42
 # define TOKEN_READWRITE 43
 # define HEREDOC_TEMPLATE "/tmp/minishell_heredocXXXXXX"
