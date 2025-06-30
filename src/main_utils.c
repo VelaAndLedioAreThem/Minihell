@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:19:06 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 13:04:10 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:17:14 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,20 @@ static void	execute_input(t_token *t, t_env *env_list, char *exp, t_ctx *ctx)
 		return ;
 	}
 	ast->heredoc_files = NULL;
-	ast->heredoc_count = 0;
-	ast->env_list = env_list;
-	execute_tree(ast, ast);
-	update_last_exit_status(ctx, ast->exit_status);
-	cleanup_heredoc_files(ast);
-	free_ast(ast);
+       ast->heredoc_count = 0;
+       ast->env_list = env_list;
+       if (!prepare_heredoc_tree(ast, ast))
+       {
+               update_last_exit_status(ctx, ast->exit_status);
+               cleanup_heredoc_files(ast);
+               free_ast(ast);
+               free(exp);
+               return ;
+       }
+       execute_tree(ast, ast);
+       update_last_exit_status(ctx, ast->exit_status);
+       cleanup_heredoc_files(ast);
+       free_ast(ast);
 	free(exp);
 }
 

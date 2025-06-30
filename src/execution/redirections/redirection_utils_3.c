@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:53:59 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 18:57:03 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:16:56 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,4 +101,15 @@ int	setup_fds(t_ast *data, t_ast *tree, int *fd_in, int *fd_out)
 	if (!handle_heredocs(data, tree->cmd->redirections))
 		return (0);
 	return (apply_redirs(data, tree->cmd->redirections, fd_in, fd_out));
+}
+
+int	prepare_heredoc_tree(t_ast *data, t_ast *tree)
+{
+	if (!tree)
+		return (1);
+	if (tree->type == AST_COMMAND)
+		return (handle_heredocs(data, tree->cmd->redirections));
+	if (!prepare_heredoc_tree(data, tree->left))
+		return (0);
+	return (prepare_heredoc_tree(data, tree->right));
 }

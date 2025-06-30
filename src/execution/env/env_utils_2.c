@@ -107,8 +107,14 @@ char	*find_executable_path(t_ast *data, char *cmd)
 	paths = NULL;
 	i = 0;
 	result = checker(data, cmd, &paths);
-	if (result != NULL || paths == NULL)
-		return (result);
+    if (result != NULL)
+            return (result);
+    if (paths == NULL)
+    {
+            if (access(cmd, X_OK) == 0)
+                    return (ft_strdup(cmd));
+            return (NULL);
+    }
 	while (paths[i] != NULL)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);
