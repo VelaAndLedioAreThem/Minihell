@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 14:26:42 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 15:28:21 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,8 @@ void    process_env_var(t_args *parse, t_env *env_list, char *input)
         else
                 parse->i++;
 }
+
+
 t_env	*deep_copy_env_list(t_env *env_list)
 {
 	t_env	*new_head;
