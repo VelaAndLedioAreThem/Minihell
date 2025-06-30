@@ -85,8 +85,8 @@ char	**add_match(char **matches, int *count, char *path)
 {
 	char	**new_tab;
 
-	new_tab = ft_realloc(matches,
-			(*count + 1) * sizeof(char *), (*count + 2) * sizeof(char *));
+	new_tab = ft_realloc(matches, (*count + 1) * sizeof(char *), (*count + 2)
+			* sizeof(char *));
 	if (new_tab == NULL)
 	{
 		free(path);

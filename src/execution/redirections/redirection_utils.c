@@ -11,49 +11,50 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-static char     *read_line_fd(int fd)
-{
-        char    *line;
-        char    buf[1];
-        size_t  len;
-        ssize_t rd;
 
-        line = NULL;
-        len = 0;
-        while ((rd = read(fd, buf, 1)) > 0)
-        {
-                line = ft_realloc(line, len + 1, len + 2);
-                if (!line)
-                        return (NULL);
-                line[len++] = buf[0];
-                if (buf[0] == '\n')
-                        break ;
-        }
-        if (rd <= 0 && len == 0)
-                return (NULL);
-        line[len] = '\0';
-        return (line);
+static char	*read_line_fd(int fd)
+{
+	char	*line;
+	char	buf[1];
+	size_t	len;
+	ssize_t	rd;
+
+	line = NULL;
+	len = 0;
+	while ((rd = read(fd, buf, 1)) > 0)
+	{
+		line = ft_realloc(line, len + 1, len + 2);
+		if (!line)
+			return (NULL);
+		line[len++] = buf[0];
+		if (buf[0] == '\n')
+			break ;
+	}
+	if (rd <= 0 && len == 0)
+		return (NULL);
+	line[len] = '\0';
+	return (line);
 }
 static void	write_expanded(int fd, char *line, t_ast *data)
 {
-	  t_args  arg;
-        char    *tmp;
-        char    *expanded;
+	t_args	arg;
+	char	*tmp;
+	char	*expanded;
 
 	arg = (t_args){.argc = g_ctx->argc - 1, .argv = g_ctx->argv + 1,
-                .exit_status = gles(g_ctx)};
-        tmp = expand_tilde(line, data->env_list);
-        if (!tmp)
-                tmp = ft_strdup(line);
-        expanded = parse_env(tmp, data->env_list, &arg);
-        if (expanded)
-        {
-                ft_putendl_fd(expanded, fd);
-                free(expanded);
-        }
-        else
-                ft_putendl_fd(tmp, fd);
-        free(tmp);
+		.exit_status = gles(g_ctx)};
+	tmp = expand_tilde(line, data->env_list);
+	if (!tmp)
+		tmp = ft_strdup(line);
+	expanded = parse_env(tmp, data->env_list, &arg);
+	if (expanded)
+	{
+		ft_putendl_fd(expanded, fd);
+		free(expanded);
+	}
+	else
+		ft_putendl_fd(tmp, fd);
+	free(tmp);
 }
 
 int	handle_line(int fd, char *line, t_hdinfo *info)

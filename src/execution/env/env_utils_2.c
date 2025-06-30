@@ -77,44 +77,44 @@ t_env	*find_envir_variable(t_ast *data, char *var_name, int len)
 
 static char	*checker(t_ast *data, char *cmd, char ***paths_ptr)
 {
-        t_env   *path_env;
+	t_env	*path_env;
 
-        if (ft_strchr(cmd, '/'))
-        {
-                if (access(cmd, X_OK) == 0)
-                        return (ft_strdup(cmd));
-                return (ft_strdup(cmd));
-        }
-        path_env = find_envir_variable(data, "PATH", 4);
-        if (!path_env || !path_env->value || path_env->value[0] == '\0')
-        {
-                *paths_ptr = NULL;
-                return (NULL);
-        }
-        *paths_ptr = ft_split(path_env->value, ':');
-        if (!*paths_ptr)
-                return (NULL);
-        return (NULL);
+	if (ft_strchr(cmd, '/'))
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		return (ft_strdup(cmd));
+	}
+	path_env = find_envir_variable(data, "PATH", 4);
+	if (!path_env || !path_env->value || path_env->value[0] == '\0')
+	{
+		*paths_ptr = NULL;
+		return (NULL);
+	}
+	*paths_ptr = ft_split(path_env->value, ':');
+	if (!*paths_ptr)
+		return (NULL);
+	return (NULL);
 }
 
 char	*find_executable_path(t_ast *data, char *cmd)
 {
-	char	**paths;
-	char	*full_path;
-	char	*result;
-	int		i;
+	char **paths;
+	char *full_path;
+	char *result;
+	int i;
 
 	paths = NULL;
 	i = 0;
 	result = checker(data, cmd, &paths);
-    if (result != NULL)
-            return (result);
-    if (paths == NULL)
-    {
-            if (access(cmd, X_OK) == 0)
-                    return (ft_strdup(cmd));
-            return (NULL);
-    }
+	if (result != NULL)
+		return (result);
+	if (paths == NULL)
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		return (NULL);
+	}
 	while (paths[i] != NULL)
 	{
 		full_path = ft_strjoin3(paths[i], "/", cmd);

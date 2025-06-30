@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/13 17:21:58 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 14:11:09 by ldurmish         ###   ########.fr       */
+/*   Created: 2025/06/30 15:58:49 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:58:49 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,22 @@
 
 int	ft_isspace(int num)
 {
-	if (num == ' ' || num == '\n' || num == '\t'
-		|| num == '\v' || num == '\f' || num == '\r')
+	if (num == ' ' || num == '\n' || num == '\t' || num == '\v' || num == '\f'
+		|| num == '\r')
 		return (1);
 	return (0);
 }
 
 int	is_operator(char c)
 {
-	if (c == '&' || c == '|' || c == '(' || c == ')'
-		|| c == '>' || c == '<')
+	if (c == '&' || c == '|' || c == '(' || c == ')' || c == '>' || c == '<')
 		return (1);
 	return (0);
 }
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
-	int			i;
+	int	i;
 
 	i = 0;
 	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
@@ -40,8 +39,8 @@ int	ft_strcmp(const char *s1, const char *s2)
 
 int	count_parenthesis_in_string(const char *str)
 {
-	int		count;
-	int		i;
+	int	count;
+	int	i;
 
 	count = 0;
 	i = 0;
@@ -82,33 +81,35 @@ int	count_parenthesis(t_token *tokenize)
 	return (count);
 }
 
-void    merge_word_tokens(t_token *tokens)
+void	merge_word_tokens(t_token *tokens)
 {
-    t_token *curr;
-    t_token *next;
-    char    *joined;
+	t_token	*curr;
+	t_token	*next;
+	char	*joined;
 
-    curr = tokens;
-    while (curr && curr->next)
-    {
-        if (curr->type == TOKEN_WORD && curr->next->type == TOKEN_WORD)
-        {
-            next = curr->next;
-            joined = ft_strjoin(curr->value, next->value);
-            if (!joined)
-                return ;
-            free(curr->value);
-            curr->value = joined;
-            curr->expandable = curr->expandable || next->expandable;
-            curr->quotes.in_single_quotes = curr->quotes.in_single_quotes && next->quotes.in_single_quotes;
-            curr->quotes.in_double_quotes = curr->quotes.in_double_quotes && next->quotes.in_double_quotes;
-            curr->next = next->next;
-            free(next->value);
-            if (next->top)
-                free_stack(next);
-            free(next);
-            continue ;
-        }
-        curr = curr->next;
-    }
+	curr = tokens;
+	while (curr && curr->next)
+	{
+		if (curr->type == TOKEN_WORD && curr->next->type == TOKEN_WORD)
+		{
+			next = curr->next;
+			joined = ft_strjoin(curr->value, next->value);
+			if (!joined)
+				return ;
+			free(curr->value);
+			curr->value = joined;
+			curr->expandable = curr->expandable || next->expandable;
+			curr->quotes.in_single_quotes = curr->quotes.in_single_quotes
+				&& next->quotes.in_single_quotes;
+			curr->quotes.in_double_quotes = curr->quotes.in_double_quotes
+				&& next->quotes.in_double_quotes;
+			curr->next = next->next;
+			free(next->value);
+			if (next->top)
+				free_stack(next);
+			free(next);
+			continue ;
+		}
+		curr = curr->next;
+	}
 }

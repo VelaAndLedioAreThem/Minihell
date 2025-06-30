@@ -59,7 +59,7 @@ bool	parenthesis_utils(t_token *tokenize)
 
 bool	check_count_paren(t_token *tokenize)
 {
-	int paren_count;
+	int	paren_count;
 
 	if (!tokenize)
 		return (true);
@@ -108,9 +108,9 @@ void	update_assignment_context(t_assign_context *ctx, t_token *current)
 
 bool	validation_parenthesis(t_token *tokenize)
 {
-	t_token *current;
-	t_token *prev;
-	t_assign_context ctx;
+	t_token				*current;
+	t_token				*prev;
+	t_assign_context	ctx;
 
 	current = tokenize;
 	prev = NULL;

@@ -2,11 +2,11 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
+/*                                                    +:+ +:+
 	+:+     */
-/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+      
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+
 	+#+        */
-/*                                                +#+#+#+#+#+  
+/*                                                +#+#+#+#+#+
 	+#+           */
 /*   Created: 2025/03/25 13:17:20 by vszpiech          #+#    #+#             */
 /*   Updated: 2025/03/25 13:17:20 by vszpiech         ###   ########.fr       */

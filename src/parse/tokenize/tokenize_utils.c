@@ -2,19 +2,15 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   tokenize_utils.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2025/02/13 23:25:01 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 19:20:37 by ldurmish         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 15:58:33 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:58:33 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
-
 
 int	handle_single_operator(t_token **token, char c)
 {

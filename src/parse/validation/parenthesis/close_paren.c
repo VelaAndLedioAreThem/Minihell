@@ -2,19 +2,15 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   close_paren.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2025/03/10 16:19:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/03/19 02:21:29 by ldurmish         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 15:55:13 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:55:13 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../../include/minishell.h"
-
 
 bool	check_redirect_after_paren(char *next_input, t_token *token, int *j)
 {
@@ -38,8 +34,8 @@ bool	check_redirect_after_paren(char *next_input, t_token *token, int *j)
 
 bool	check_commands_after_paren(char *input, int *j)
 {
-	bool found_operator;
-	int k;
+	bool	found_operator;
+	int		k;
 
 	if (input[*j] && is_command_or_arg_char(input[*j]))
 	{
@@ -58,8 +54,8 @@ bool	check_commands_after_paren(char *input, int *j)
 		if (!found_operator)
 		{
 			report_error(ERR_SYNTAX,
-							"missing operator between"
-							"parenthesis and commands");
+				"missing operator between"
+				"parenthesis and commands");
 			return (false);
 		}
 	}
@@ -110,9 +106,9 @@ bool	logical_op_after_paren(char *input, t_token *token, int *j)
 
 bool	check_next_token(t_token *next)
 {
-	t_token *next_token;
-	char *next_input;
-	int j;
+	t_token		*next_token;
+	char		*next_input;
+	int			j;
 
 	if (!next || !next->next)
 		return (true);

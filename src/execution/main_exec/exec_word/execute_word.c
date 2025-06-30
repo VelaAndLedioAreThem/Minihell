@@ -30,8 +30,7 @@ int	fork_external_command(t_ast *data, t_ast *tree, int fd_in, int fd_out)
 	return (0);
 }
 
-int	finalize_heredoc(t_ast *data, t_redir_ls *redir,
-		char *tmp_name, int status)
+int	finalize_heredoc(t_ast *data, t_redir_ls *redir, char *tmp_name, int status)
 {
 	if (status != 0)
 	{

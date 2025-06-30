@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
 #include "libft.h" /* your usual libft */
+#include "minishell.h"
 
 /* --- basic linked-list helpers ------------------------------------------ */
 

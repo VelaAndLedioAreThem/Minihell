@@ -33,9 +33,9 @@ int	handle_builtin(t_ast *data, t_ast *tree, int fd_out)
 {
 	int						i;
 	static const t_builtin	builtins[] = {{"export", builtin_export}, {"unset",
-		builtin_unset}, {"env", builtin_env}, {"cd", builtin_cd}, {"pwd",
-		builtin_pwd}, {"echo", builtin_echo},
-	{"exit", builtin_exit}, {NULL, NULL}};
+			builtin_unset}, {"env", builtin_env}, {"cd", builtin_cd}, {"pwd",
+			builtin_pwd}, {"echo", builtin_echo}, {"exit", builtin_exit}, {NULL,
+			NULL}};
 
 	i = 0;
 	if (!tree->cmd->args || !tree->cmd->args[0])

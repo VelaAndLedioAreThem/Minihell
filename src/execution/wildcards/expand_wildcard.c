@@ -44,8 +44,7 @@ char	**expand_wildcard(char *pattern)
 
 void	add_arg_to_args(char ***new_args, int *new_count, char *arg)
 {
-	*new_args = ft_realloc(*new_args,
-			(*new_count + 1) * sizeof(char *),
+	*new_args = ft_realloc(*new_args, (*new_count + 1) * sizeof(char *),
 			(*new_count + 2) * sizeof(char *));
 	(*new_args)[*new_count] = ft_strdup(arg);
 	(*new_count)++;

@@ -49,8 +49,8 @@ void	process_all_arguments(char **args, char ***new_args, int *new_count)
 
 char	**finalize_args_array(char **args, int count)
 {
-	args = ft_realloc(args,
-			(count + 1) * sizeof(char *), (count + 2) * sizeof(char *));
+	args = ft_realloc(args, (count + 1) * sizeof(char *), (count + 2)
+			* sizeof(char *));
 	args[count] = NULL;
 	return (args);
 }

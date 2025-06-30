@@ -43,19 +43,19 @@ int	builtin_cd(t_ast *data, t_ast *tree, int fd)
 
 	(void)fd;
 	count = 0;
-    while (tree->cmd->args && tree->cmd->args[count])
-        	count++;
+	while (tree->cmd->args && tree->cmd->args[count])
+		count++;
 	if (count > 2)
 		return (cd_too_many_args(data));
 	path = tree->cmd->args[1];
 	expanded = NULL;
 	if (path && !ft_strcmp(path, "--"))
-       {
-               path = tree->cmd->args[2];
-               count--;
-       }
-       if (count > 2)
-               return (cd_too_many_args(data));
+	{
+		path = tree->cmd->args[2];
+		count--;
+	}
+	if (count > 2)
+		return (cd_too_many_args(data));
 	if (path && path[0] == '~')
 	{
 		expanded = expand_tilde(path, data->env_list);
