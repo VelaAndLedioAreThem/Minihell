@@ -1,18 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tilde_expansion.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 16:27:12 by ldurmish          #+#    #+#             */
+/*   Updated: 2025/06/30 16:27:38 by ldurmish         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 #include <pwd.h>
 
-static char *tilde_join_path(const char *prefix, const char *rest)
+static char	*tilde_join_path(const char *prefix, const char *rest)
 {
-    char *tmp;
-    if (!prefix)
-        return NULL;
-    tmp = ft_strjoin(prefix, rest);
-    return tmp;
+	char	*tmp;
+
+	if (!prefix)
+		return (NULL);
+	tmp = ft_strjoin(prefix, rest);
+	return (tmp);
 }
 
-char *expand_tilde(const char *path, t_env *env)
+char	*expand_tilde(const char *path, t_env *env)
 {
-    const char *rest;
+    const char	*rest;
     char *prefix;
     struct passwd *pw;
     char *username;
@@ -79,4 +92,60 @@ void expand_tilde_tokens(t_token *tokens, t_env *env)
         }
         curr = curr->next;
     }
+}
+
+t_env	*create_copy_env_node(t_env *original)
+{
+	t_env	*env_node;
+
+	env_node = malloc(sizeof(t_env));
+	if (!env_node)
+		return (NULL);
+	env_node->key = NULL;
+	env_node->next = NULL;
+	env_node->value = NULL;
+	if (original->key)
+	{
+		env_node->key = ft_strdup(original->key);
+		if (!env_node->key)
+		{
+			free(env_node);
+			return (NULL);
+		}
+	}
+	if (original->value)
+	{
+		env_node->value = ft_strdup(original->value);
+		if (!env_node->value)
+			return (free(env_node->key), free(env_node), NULL);
+	}
+	return (env_node);
+}
+
+t_env	*deep_copy_env_list(t_env *env_list)
+{
+	t_env	*new_head;
+	t_env	*new_curr;
+	t_env	*new_node;
+	t_env	*original;
+
+	new_head = NULL;
+	new_curr = NULL;
+	original = env_list;
+	while (original)
+	{
+		new_node = create_copy_env_node(original);
+		if (!new_node)
+		{
+			free_env_list(new_head);
+			return (NULL);
+		}
+		if (!new_head)
+			new_head = new_node;
+		else
+			new_curr->next = new_node;
+		new_curr = new_node;
+		original = original->next;
+	}
+	return (new_head);
 }

@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 16:06:30 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:42:09 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -410,6 +410,9 @@ int			handle_whitespace(t_token **token, char *input, int *i);
 // Environmental variables
 t_env		*init_env_list(char **envp);
 int			quotes(char	*input, int i, t_args *parse);
+int			append_backslashes(t_args *p, int n);
+int			is_after_heredoc(char *input, int pos);
+void		process_env_var(t_args *p, t_env *env, char *in);
 char		*safe_and_expand_var(char *value);
 int			validate_parentheses(char *str);
 char		*process_env_value(char *value, t_args *arg);
