@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 15:58:33 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 15:58:33 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:56:52 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	handle_single_operator(t_token **token, char c)
 {
-	t_token *current;
+	t_token		*current;
 
 	if (c == '|')
 		current = create_node("|", TOKEN_PIPE);
@@ -38,7 +38,7 @@ int	handle_single_operator(t_token **token, char c)
 }
 
 static int	handle_double_operator_utils(t_token **current, char *input, int *i,
-		char next_char)
+	char next_char)
 {
 	if (input[*i] == '<' && next_char == '<')
 		*current = create_node("<<", TOKEN_HEREDOC);
@@ -60,9 +60,9 @@ static int	handle_double_operator_utils(t_token **current, char *input, int *i,
 
 int	handle_double_operator(t_token **head, char *input, int *i)
 {
-	t_token *current;
-	char next_char;
-	int result;
+	t_token	*current;
+	char	next_char;
+	int		result;
 
 	if (input[*i + 1] == '\0')
 		return (0);
@@ -83,7 +83,7 @@ int	handle_double_operator(t_token **head, char *input, int *i)
 
 int	return_parenthesis(t_token **token, char c)
 {
-	t_token *current;
+	t_token	*current;
 
 	if (c == '(')
 		current = create_node("(", TOKEN_PAREN_OPEN);
@@ -97,7 +97,7 @@ int	return_parenthesis(t_token **token, char c)
 
 static int	is_arithmetic_expr_valid(const char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -113,11 +113,11 @@ static int	is_arithmetic_expr_valid(const char *str)
 
 int	validate_assignment_value(char *assignment)
 {
-	const char *eq;
-	const char *value;
-	const char *end;
-	char *inner;
-	size_t len;
+	const char	*eq;
+	const char	*value;
+	const char	*end;
+	char		*inner;
+	size_t		len;
 
 	eq = ft_strchr(assignment, '=');
 	if (!eq || !*(eq + 1))
