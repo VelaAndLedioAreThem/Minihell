@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_parenthesis.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 09:55:50 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/21 16:01:44 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 14:04:32 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
