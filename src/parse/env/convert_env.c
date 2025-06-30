@@ -3,14 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   convert_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 15:36:47 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:25:29 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../include/minishell.h"
+
+static int	is_after_heredoc(char *input, int pos)
+{
+	int	i;
+
+	i = pos - 1;
+	while (i >= 0 && ft_isspace(input[i]))
+		i--;
+	if (i >= 0 && (input[i] == '"' || input[i] == '\''))
+		i--;
+	while (i >= 0 && ft_isspace(input[i]))
+		i--;
+	if (i >= 1 && input[i] == '<' && input[i - 1] == '<')
+		return (1);
+	return (0);
+}
 
 t_env	*create_copy_env_node(t_env *original)
 {
@@ -42,17 +58,22 @@ t_env	*create_copy_env_node(t_env *original)
 
 void	process_env_var(t_args *parse, t_env *env_list, char *input)
 {
-	int		old_i;
+	int	old_i;
 
 	if (quotes(input, parse->i, parse))
 	{
 		parse->i++;
 		return ;
 	}
-	if (input[parse->i] == '$' && input[parse->i + 1]
-		&& input[parse->i + 1] != '\'' && input[parse->i + 1] != ' '
-		&& input[parse->i + 1] != '"')
+	if (input[parse->i] == '$' && input[parse->i + 1] && input[parse->i
+		+ 1] != '\'' && input[parse->i + 1] != ' ' && input[parse->i
+		+ 1] != '"')
 	{
+		if (is_after_heredoc(input, parse->i))
+		{
+			parse->i++;
+			return ;
+		}
 		old_i = parse->i;
 		parse->result = handle_env_part(parse, &parse->i, env_list);
 		if (parse->i == old_i)

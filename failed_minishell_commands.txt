@@ -401,9 +401,3 @@ why
 not
 $USER
 
-cat << "$US"E"R"
-because
-we
-love
-bash
-$USER
