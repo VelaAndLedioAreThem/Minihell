@@ -1,31 +1,16 @@
 ----------------------------
 🌀 Tilde Expansion Issues
 ----------------------------
-/bin/echo ~42         # Invalid: ~42 is not a valid tilde expansion
-echo ~42              # Same issue
-cd ~                  # Valid tilde usage
-cd ../../             # Relative path navigation
-cd --                 # Using end-of-options marker
+/bin/echo ~42         
+echo ~42             
+cd ~                 
+cd ../../            
+cd --                
 
 ----------------------------
 🧾 Heredoc Edge Cases
 ----------------------------
-cat << $USER
-why
-not
-$USER
 
-cat << "$USER"
-why
-not
-$USER
-
-cat << "$US"E"R"
-because
-we
-love
-bash
-$USER
 
 ls | cat << stop | ls -la | cat << stop1
 12
