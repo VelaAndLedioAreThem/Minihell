@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 00:37:42 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 16:54:51 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:39:43 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ char	*handle_env_part(t_args *parse, int *i, t_env *env_list)
 {
 	if (parse->single_quotes)
 	{
-		parse->temp = ft_substr(parse->input, parse->start, *i - parse->start);
+		parse->temp = ft_substr(parse->input, parse->start, *i - parse->start + 1);
 		parse->old_result = parse->result;
 		parse->result = ft_strjoin(parse->result, parse->temp);
 		free(parse->old_result);
@@ -96,7 +96,6 @@ char	*handle_env_part(t_args *parse, int *i, t_env *env_list)
 	free(parse->temp);
 	return (parse->result);
 }
-
 static void	handle_remaining(t_args *parse, int *i)
 {
 	char		*temp;

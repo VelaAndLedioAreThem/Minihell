@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 12:25:29 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:45:17 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,34 +56,75 @@ t_env	*create_copy_env_node(t_env *original)
 	return (env_node);
 }
 
-void	process_env_var(t_args *parse, t_env *env_list, char *input)
+void    process_env_var(t_args *parse, t_env *env_list, char *input)
 {
-	int	old_i;
+        int     old_i;
+        int     j;
+        int     bslash_count;
+        char    *tmp;
 
-	if (quotes(input, parse->i, parse))
-	{
-		parse->i++;
-		return ;
-	}
-	if (input[parse->i] == '$' && input[parse->i + 1] && input[parse->i
-		+ 1] != '\'' && input[parse->i + 1] != ' ' && input[parse->i
-		+ 1] != '"')
-	{
-		if (is_after_heredoc(input, parse->i))
-		{
-			parse->i++;
-			return ;
-		}
-		old_i = parse->i;
-		parse->result = handle_env_part(parse, &parse->i, env_list);
-		if (parse->i == old_i)
-			parse->i++;
-		parse->start = parse->i;
-	}
-	else
-		parse->i++;
+        j = parse->i;
+        bslash_count = 0;
+        while (input[j] == '\\')
+        {
+                j++;
+                bslash_count++;
+        }
+        if (bslash_count && input[j] == '$')
+        {
+                if (parse->i > parse->start)
+                {
+                        parse->temp = ft_substr(input, parse->start, parse->i - parse->start);
+                        parse->old_result = parse->result;
+                        parse->result = ft_strjoin(parse->result, parse->temp);
+                        free(parse->old_result);
+                        free(parse->temp);
+                }
+                tmp = ft_calloc(bslash_count / 2 + 1, sizeof(char));
+                if (!tmp)
+                {
+                        parse->i = j;
+                        return ;
+                }
+                ft_memset(tmp, '\\', bslash_count / 2);
+                parse->old_result = parse->result;
+                parse->result = ft_strjoin(parse->result, tmp);
+                free(parse->old_result);
+                free(tmp);
+                if (bslash_count % 2)
+                {
+                        parse->old_result = parse->result;
+                        parse->result = ft_strjoin(parse->result, "$");
+                        free(parse->old_result);
+                        parse->i = j + 1;
+                        parse->start = parse->i;
+                        return ;
+                }
+                parse->i = j;
+                parse->start = parse->i;
+        }
+        if (quotes(input, parse->i, parse))
+        {
+                parse->i++;
+                return ;
+        }
+        if (input[parse->i] == '$' && input[parse->i + 1] && input[parse->i + 1] != '\''
+                && input[parse->i + 1] != ' ' && input[parse->i + 1] != '"')
+        {
+                if (is_after_heredoc(input, parse->i))
+                {
+                        parse->i++;
+                        return ;
+                }
+                old_i = parse->i;
+                parse->result = handle_env_part(parse, &parse->i, env_list);
+                if (parse->i == old_i)
+                        parse->i++;
+                parse->start = parse->i;
+        }
+        else
+                parse->i++;
 }
-
 t_env	*deep_copy_env_list(t_env *env_list)
 {
 	t_env	*new_head;

@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 19:07:30 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/25 16:47:15 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:38:58 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,23 @@ char	*env_expansion(char *input, int *i, t_env *env_list, t_args *arg)
 	char	*value;
 	char	*processed_value;
 
-	(*i)++;
-	if (input[*i] == '?' || input[*i] == '@' || input[*i] == '*'
-		|| input[*i] == '0')
-		return (handle_special_var(input, i, arg));
-	name = get_env_name(input, i);
-	if (!name)
-		return (ft_strdup(""));
+    (*i)++;
+    if (!input[*i])
+    {
+            (*i)--;
+            return (ft_strdup("$"));
+    }
+    if (input[*i] == '?' || input[*i] == '@' || input[*i] == '*'
+            || input[*i] == '0')
+            return (handle_special_var(input, i, arg));
+    if (!ft_isalpha(input[*i]) && input[*i] != '_')
+    {
+            (*i)--;
+            return (ft_strdup("$"));
+    }
+    name = get_env_name(input, i);
+    if (!name)
+            return (ft_strdup(""));
 	if (!ft_strcmp(name, "SHLVL"))
 	{
 		val = handle_shlvl(env_list);

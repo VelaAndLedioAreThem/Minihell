@@ -115,41 +115,26 @@ rm "*1"
 
 echo '$='
 
-echo "$""$"
 
-echo $"$"
 
-echo $"42$"
 
-echo "$"$
 
 echo $'$'
 
-echo '$'$
 
-echo '$HO ME'
 
-echo $"HOME"
 
 echo $'HOME'
 
-echo ""$PWD""
 
-echo ''$PWD''
 
-echo $USE"R"$HOME
 
-echo $"HOME"$USER
 
-echo $"HOM"E$USER
 
-echo $"'HOM'E"$USER
 
-echo $'HOM'E$USER
 
-echo $"HOME"
 
-echo '$USER'
+
 
 
 export X="  A  B  "
@@ -260,44 +245,24 @@ stop3
 
 
 
-echo ''totally logical''
-
-echo ""'totally logical'""
-
-echo echo"1"
 
 
-echo text"$USER"
 
 
-echo \$USER
-
-echo \\$USER
-
-echo \\\$USER
-
-echo $"HOME"
-
-echo $"42$"
-
-echo """"""""$USER""""""""
 
 
-echo "cd ~"
 
-echo ""$?""
 
-echo $?"42"
 
-echo ''$?''"42"
 
-echo '"$USER"'
-echo "$/ $/"
 
-echo $/"$/"
 
-echo '$/'
+
+
+
+
+
+
 export T=ech
 
 
-echo $T'o '
