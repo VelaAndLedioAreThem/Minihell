@@ -6,33 +6,36 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:49:31 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/28 18:49:31 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:19:54 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-t_ctx	*g_ctx;
-static char *simple_gnl(int fd)
-{
-    char *line = NULL;
-    char buf[1];
-    size_t len = 0;
-    ssize_t rd;
-    while ((rd = read(fd, buf, 1)) > 0)
-    {
+t_ctx		*g_ctx;
 
-        line = ft_realloc(line, len + 1, len + 2);
-        if (!line)
-            return NULL;
-        line[len++] = buf[0];
-        if (buf[0] == '\n')
-            break;
-    }
-    if (rd <= 0 && len == 0)
-        return NULL;
-    line[len] = '\0';
-    return line;
+static char	*simple_gnl(int fd)
+{
+	char	*line;
+	char	buf[1];
+	size_t	len;
+	ssize_t	rd;
+
+	line = NULL;
+	len = 0;
+	while ((rd = read(fd, buf, 1)) > 0)
+	{
+		line = ft_realloc(line, len + 1, len + 2);
+		if (!line)
+			return (NULL);
+		line[len++] = buf[0];
+		if (buf[0] == '\n')
+			break ;
+	}
+	if (rd <= 0 && len == 0)
+		return (NULL);
+	line[len] = '\0';
+	return (line);
 }
 static void	init_main_context(t_ctx *main_ctx, int argc, char **argv)
 {
@@ -80,6 +83,5 @@ int	main(int argc, char **argv, char **envp)
 		handle_input(input, env_list, &g_main_ctx);
 		free(input);
 	}
-	return (cleanup_minishell(env_list, NULL, NULL, NULL),
-		gles(&g_main_ctx));
+	return (cleanup_minishell(env_list, NULL, NULL, NULL), gles(&g_main_ctx));
 }
