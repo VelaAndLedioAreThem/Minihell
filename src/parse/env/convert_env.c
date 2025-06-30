@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/15 20:29:25 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 16:42:42 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:52:28 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,26 @@ int	append_backslashes(t_args *p, int n)
 	free(old);
 	free(blk);
 	return (1);
+}
+
+char	*handle_special_utils(char *input, char *str, int *i, t_args *arg)
+{
+	if (input[*i] == '?')
+	{
+		str = ft_itoa(arg->exit_status);
+		(*i)++;
+	}
+	else if (input[*i] == '@' || input[*i] == '*')
+	{
+		str = join_arguments(arg);
+		(*i)++;
+	}
+	else if (input[*i] == '0')
+	{
+		str = ft_strdup(arg->argv[0]);
+		(*i)++;
+	}
+	return (str);
 }
 
 char	*get_env_value(t_env *env_list, char *name)
