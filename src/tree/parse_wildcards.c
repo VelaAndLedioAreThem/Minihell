@@ -6,7 +6,7 @@
 /*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 11:04:56 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 20:22:07 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 13:15:47 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,33 @@
 
 static int	handle_word_token(t_expand_wild *exp, char ***temp_args)
 {
-	char		*token_value;
+        char    *token_value;
+        char    *tmp;
 
-	token_value = exp->curr->value;
-	if (ft_strchr(token_value, '\'') && ft_strncmp(token_value, "'$", 2) == 0)
-		(*temp_args)[exp->i] = ft_strndup(token_value + 1,
-				ft_strlen(token_value) - 2);
-	else
-		(*temp_args)[exp->i] = ft_strdup(token_value);
-	if (!(*temp_args)[exp->i])
-		return (0);
-	exp->curr = exp->curr->next;
-	exp->i++;
-	return (1);
+        token_value = ft_strdup(exp->curr->value);
+        if (!token_value)
+                return (0);
+        exp->curr = exp->curr->next;
+        while (exp->curr && (exp->curr->type == TOKEN_WORD
+                        || exp->curr->type == TOKEN_WILDCARD))
+        {
+                tmp = ft_strjoin(token_value, exp->curr->value);
+                free(token_value);
+                if (!tmp)
+                        return (0);
+                token_value = tmp;
+                exp->curr = exp->curr->next;
+        }
+        if (ft_strchr(token_value, '\'') && ft_strncmp(token_value, "'$", 2) == 0)
+                (*temp_args)[exp->i] = ft_strndup(token_value + 1,
+                                ft_strlen(token_value) - 2);
+        else
+                (*temp_args)[exp->i] = ft_strdup(token_value);
+        free(token_value);
+        if (!(*temp_args)[exp->i])
+                return (0);
+        exp->i++;
+        return (1);
 }
 
 static int	process_collect_loop(t_expand_wild *exp, char **temp_args,
