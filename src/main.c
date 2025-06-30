@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:49:31 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 17:19:54 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:36:06 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,26 +17,30 @@ t_ctx		*g_ctx;
 static char	*simple_gnl(int fd)
 {
 	char	*line;
-	char	buf[1];
-	size_t	len;
-	ssize_t	rd;
+	char	buffer[1];
+	ssize_t	bytes_read;
+	size_t	length;
 
 	line = NULL;
-	len = 0;
-	while ((rd = read(fd, buf, 1)) > 0)
+	length = 0;
+	bytes_read = read(fd, buffer, 1);
+	while (bytes_read > 0)
 	{
-		line = ft_realloc(line, len + 1, len + 2);
-		if (!line)
+		line = ft_realloc(line, length + 1, length + 2);
+		if (line == NULL)
 			return (NULL);
-		line[len++] = buf[0];
-		if (buf[0] == '\n')
+		line[length] = buffer[0];
+		length++;
+		if (buffer[0] == '\n')
 			break ;
+		bytes_read = read(fd, buffer, 1);
 	}
-	if (rd <= 0 && len == 0)
+	if (bytes_read <= 0 && length == 0)
 		return (NULL);
-	line[len] = '\0';
+	line[length] = '\0';
 	return (line);
 }
+
 static void	init_main_context(t_ctx *main_ctx, int argc, char **argv)
 {
 	g_ctx = main_ctx;
