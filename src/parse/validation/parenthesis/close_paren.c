@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 15:55:13 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 15:55:13 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:25:41 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@ bool	check_commands_after_paren(char *input, int *j)
 		if (!found_operator)
 		{
 			report_error(ERR_SYNTAX,
-				"missing operator between"
-				"parenthesis and commands");
+				"missing operator between parenthesis and commands");
 			return (false);
 		}
 	}

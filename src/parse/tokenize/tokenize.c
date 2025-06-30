@@ -15,10 +15,9 @@
 
 #include "../../../include/minishell.h"
 
-
 int	handle_operator(t_token **token, char *input, int *i)
 {
-	int status;
+	int	status;
 
 	if (input[*i] == '(' || input[*i] == ')')
 		return (return_parenthesis(token, input[*i]));
@@ -38,7 +37,7 @@ int	handle_operator(t_token **token, char *input, int *i)
 int	tokenize_utils(t_token **token, char *input, int *i)
 
 {
-	int status;
+	int	status;
 
 	status = handle_assignment(token, input, i);
 	if (status != 0)
@@ -60,7 +59,7 @@ int	tokenize_utils(t_token **token, char *input, int *i)
 
 t_token	*finalize_token(t_token *token)
 {
-	t_token *eof_token;
+	t_token	*eof_token;
 
 	eof_token = create_node("", TOKEN_EOF);
 	if (!eof_token)
@@ -71,9 +70,9 @@ t_token	*finalize_token(t_token *token)
 
 t_token	*tokenize(char *input)
 {
-	t_token *token;
-	int i;
-	int status;
+	t_token	*token;
+	int		i;
+	int		status;
 
 	if (!input)
 		return (NULL);

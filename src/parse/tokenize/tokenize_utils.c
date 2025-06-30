@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 15:58:33 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 16:56:52 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:12:29 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,53 +92,5 @@ int	return_parenthesis(t_token **token, char c)
 	if (!current)
 		return (-1);
 	append_node(token, current);
-	return (1);
-}
-
-static int	is_arithmetic_expr_valid(const char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]) && str[i] != ' ' && str[i] != '+'
-			&& str[i] != '-' && str[i] != '*' && str[i] != '/' && str[i] != '%'
-			&& str[i] != '(' && str[i] != ')')
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int	validate_assignment_value(char *assignment)
-{
-	const char	*eq;
-	const char	*value;
-	const char	*end;
-	char		*inner;
-	size_t		len;
-
-	eq = ft_strchr(assignment, '=');
-	if (!eq || !*(eq + 1))
-		return (1);
-	value = eq + 1;
-	if (ft_strncmp(value, "((", 2) != 0)
-		return (1);
-	len = ft_strlen(value);
-	if (len < 4)
-		return (0);
-	end = value + len - 1;
-	if (*(end) != ')' || *(end - 1) != ')')
-		return (0);
-	inner = ft_substr(value + 2, 0, len - 4);
-	if (!inner)
-		return (0);
-	if (!is_arithmetic_expr_valid(inner))
-	{
-		free(inner);
-		return (0);
-	}
-	free(inner);
 	return (1);
 }

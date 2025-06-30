@@ -15,12 +15,11 @@
 
 #include "../../../include/minishell.h"
 
-
 static int	get_quote_content(char *input, int *i, char quote_type,
 		char **content)
 {
-	int start;
-	int len;
+	int	start;
+	int	len;
 
 	start = *i + 1;
 	*i = start;
@@ -40,9 +39,9 @@ static int	get_quote_content(char *input, int *i, char quote_type,
 
 int	handle_quotes(t_token **token, char *input, int *i)
 {
-	t_token *current;
-	char *content;
-	char quote_type;
+	t_token	*current;
+	char	*content;
+	char	quote_type;
 
 	quote_type = input[*i];
 	if (get_quote_content(input, i, quote_type, &content) == -1)
@@ -67,9 +66,9 @@ int	handle_quotes(t_token **token, char *input, int *i)
 
 int	handle_dollar_single_quotes(t_token **token, char *input, int *i)
 {
-	int start;
-	char *content;
-	t_token *current;
+	int		start;
+	char	*content;
+	t_token	*current;
 
 	start = *i + 2;
 	*i = start;
@@ -95,9 +94,9 @@ int	handle_dollar_single_quotes(t_token **token, char *input, int *i)
 
 int	handle_word(t_token **token, char *input, int *i)
 {
-	int start;
-	char *word;
-	t_token *current;
+	int		start;
+	char	*word;
+	t_token	*current;
 
 	start = *i;
 	while (input[*i] && !ft_isspace(input[*i]) && !is_operator(input[*i])
@@ -118,9 +117,9 @@ int	handle_word(t_token **token, char *input, int *i)
 
 int	handle_whitespace(t_token **token, char *input, int *i)
 {
-	int start;
-	char *whitespace;
-	t_token *curr;
+	int		start;
+	char	*whitespace;
+	t_token	*curr;
 
 	start = *i;
 	while (input[*i] && ft_isspace(input[*i]))

@@ -6,14 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:53:59 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 16:17:06 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:15:57 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 static int	open_infiles(t_ast *data, t_redir_ls *curr, int *fd_in)
 {
