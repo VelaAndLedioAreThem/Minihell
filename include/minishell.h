@@ -293,6 +293,8 @@ typedef struct s_hdinfo
 }		t_hdinfo;
 
 extern t_ctx	*g_ctx;
+int			handle_heredocs(t_ast *data, t_redir_ls *list);
+char		*read_line_fd(int fd);
 void		merge_word_tokens(t_token *tokens);
 int			prepare_heredoc_tree(t_ast *data, t_ast *tree);
 int			open_unique_tmp(char *path);

@@ -6,7 +6,7 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 18:53:59 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 16:08:02 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 16:17:06 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,6 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-static int	handle_heredocs(t_ast *data, t_redir_ls *list)
-{
-	t_redir_ls	*curr;
-
-	curr = list;
-	while (curr)
-	{
-		if (curr->type == TOKEN_HEREDOC)
-			if (!create_heredoc_file(data, curr))
-				return (0);
-		curr = curr->next;
-	}
-	return (1);
-}
 
 static int	open_infiles(t_ast *data, t_redir_ls *curr, int *fd_in)
 {
