@@ -2,14 +2,11 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parenthesis_validation.c                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+        
-	+:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+      
-	+#+        */
-/*                                                +#+#+#+#+#+  
-	+#+           */
-/*   Created: 2025/02/23 17:59:54 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/28 19:26:18 by ldurmish         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 15:49:36 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:49:36 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +59,7 @@ bool	parenthesis_utils(t_token *tokenize)
 
 bool	check_count_paren(t_token *tokenize)
 {
-	int	paren_count;
+	int paren_count;
 
 	if (!tokenize)
 		return (true);
@@ -109,24 +106,17 @@ void	update_assignment_context(t_assign_context *ctx, t_token *current)
 		reset_assign(ctx);
 }
 
-
 bool	validation_parenthesis(t_token *tokenize)
 {
-	t_token				*current;
-	t_token				*prev;
-	t_assign_context	ctx;
+	t_token *current;
+	t_token *prev;
+	t_assign_context ctx;
 
 	current = tokenize;
 	prev = NULL;
-       ctx = (t_assign_context){false, false, -1, NULL};
-       if (current && current->value[0] == '('
-               && current->next->value[0] == '(')
-       {
-               report_error(ERR_SYNTAX, "double parenthesis '((' not supported");
-               return (false);
-       }
-       while (current)
-       {
+	ctx = (t_assign_context){false, false, -1, NULL};
+	while (current)
+	{
 		update_assignment_context(&ctx, current);
 		if (!check_command_paren_sequence(current, prev, &ctx))
 			return (false);

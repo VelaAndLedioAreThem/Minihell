@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_utils_1.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+       +#+        */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/20 17:45:55 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 13:17:11 by ldurmish         ###   ########.fr       */
+/*   Created: 2025/06/30 15:24:44 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:24:44 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,61 +53,60 @@ int	parse_process_redirection(t_token **tokens, t_ast **cmd_node)
 	return (1);
 }
 
-static char     *join_adjacent_words(t_token **curr)
+static char	*join_adjacent_words(t_token **curr)
 {
-        char            *result;
-        char            *tmp;
-        t_token         *next;
+	char	*result;
+	char	*tmp;
+	t_token	*next;
 
-        result = ft_strdup((*curr)->value);
-        if (!result)
-                return (NULL);
-        next = (*curr)->next;
-        while (next && next->type != TOKEN_WHITESPACE
-                && (next->type == TOKEN_WORD || next->type == TOKEN_WILDCARD))
-        {
-                tmp = ft_strjoin(result, next->value);
-                free(result);
-                if (!tmp)
-                        return (NULL);
-                result = tmp;
-                *curr = next;
-                next = next->next;
-        }
-        *curr = (*curr)->next;
-        return (result);
+	result = ft_strdup((*curr)->value);
+	if (!result)
+		return (NULL);
+	next = (*curr)->next;
+	while (next && next->type != TOKEN_WHITESPACE && (next->type == TOKEN_WORD
+			|| next->type == TOKEN_WILDCARD))
+	{
+		tmp = ft_strjoin(result, next->value);
+		free(result);
+		if (!tmp)
+			return (NULL);
+		result = tmp;
+		*curr = next;
+		next = next->next;
+	}
+	*curr = (*curr)->next;
+	return (result);
 }
 
-int     parse_process_word_token(t_token **tokens, t_ast **cmd_node, int *has_cmd)
+int	parse_process_word_token(t_token **tokens, t_ast **cmd_node, int *has_cmd)
 {
-        t_token         *curr;
-        char            *value;
+	t_token	*curr;
+	char	*value;
 
-        curr = *tokens;
-        value = join_adjacent_words(&curr);
-        if (!value)
-                return (free_ast(*cmd_node), *cmd_node = NULL, 0);
-        if (!*has_cmd)
-        {
-                if (!*cmd_node)
-                {
-                        *cmd_node = parse_init_command_node(*tokens);
-                        if (!*cmd_node)
-                                return (free(value), 0);
-                }
-                if (!set_command_name(*cmd_node, value))
-                        return (free(value), free_ast(*cmd_node), *cmd_node = NULL, 0);
-                *has_cmd = 1;
-        }
-        else
-        {
-                if (!add_command_arg(*cmd_node, value))
-                        return (free(value), free_ast(*cmd_node), *cmd_node = NULL, 0);
-        }
-        free(value);
-        *tokens = curr;
-        return (1);
+	curr = *tokens;
+	value = join_adjacent_words(&curr);
+	if (!value)
+		return (free_ast(*cmd_node), *cmd_node = NULL, 0);
+	if (!*has_cmd)
+	{
+		if (!*cmd_node)
+		{
+			*cmd_node = parse_init_command_node(*tokens);
+			if (!*cmd_node)
+				return (free(value), 0);
+		}
+		if (!set_command_name(*cmd_node, value))
+			return (free(value), free_ast(*cmd_node), *cmd_node = NULL, 0);
+		*has_cmd = 1;
+	}
+	else
+	{
+		if (!add_command_arg(*cmd_node, value))
+			return (free(value), free_ast(*cmd_node), *cmd_node = NULL, 0);
+	}
+	return (*tokens = curr, free(value), 1);
 }
+
 int	parse_command_loop(t_token **tokens, t_ast **cmd_node, int *has_command)
 {
 	t_token	*curr;

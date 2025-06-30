@@ -2,95 +2,91 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parse_redir.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+
-	+:+     */
-/*   By: ldurmish < ldurmish@student.42wolfsburg.d  +#+  +:+
-	+#+        */
-/*                                                +#+#+#+#+#+
-	+#+           */
-/*   Created: 2025/03/21 22:06:24 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/22 17:11:35 by ldurmish         ###   ########.fr       */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 15:52:18 by vszpiech          #+#    #+#             */
+/*   Updated: 2025/06/30 15:52:18 by vszpiech         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "../../include/minishell.h"
 
-static int      collect_delimiter(t_token **tokens, char **value, int *quoted)
+static int	collect_delimiter(t_token **tokens, char **value, int *quoted)
 {
-        t_token *curr;
-        char    *res;
-        char    *tmp;
+	t_token	*curr;
+	char	*res;
+	char	*tmp;
 
-        curr = *tokens;
-        res = ft_strdup("");
-        if (!res)
-                return (0);
-         *quoted = 0;
-        while (curr && curr->type == TOKEN_WORD)
-        {
-                tmp = ft_strjoin(res, curr->value);
-                free(res);
-                if (!tmp)
-                        return (0);
-                res = tmp;
-                if (*quoted == 0)
-                {
-                        if (curr->quotes.in_single_quotes)
-                                *quoted = 1;
-                        else if (curr->quotes.in_double_quotes)
-                                *quoted = 2;
-                }
-                curr = curr->next;
-        }
-		*tokens = curr;
-        *value = res;
-        return (1);
+	curr = *tokens;
+	res = ft_strdup("");
+	if (!res)
+		return (0);
+	*quoted = 0;
+	while (curr && curr->type == TOKEN_WORD)
+	{
+		tmp = ft_strjoin(res, curr->value);
+		free(res);
+		if (!tmp)
+			return (0);
+		res = tmp;
+		if (*quoted == 0)
+		{
+			if (curr->quotes.in_single_quotes)
+				*quoted = 1;
+			else if (curr->quotes.in_double_quotes)
+				*quoted = 2;
+		}
+		curr = curr->next;
+	}
+	*tokens = curr;
+	*value = res;
+	return (1);
 }
 
-static int      validate_redirection_tokens(t_token **tokens, t_token **redir_token,
-                char **filename, int *quoted)
+static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
+		char **filename, int *quoted)
 {
-        if (!tokens || !*tokens)
-                return (0);
-        *redir_token = *tokens;
-        if ((*redir_token)->next)
-                *tokens = (*redir_token)->next;
-        else
-        {
-                ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
-                        STDERR_FILENO);
-                return (0);
-        }
-        skip_tree_whitespaces(tokens);
-        if (!*tokens || (*tokens)->type != TOKEN_WORD)
-        {
-                ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
-                        STDERR_FILENO);
-                return (0);
-        }
-        if (!collect_delimiter(tokens, filename, quoted))
-                return (0);
-        return (1);
+	if (!tokens || !*tokens)
+		return (0);
+	*redir_token = *tokens;
+	if ((*redir_token)->next)
+		*tokens = (*redir_token)->next;
+	else
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
+		return (0);
+	}
+	skip_tree_whitespaces(tokens);
+	if (!*tokens || (*tokens)->type != TOKEN_WORD)
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `newline'",
+			STDERR_FILENO);
+		return (0);
+	}
+	if (!collect_delimiter(tokens, filename, quoted))
+		return (0);
+	return (1);
 }
 
-static int      handle_single_redirection(t_token **tokens, t_commands *cmd)
+static int	handle_single_redirection(t_token **tokens, t_commands *cmd)
 {
-        t_token *redir_token;
-        char    *filename;
-        int             quoted;
+	t_token		*redir_token;
+	char		*filename;
+	int			quoted;
 
-        if (!tokens || !*tokens || !cmd)
-                return (0);
-        if (!validate_redirection_tokens(tokens, &redir_token, &filename, &quoted))
-                return (0);
-        if (!add_redirection(cmd, redir_token->type, filename, quoted))
-        {
-                free(filename);
-                return (0);
-        }
-        free(filename);
-        return (1);
+	if (!tokens || !*tokens || !cmd)
+		return (0);
+	if (!validate_redirection_tokens(tokens, &redir_token, &filename, &quoted))
+		return (0);
+	if (!add_redirection(cmd, redir_token->type, filename, quoted))
+	{
+		free(filename);
+		return (0);
+	}
+	free(filename);
+	return (1);
 }
 
 int	parse_redirection(t_token **tokens, t_ast *cmd_node)
