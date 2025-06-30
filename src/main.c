@@ -12,7 +12,7 @@
 
 #include "../include/minishell.h"
 
-t_ctx	*g_ctx;
+t_ctx		*g_ctx;
 
 static void	init_main_context(t_ctx *main_ctx, int argc, char **argv)
 {
