@@ -6,43 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 15:52:18 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 15:52:18 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:36:10 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-static int	collect_delimiter(t_token **tokens, char **value, int *quoted)
-{
-	t_token	*curr;
-	char	*res;
-	char	*tmp;
-
-	curr = *tokens;
-	res = ft_strdup("");
-	if (!res)
-		return (0);
-	*quoted = 0;
-	while (curr && curr->type == TOKEN_WORD)
-	{
-		tmp = ft_strjoin(res, curr->value);
-		free(res);
-		if (!tmp)
-			return (0);
-		res = tmp;
-		if (*quoted == 0)
-		{
-			if (curr->quotes.in_single_quotes)
-				*quoted = 1;
-			else if (curr->quotes.in_double_quotes)
-				*quoted = 2;
-		}
-		curr = curr->next;
-	}
-	*tokens = curr;
-	*value = res;
-	return (1);
-}
 
 static int	validate_redirection_tokens(t_token **tokens, t_token **redir_token,
 		char **filename, int *quoted)

@@ -6,7 +6,7 @@
 /*   By: vela <vela@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/12 23:21:28 by ldurmish          #+#    #+#             */
-/*   Updated: 2025/06/30 16:52:48 by ldurmish         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:36:05 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -539,8 +539,11 @@ void		free_stack(t_token *token);
 
 // Binary Tree
 t_ast		*parse_tokens(t_token *tokens);
+int			collect_delimiter(t_token **tokens, char **value, int *quoted);
 t_ast		*parse_command_line(t_token **curr);
+int			handle_word_token(t_expand_wild *exp, char ***temp_args);
 int			parse_setup_tokens(t_token **tokens);
+t_ast		*parse_init_command_node(t_token *token);
 int			is_redirection_token(t_token_type type);
 int			set_command_name(t_ast *cmd_node, char *name);
 int			add_command_arg(t_ast *cmd_node, char *arg);

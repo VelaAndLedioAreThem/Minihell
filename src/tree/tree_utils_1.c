@@ -6,35 +6,11 @@
 /*   By: vszpiech <vszpiech@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 15:24:44 by vszpiech          #+#    #+#             */
-/*   Updated: 2025/06/30 15:24:44 by vszpiech         ###   ########.fr       */
+/*   Updated: 2025/06/30 17:29:12 by ldurmish         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
-
-t_ast	*parse_init_command_node(t_token *token)
-{
-	t_ast	*cmd_node;
-
-	cmd_node = create_ast_node(AST_COMMAND, token);
-	if (!cmd_node)
-		return (NULL);
-	cmd_node->cmd = create_command_struct();
-	if (!cmd_node->cmd)
-	{
-		free(cmd_node);
-		return (NULL);
-	}
-	cmd_node->cmd->args = malloc(sizeof(char *));
-	if (!cmd_node->cmd->args)
-	{
-		free(cmd_node->cmd);
-		free(cmd_node);
-		return (NULL);
-	}
-	cmd_node->cmd->args[0] = NULL;
-	return (cmd_node);
-}
 
 int	parse_process_redirection(t_token **tokens, t_ast **cmd_node)
 {
